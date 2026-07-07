@@ -64,7 +64,7 @@ A successful BOS will be recognized for:
 Every major decision made during the development of BOS should support this vision.
 
 If a proposed feature does not improve security, usability, performance, privacy, or productivity, it should be reconsidered before implementation.
-
+ 
 ---
 
 # 7. Looking Ahead
