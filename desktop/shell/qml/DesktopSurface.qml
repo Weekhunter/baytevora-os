@@ -39,8 +39,9 @@ Item {
             width: modelData.width
             height: modelData.height
             title: modelData.title
-            visible: modelData.visible
+            visible: modelData.visible && modelData.state !== "minimized"
             isActive: modelData.id === windowManager.activeWindowId
+            state: modelData.state
         }
     }
 }

@@ -16,6 +16,9 @@ Rectangle {
     /** Whether this window is the active window. */
     property bool isActive: false
 
+    /** Current window state: "normal", "minimized", "maximized", or "closed". */
+    property string state: "normal"
+
     color: "#1e293b"
     border.color: isActive ? "#475569" : "#334155"
     border.width: isActive ? 2 : 1
@@ -48,9 +51,41 @@ Rectangle {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
                 anchors.leftMargin: 12
+                anchors.right: buttonRow.left
+                anchors.rightMargin: 8
                 text: root.title
                 color: "#e2e8f0"
                 font.pixelSize: 14
+                elide: Text.ElideRight
+            }
+
+            Row {
+                id: buttonRow
+
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                height: parent.height
+
+                WindowButton {
+                    symbol: "−"
+                    onClicked: windowManager.minimizeWindow(modelData.id)
+                }
+
+                WindowButton {
+                    symbol: root.state === "maximized" ? "❐" : "□"
+                    onClicked: {
+                        if (root.state === "maximized") {
+                            windowManager.restoreWindow(modelData.id)
+                        } else {
+                            windowManager.maximizeWindow(modelData.id)
+                        }
+                    }
+                }
+
+                WindowButton {
+                    symbol: "×"
+                    onClicked: windowManager.closeWindow(modelData.id)
+                }
             }
         }
 

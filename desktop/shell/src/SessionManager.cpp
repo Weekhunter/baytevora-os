@@ -2,8 +2,11 @@
 
 #include <QDebug>
 
+#include "bos/ApplicationManager.h"
 #include "bos/DesktopSurfaceModule.h"
+#include "bos/LauncherModule.h"
 #include "bos/ModuleManager.h"
+#include "bos/TaskbarModule.h"
 #include "bos/WallpaperModule.h"
 #include "bos/WindowManager.h"
 
@@ -26,12 +29,15 @@ void SessionManager::initialize()
     m_initialized = true;
     log(QStringLiteral("Session initialized"));
 
-    // Register placeholder modules from previous sprints and the WindowManager
-    // framework from Sprint 5. Additional desktop modules will be added here
-    // as they are implemented in future sprints.
+    // Register placeholder modules from previous sprints, the WindowManager
+    // framework, the Taskbar module, and the Launcher module. Additional
+    // desktop modules will be added here as they are implemented.
     m_moduleManager->registerModule(std::make_unique<DesktopSurfaceModule>());
     m_moduleManager->registerModule(std::make_unique<WallpaperModule>());
     m_moduleManager->registerModule(std::make_unique<WindowManager>());
+    m_moduleManager->registerModule(std::make_unique<TaskbarModule>());
+    m_moduleManager->registerModule(std::make_unique<LauncherModule>());
+    m_moduleManager->registerModule(std::make_unique<ApplicationManager>());
 
     m_moduleManager->initializeAll();
 }

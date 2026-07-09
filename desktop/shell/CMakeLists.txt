@@ -26,6 +26,11 @@ set(SOURCES
     src/WallpaperModule.cpp
     src/WindowManager.cpp
     src/Window.cpp
+    src/TaskbarModule.cpp
+    src/LauncherModule.cpp
+    src/ApplicationRegistry.cpp
+    src/ApplicationLauncher.cpp
+    src/ApplicationManager.cpp
 )
 
 set(HEADERS
@@ -37,6 +42,12 @@ set(HEADERS
     include/bos/WallpaperModule.h
     include/bos/WindowManager.h
     include/bos/Window.h
+    include/bos/TaskbarModule.h
+    include/bos/LauncherModule.h
+    include/bos/ApplicationInfo.h
+    include/bos/ApplicationRegistry.h
+    include/bos/ApplicationLauncher.h
+    include/bos/ApplicationManager.h
 )
 
 qt_add_executable(BOS_Shell
@@ -62,6 +73,15 @@ qt_add_qml_module(BOS_Shell
         qml/DesktopSurface.qml
         qml/Wallpaper.qml
         qml/WindowFrame.qml
+        qml/WindowButton.qml
+        qml/Taskbar.qml
+        qml/TaskbarButton.qml
+        qml/RunningApps.qml
+        qml/Clock.qml
+        qml/Launcher.qml
+        qml/LauncherButton.qml
+        qml/LauncherGrid.qml
+        qml/LauncherHeader.qml
 )
 
 # Copy assets from the source tree into the build directory so the executable

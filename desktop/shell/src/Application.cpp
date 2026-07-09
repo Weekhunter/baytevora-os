@@ -4,6 +4,8 @@
 #include <QCoreApplication>
 #include <QUrl>
 
+#include "bos/ApplicationManager.h"
+#include "bos/LauncherModule.h"
 #include "bos/ModuleManager.h"
 #include "bos/SessionManager.h"
 #include "bos/WindowManager.h"
@@ -72,6 +74,27 @@ int Application::run()
     if (auto *windowManager = dynamic_cast<WindowManager*>(
             m_sessionManager->moduleManager()->findModule(QStringLiteral("WindowManager")))) {
         m_engine->rootContext()->setContextProperty(QStringLiteral("windowManager"), windowManager);
+    }
+
+    // Expose the LauncherModule to QML so the taskbar and launcher UI can
+    // toggle visibility and log placeholder launch requests.
+    if (auto *launcher = dynamic_cast<LauncherModule*>(
+            m_sessionManager->moduleManager()->findModule(QStringLiteral("Launcher")))) {
+        m_engine->rootContext()->setContextProperty(QStringLiteral("launcher"), launcher);
+    }
+
+    // Wire ApplicationManager to WindowManager so launch requests can create
+    // demonstration windows, then expose it to QML.
+    auto *windowManager = dynamic_cast<WindowManager*>(
+        m_sessionManager->moduleManager()->findModule(QStringLiteral("WindowManager")));
+    auto *applicationManager = dynamic_cast<ApplicationManager*>(
+        m_sessionManager->moduleManager()->findModule(QStringLiteral("ApplicationManager")));
+    if (windowManager && applicationManager) {
+        applicationManager->setWindowManager(windowManager);
+    }
+    if (applicationManager) {
+        m_engine->rootContext()->setContextProperty(
+            QStringLiteral("applicationManager"), applicationManager);
     }
 
     loadInterface();

@@ -87,13 +87,59 @@ public slots:
      */
     void setActiveWindow(int id);
 
+    /**
+     * @brief Creates a demonstration application window with the given title.
+     *
+     * The window is centered on the primary screen, registered with the
+     * manager, and set as the active window. Sprint 10 uses this method so
+     * ApplicationManager can request windows without manipulating them directly.
+     * @return The new window ID, or -1 if creation failed.
+     */
+    Q_INVOKABLE int createApplicationWindow(const QString &title);
+
+    /**
+     * @brief Sets the window state to Minimized.
+     */
+    void minimizeWindow(int id);
+
+    /**
+     * @brief Sets the window state to Maximized and fills the desktop area.
+     */
+    void maximizeWindow(int id);
+
+    /**
+     * @brief Restores the window to its Normal state and previous geometry.
+     */
+    void restoreWindow(int id);
+
+    /**
+     * @brief Sets the window state to Closed and removes it from the manager.
+     */
+    void closeWindow(int id);
+
+    /**
+     * @brief Handles a taskbar button click for the given window.
+     *
+     * Restores the window if it is minimized, focuses it if it is inactive,
+     * and does nothing if it is already active. This keeps taskbar interaction
+     * logic in C++.
+     */
+    void taskbarButtonClicked(int id);
+
 signals:
     void windowsChanged();
     void activeWindowIdChanged();
 
+    /**
+     * @brief Emitted when a window has been closed and removed.
+     */
+    void windowClosed(int id);
+
 private:
     QVariantMap windowToMap(const Window &window) const;
     Window *findWindowObject(int id) const;
+    void pickNewActiveWindow();
+    QString stateToString(WindowState state) const;
 
     int m_nextId = 1;
     int m_activeWindowId = -1;
