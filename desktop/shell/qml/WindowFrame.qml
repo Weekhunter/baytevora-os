@@ -13,14 +13,19 @@ Rectangle {
     /** Window title shown in the title bar. */
     property string title: ""
 
+    /** The name of the application that owns this window. */
+    property string applicationName: ""
+
     /** Whether this window is the active window. */
     property bool isActive: false
 
     /** Current window state: "normal", "minimized", "maximized", or "closed". */
     property string state: "normal"
 
-    color: "#1e293b"
-    border.color: isActive ? "#475569" : "#334155"
+    color: ThemeManager ? ThemeManager.windowBackground : "#1e293b"
+    border.color: isActive
+                  ? (ThemeManager ? ThemeManager.borderColor : "#475569")
+                  : (ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155")
     border.width: isActive ? 2 : 1
     z: isActive ? 1 : 0
 
@@ -45,17 +50,20 @@ Rectangle {
 
             width: parent.width
             height: 32
-            color: isActive ? "#1e293b" : "#0f172a"
+            color: isActive
+                  ? (ThemeManager ? ThemeManager.surfaceColor : "#1e293b")
+                  : (ThemeManager ? ThemeManager.backgroundColor : "#0f172a")
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
-                anchors.leftMargin: 12
+                anchors.leftMargin: SpacingManager ? SpacingManager.space12 : 12
                 anchors.right: buttonRow.left
-                anchors.rightMargin: 8
+                anchors.rightMargin: SpacingManager ? SpacingManager.space8 : 8
                 text: root.title
-                color: "#e2e8f0"
-                font.pixelSize: 14
+                color: ThemeManager ? ThemeManager.textPrimary : "#e2e8f0"
+                font.pixelSize: TypographyManager ? TypographyManager.body : 14
+                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
                 elide: Text.ElideRight
             }
 
@@ -89,11 +97,29 @@ Rectangle {
             }
         }
 
-        // Content area placeholder
-        Rectangle {
+        // Content area. A Loader selects the application-specific UI based on
+        // the owning application name; unknown applications get the placeholder.
+        Loader {
             width: parent.width
             height: parent.height - titleBar.height
-            color: root.color
+            source: {
+                if (root.applicationName === "File Manager") {
+                    return "FileManagerWindow.qml";
+                }
+                if (root.applicationName === "Settings") {
+                    return "SettingsWindow.qml";
+                }
+                if (root.applicationName === "Terminal") {
+                    return "TerminalWindow.qml";
+                }
+                return "";
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                color: root.color
+                visible: parent.status !== Loader.Ready
+            }
         }
     }
 }

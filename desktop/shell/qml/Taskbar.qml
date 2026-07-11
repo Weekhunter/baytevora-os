@@ -11,7 +11,9 @@ import QtQuick
 Rectangle {
     id: root
 
-    color: "#1e293b"
+    property alias powerMenu: powerMenu
+
+    color: ThemeManager ? ThemeManager.taskbarBackground : "#1e293b"
     height: 40
     anchors.bottom: parent.bottom
     anchors.left: parent.left
@@ -23,14 +25,26 @@ Rectangle {
         anchors.top: parent.top
         width: parent.width
         height: 1
-        color: "#475569"
+        color: ThemeManager ? ThemeManager.borderColor : "#475569"
+    }
+
+    // Clicking on the taskbar outside the power menu closes the menu.
+    MouseArea {
+        anchors.fill: parent
+        enabled: powerMenu.menuOpen
+        visible: enabled
+        z: 10
+        onClicked: {
+            powerMenu.menuOpen = false;
+            powerMenu.menuClosed();
+        }
     }
 
     TaskbarButton {
         id: bosButton
 
         anchors.left: parent.left
-        anchors.leftMargin: 8
+        anchors.leftMargin: SpacingManager ? SpacingManager.space8 : 8
         anchors.verticalCenter: parent.verticalCenter
         width: 48
         text: "BOS"
@@ -51,9 +65,38 @@ Rectangle {
     }
 
     Clock {
-        anchors.right: parent.right
-        anchors.rightMargin: 12
+        id: clock
+
+        anchors.right: powerButton.left
+        anchors.rightMargin: SpacingManager ? SpacingManager.space4 : 4
         anchors.verticalCenter: parent.verticalCenter
         height: parent.height
+    }
+
+    TaskbarButton {
+        id: powerButton
+
+        anchors.right: parent.right
+        anchors.rightMargin: SpacingManager ? SpacingManager.space8 : 8
+        anchors.verticalCenter: parent.verticalCenter
+        z: 11
+        width: 40
+        text: "P"
+        active: powerMenu ? powerMenu.menuOpen : false
+        onClicked: {
+            if (powerMenu) {
+                powerMenu.menuOpen = !powerMenu.menuOpen;
+            }
+        }
+    }
+
+    PowerMenu {
+        id: powerMenu
+
+        anchors.bottom: parent.top
+        anchors.right: parent.right
+        anchors.rightMargin: SpacingManager ? SpacingManager.space8 : 8
+        anchors.bottomMargin: SpacingManager ? SpacingManager.space4 : 4
+        z: 11
     }
 }

@@ -13,6 +13,10 @@ namespace bos::shell {
 
 class ApplicationLauncher;
 class ApplicationRegistry;
+class FileManagerApplication;
+class NotificationManager;
+class SettingsApplication;
+class TerminalApplication;
 class WindowManager;
 
 /**
@@ -24,6 +28,8 @@ class WindowManager;
  * WindowManager.
  *
  * Sprint 10 only creates demonstration windows; real binaries are not executed.
+ * Sprint 11 integrates with NotificationManager to emit a success notification
+ * when an application launches.
  */
 class ApplicationManager : public QObject, public DesktopModule {
     Q_OBJECT
@@ -56,6 +62,42 @@ public:
      */
     void setWindowManager(WindowManager *windowManager);
 
+    /**
+     * @brief Sets the NotificationManager used to report launch events.
+     *
+     * Wired in Application.cpp after all modules have started.
+     */
+    void setNotificationManager(NotificationManager *notificationManager);
+
+    /**
+     * @brief Registers the FileManagerApplication handler for File Manager launches.
+     *
+     * The handler is invoked instead of the generic demonstration window path
+     * when the user launches File Manager.
+     */
+    void setFileManagerApplication(FileManagerApplication *fileManager);
+
+    /**
+     * @brief Registers the SettingsApplication handler for Settings launches.
+     *
+     * The handler is invoked instead of the generic demonstration window path
+     * when the user launches Settings.
+     */
+    void setSettingsApplication(SettingsApplication *settings);
+
+    /**
+     * @return The registered SettingsApplication handler, or nullptr if none.
+     */
+    SettingsApplication *settingsApplication() const;
+
+    /**
+     * @brief Registers the TerminalApplication handler for Terminal launches.
+     *
+     * The handler is invoked instead of the generic demonstration window path
+     * when the user launches Terminal.
+     */
+    void setTerminalApplication(TerminalApplication *terminal);
+
     QVariantList applications() const;
     QVariantList runningApplications() const;
 
@@ -79,6 +121,10 @@ private:
     std::unique_ptr<ApplicationRegistry> m_registry;
     std::unique_ptr<ApplicationLauncher> m_launcher;
     WindowManager *m_windowManager = nullptr;
+    NotificationManager *m_notificationManager = nullptr;
+    FileManagerApplication *m_fileManagerApplication = nullptr;
+    SettingsApplication *m_settingsApplication = nullptr;
+    TerminalApplication *m_terminalApplication = nullptr;
 
     QSet<QString> m_running;
     QMap<int, QString> m_windowToApp;

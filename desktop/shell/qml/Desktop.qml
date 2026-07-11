@@ -8,6 +8,7 @@ import QtQuick.Window
  * Sprint 2: loads the DesktopSurface component that displays the wallpaper.
  * Sprint 8: adds the Taskbar at the bottom of the screen.
  * Sprint 9: adds the Launcher overlay.
+ * Sprint 11: adds the NotificationCenter overlay.
  */
 Window {
     id: root
@@ -22,6 +23,8 @@ Window {
     }
 
     Taskbar {
+        id: taskbar
+
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
@@ -29,5 +32,24 @@ Window {
 
     Launcher {
         anchors.fill: parent
+    }
+
+    NotificationCenter {
+        anchors.top: parent.top
+        anchors.right: parent.right
+    }
+
+    // Sprint 20: clicking on the desktop surface while the power menu is open
+    // closes the menu. The overlay sits below the taskbar so taskbar controls
+    // remain usable.
+    MouseArea {
+        anchors.fill: parent
+        enabled: taskbar.powerMenu.menuOpen
+        visible: enabled
+        z: 90
+        onClicked: {
+            taskbar.powerMenu.menuOpen = false;
+            taskbar.powerMenu.menuClosed();
+        }
     }
 }

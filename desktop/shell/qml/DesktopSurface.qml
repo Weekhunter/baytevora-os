@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief The desktop surface container.
@@ -12,6 +13,31 @@ Item {
 
     anchors.fill: parent
 
+    property int __deleteShortcutId: -1
+
+    Component.onCompleted: {
+        if (shortcutManager) {
+            __deleteShortcutId = shortcutManager.registerShortcut("Desktop Delete", "Delete",
+                                                                   ShortcutContext.Global,
+                                                                   "Request desktop delete action");
+        }
+    }
+
+    Component.onDestruction: {
+        if (shortcutManager && __deleteShortcutId !== -1) {
+            shortcutManager.removeShortcut(__deleteShortcutId);
+        }
+    }
+
+    Connections {
+        target: shortcutManager
+        function onShortcutActivated(id) {
+            if (id === __deleteShortcutId) {
+                console.log("[BDE] Desktop delete requested");
+            }
+        }
+    }
+
     /**
      * Wallpaper layer. The source is provided by the C++ Application class via
      * a context property so the application can resolve the file path relative
@@ -23,6 +49,16 @@ Item {
         anchors.fill: parent
         source: wallpaperSource
         fallbackColor: "#0f172a"
+    }
+
+    /**
+     * Desktop icon layer. Renders all icons managed by the DesktopManager.
+     * This layer sits above the wallpaper but below managed windows.
+     */
+    DesktopIcons {
+        id: desktopIcons
+
+        anchors.fill: parent
     }
 
     /**
@@ -39,6 +75,7 @@ Item {
             width: modelData.width
             height: modelData.height
             title: modelData.title
+            applicationName: modelData.applicationName
             visible: modelData.visible && modelData.state !== "minimized"
             isActive: modelData.id === windowManager.activeWindowId
             state: modelData.state

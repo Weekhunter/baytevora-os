@@ -5,6 +5,10 @@
 #include "bos/ApplicationInfo.h"
 #include "bos/ApplicationLauncher.h"
 #include "bos/ApplicationRegistry.h"
+#include "bos/FileManagerApplication.h"
+#include "bos/NotificationManager.h"
+#include "bos/SettingsApplication.h"
+#include "bos/TerminalApplication.h"
 #include "bos/WindowManager.h"
 
 namespace bos::shell {
@@ -59,6 +63,31 @@ void ApplicationManager::setWindowManager(WindowManager *windowManager)
     }
 }
 
+void ApplicationManager::setNotificationManager(NotificationManager *notificationManager)
+{
+    m_notificationManager = notificationManager;
+}
+
+void ApplicationManager::setFileManagerApplication(FileManagerApplication *fileManager)
+{
+    m_fileManagerApplication = fileManager;
+}
+
+void ApplicationManager::setSettingsApplication(SettingsApplication *settings)
+{
+    m_settingsApplication = settings;
+}
+
+void ApplicationManager::setTerminalApplication(TerminalApplication *terminal)
+{
+    m_terminalApplication = terminal;
+}
+
+SettingsApplication *ApplicationManager::settingsApplication() const
+{
+    return m_settingsApplication;
+}
+
 QVariantList ApplicationManager::applications() const
 {
     QVariantList list;
@@ -104,13 +133,44 @@ bool ApplicationManager::launchApplication(const QString &name)
         return false;
     }
 
-    const int windowId = m_windowManager->createApplicationWindow(info->name());
-    if (windowId < 0) {
-        qWarning() << QStringLiteral("[BDE] Failed to create window for") << name;
-        return false;
-    }
+    int windowId = -1;
 
-    qDebug() << QStringLiteral("[BDE] Demo window created:") << info->name();
+    // Sprint 12/13: File Manager and Settings are real applications and use
+    // dedicated handlers. All other applications continue to use a demo window.
+    if (name == QStringLiteral("File Manager") && m_fileManagerApplication) {
+        windowId = m_fileManagerApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open File Manager");
+            return false;
+        }
+    } else if (name == QStringLiteral("Settings") && m_settingsApplication) {
+        windowId = m_settingsApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Settings");
+            return false;
+        }
+    } else if (name == QStringLiteral("Terminal") && m_terminalApplication) {
+        windowId = m_terminalApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Terminal");
+            return false;
+        }
+    } else {
+        windowId = m_windowManager->createApplicationWindow(info->name());
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to create window for") << name;
+            return false;
+        }
+        qDebug() << QStringLiteral("[BDE] Demo window created:") << info->name();
+
+        if (m_notificationManager) {
+            m_notificationManager->createNotification(
+                QStringLiteral("Application Started"),
+                name + QStringLiteral(" launched successfully."),
+                name,
+                QStringLiteral("success"));
+        }
+    }
 
     m_running.insert(name);
     m_windowToApp.insert(windowId, name);
@@ -132,8 +192,8 @@ void ApplicationManager::registerPlaceholderApplications()
 
     const std::vector<Placeholder> placeholders = {
         {QStringLiteral("file-manager"), QStringLiteral("File Manager"), QStringLiteral("Browse files"), QStringLiteral("Utilities"), QStringLiteral("FM"), false},
-        {QStringLiteral("terminal"), QStringLiteral("Terminal"), QStringLiteral("Command line"), QStringLiteral("Utilities"), QStringLiteral("TR"), true},
-        {QStringLiteral("settings"), QStringLiteral("Settings"), QStringLiteral("System settings"), QStringLiteral("System"), QStringLiteral("ST"), true},
+        {QStringLiteral("terminal"), QStringLiteral("Terminal"), QStringLiteral("Command line"), QStringLiteral("Utilities"), QStringLiteral("TR"), false},
+        {QStringLiteral("settings"), QStringLiteral("Settings"), QStringLiteral("System settings"), QStringLiteral("System"), QStringLiteral("ST"), false},
         {QStringLiteral("browser"), QStringLiteral("Browser"), QStringLiteral("Web browser"), QStringLiteral("Internet"), QStringLiteral("BR"), false},
         {QStringLiteral("calculator"), QStringLiteral("Calculator"), QStringLiteral("Basic calculator"), QStringLiteral("Utilities"), QStringLiteral("CA"), true},
         {QStringLiteral("notes"), QStringLiteral("Notes"), QStringLiteral("Simple notes"), QStringLiteral("Productivity"), QStringLiteral("NO"), false}

@@ -24,7 +24,14 @@ enum class WindowState {
  */
 class Window {
 public:
-    Window(int id, const QString &title, int width, int height, int x, int y, bool visible = true);
+    Window(int id,
+           const QString &title,
+           int width,
+           int height,
+           int x,
+           int y,
+           const QString &applicationName = QString(),
+           bool visible = true);
 
     int id() const;
     QString title() const;
@@ -32,6 +39,7 @@ public:
     int height() const;
     int x() const;
     int y() const;
+    QString applicationName() const;
     bool isVisible() const;
     bool isActive() const;
     WindowState state() const;
@@ -46,6 +54,7 @@ public:
     void setHeight(int height);
     void setX(int x);
     void setY(int y);
+    void setApplicationName(const QString &applicationName);
     void setVisible(bool visible);
     void setActive(bool active);
     void setState(WindowState state);
@@ -60,6 +69,7 @@ private:
     int m_height;
     int m_x;
     int m_y;
+    QString m_applicationName;
     bool m_visible;
     bool m_active;
     WindowState m_state;

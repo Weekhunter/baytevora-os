@@ -48,7 +48,12 @@ public:
      * @brief Creates and registers a new window with a unique ID.
      * @return The assigned window ID.
      */
-    Q_INVOKABLE int registerWindow(const QString &title, int width, int height, int x, int y);
+    Q_INVOKABLE int registerWindow(const QString &title,
+                                  int width,
+                                  int height,
+                                  int x,
+                                  int y,
+                                  const QString &applicationName = QString());
 
     /**
      * @brief Removes the window with the given ID.
