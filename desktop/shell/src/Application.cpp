@@ -6,12 +6,14 @@
 #include <QtQml>
 
 #include "bos/ApplicationManager.h"
+#include "bos/ClipboardManager.h"
 #include "bos/ClipboardModule.h"
 #include "bos/DesignTokens.h"
 #include "bos/SearchCategory.h"
 #include "bos/SearchModule.h"
 #include "bos/SettingsApplication.h"
 #include "bos/ShortcutContext.h"
+#include "bos/ShortcutManager.h"
 #include "bos/ShortcutModule.h"
 #include "bos/DesktopIconsModule.h"
 #include "bos/DesktopManager.h"
@@ -23,7 +25,9 @@
 #include "bos/ModuleManager.h"
 #include "bos/NotificationModule.h"
 #include "bos/PowerActionType.h"
+#include "bos/PowerManager.h"
 #include "bos/PowerModule.h"
+#include "bos/SearchManager.h"
 #include "bos/SettingsManager.h"
 #include "bos/SessionManager.h"
 #include "bos/SpacingManager.h"
@@ -98,7 +102,7 @@ void Application::loadInterface()
     // Sprint 18: register the ShortcutContext enum so QML integrations can use
     // ShortcutContext.Global, ShortcutContext.Application, and ShortcutContext.Window.
     qmlRegisterUncreatableMetaObject(
-        bos::shell::ShortcutContext::staticMetaObject,
+        bos::shell::staticMetaObject,
         "BOS.Shell", 1, 0, "ShortcutContext",
         QStringLiteral("ShortcutContext is an enum and cannot be instantiated"));
 
@@ -204,14 +208,6 @@ int Application::run()
         }
     }
 
-    // Sprint 19: expose the SettingsApplication so search results can request a
-    // specific settings page.
-    if (m_sessionManager->applicationManager() && m_sessionManager->applicationManager()->settingsApplication()) {
-        m_engine->rootContext()->setContextProperty(
-            QStringLiteral("settingsApplication"),
-            m_sessionManager->applicationManager()->settingsApplication());
-    }
-
     // Sprint 20: expose the PowerManager so the taskbar and settings can use
     // the Baytevora Power Management Service.
     if (auto *powerModule = dynamic_cast<PowerModule*>(
@@ -284,6 +280,10 @@ int Application::run()
     if (applicationManager) {
         applicationManager->setSettingsApplication(settingsPtr);
     }
+    // Sprint 19: expose the SettingsApplication so search results can request a
+    // specific settings page. Registered here, after settingsPtr is fully wired.
+    m_engine->rootContext()->setContextProperty(
+        QStringLiteral("settingsApplication"), settingsPtr);
     settings->setParent(m_engine.get());
     settings.release();
 
