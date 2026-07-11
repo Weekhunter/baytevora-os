@@ -1,5 +1,7 @@
 #include "bos/WindowManager.h"
 
+#include <algorithm>
+
 #include <QDebug>
 #include <QGuiApplication>
 #include <QScreen>
@@ -55,10 +57,15 @@ void WindowManager::shutdown()
     emit windowsChanged();
 }
 
-int WindowManager::registerWindow(const QString &title, int width, int height, int x, int y)
+int WindowManager::registerWindow(const QString &title,
+                                  int width,
+                                  int height,
+                                  int x,
+                                  int y,
+                                  const QString &applicationName)
 {
     const int id = m_nextId++;
-    m_windows.push_back(std::make_unique<Window>(id, title, width, height, x, y));
+    m_windows.push_back(std::make_unique<Window>(id, title, width, height, x, y, applicationName));
 
     qDebug() << QStringLiteral("[BDE] Window created (ID:") << id << QStringLiteral(")");
     qDebug() << QStringLiteral("[BDE] Window registered");
@@ -124,7 +131,7 @@ int WindowManager::createApplicationWindow(const QString &title)
         y = (geometry.height() - height) / 2;
     }
 
-    const int windowId = registerWindow(title, width, height, x, y);
+    const int windowId = registerWindow(title, width, height, x, y, title);
     setActiveWindow(windowId);
     return windowId;
 }
@@ -290,6 +297,7 @@ QVariantMap WindowManager::windowToMap(const Window &window) const
         { QStringLiteral("height"), window.height() },
         { QStringLiteral("x"), window.x() },
         { QStringLiteral("y"), window.y() },
+        { QStringLiteral("applicationName"), window.applicationName() },
         { QStringLiteral("visible"), window.isVisible() },
         { QStringLiteral("isActive"), window.id() == m_activeWindowId },
         { QStringLiteral("state"), stateToString(window.state()) }

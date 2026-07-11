@@ -3,9 +3,15 @@
 #include <QDebug>
 
 #include "bos/ApplicationManager.h"
+#include "bos/ClipboardModule.h"
+#include "bos/DesktopIconsModule.h"
+#include "bos/PowerModule.h"
+#include "bos/SearchModule.h"
+#include "bos/ShortcutModule.h"
 #include "bos/DesktopSurfaceModule.h"
 #include "bos/LauncherModule.h"
 #include "bos/ModuleManager.h"
+#include "bos/NotificationModule.h"
 #include "bos/TaskbarModule.h"
 #include "bos/WallpaperModule.h"
 #include "bos/WindowManager.h"
@@ -33,11 +39,17 @@ void SessionManager::initialize()
     // framework, the Taskbar module, and the Launcher module. Additional
     // desktop modules will be added here as they are implemented.
     m_moduleManager->registerModule(std::make_unique<DesktopSurfaceModule>());
+    m_moduleManager->registerModule(std::make_unique<DesktopIconsModule>());
+    m_moduleManager->registerModule(std::make_unique<ClipboardModule>());
+    m_moduleManager->registerModule(std::make_unique<SearchModule>());
+    m_moduleManager->registerModule(std::make_unique<PowerModule>());
+    m_moduleManager->registerModule(std::make_unique<ShortcutModule>());
     m_moduleManager->registerModule(std::make_unique<WallpaperModule>());
     m_moduleManager->registerModule(std::make_unique<WindowManager>());
     m_moduleManager->registerModule(std::make_unique<TaskbarModule>());
     m_moduleManager->registerModule(std::make_unique<LauncherModule>());
     m_moduleManager->registerModule(std::make_unique<ApplicationManager>());
+    m_moduleManager->registerModule(std::make_unique<NotificationModule>());
 
     m_moduleManager->initializeAll();
 }
