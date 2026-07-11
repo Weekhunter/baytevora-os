@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(BOS_Shell
     VERSION 0.1.0
-    DESCRIPTION "Baytevora OS Desktop Environment Shell - Sprint 20"
+    DESCRIPTION "Baytevora OS Desktop Environment Shell - Sprint 26"
     LANGUAGES CXX
 )
 
@@ -66,6 +66,36 @@ set(SOURCES
     src/PowerAction.cpp
     src/PowerManager.cpp
     src/PowerModule.cpp
+    src/DragType.cpp
+    src/DragOperationState.cpp
+    src/DragData.cpp
+    src/DragOperation.cpp
+    src/DragManager.cpp
+    src/DragModule.cpp
+    src/User.cpp
+    src/UserManager.cpp
+    src/LoginState.cpp
+    src/LoginManager.cpp
+    src/LoginModule.cpp
+    src/LockState.cpp
+    src/LockManager.cpp
+    src/LockModule.cpp
+    src/UpdateState.cpp
+    src/UpdateInfo.cpp
+    src/UpdateManager.cpp
+    src/UpdateModule.cpp
+    src/PackageState.cpp
+    src/PackageType.cpp
+    src/PackageInfo.cpp
+    src/PackageDatabase.cpp
+    src/PackageManager.cpp
+    src/PackageModule.cpp
+    src/StoreCategory.cpp
+    src/StoreItem.cpp
+    src/StoreCatalog.cpp
+    src/StoreManager.cpp
+    src/StoreModule.cpp
+    src/StoreApplication.cpp
 )
 
 set(HEADERS
@@ -122,6 +152,36 @@ set(HEADERS
     include/bos/PowerAction.h
     include/bos/PowerManager.h
     include/bos/PowerModule.h
+    include/bos/DragType.h
+    include/bos/DragOperationState.h
+    include/bos/DragData.h
+    include/bos/DragOperation.h
+    include/bos/DragManager.h
+    include/bos/DragModule.h
+    include/bos/User.h
+    include/bos/UserManager.h
+    include/bos/LoginState.h
+    include/bos/LoginManager.h
+    include/bos/LoginModule.h
+    include/bos/LockState.h
+    include/bos/LockManager.h
+    include/bos/LockModule.h
+    include/bos/UpdateState.h
+    include/bos/UpdateInfo.h
+    include/bos/UpdateManager.h
+    include/bos/UpdateModule.h
+    include/bos/PackageState.h
+    include/bos/PackageType.h
+    include/bos/PackageInfo.h
+    include/bos/PackageDatabase.h
+    include/bos/PackageManager.h
+    include/bos/PackageModule.h
+    include/bos/StoreCategory.h
+    include/bos/StoreItem.h
+    include/bos/StoreCatalog.h
+    include/bos/StoreManager.h
+    include/bos/StoreModule.h
+    include/bos/StoreApplication.h
 )
 
 qt_add_executable(BOS_Shell
@@ -162,6 +222,31 @@ qt_add_qml_module(BOS_Shell
         qml/SearchResultItem.qml
         qml/PowerMenu.qml
         qml/PowerMenuItem.qml
+        qml/DragOverlay.qml
+        qml/DragIndicator.qml
+        qml/DropTarget.qml
+        qml/LoginScreen.qml
+        qml/UserList.qml
+        qml/LoginButton.qml
+        qml/LockScreen.qml
+        qml/UnlockButton.qml
+        qml/UpdatesPage.qml
+        qml/UpdateCard.qml
+        qml/CheckUpdatesButton.qml
+        qml/PackagesPage.qml
+        qml/PackageCard.qml
+        qml/PackageList.qml
+        qml/PackageStatus.qml
+        qml/StoreWindow.qml
+        qml/StoreSidebar.qml
+        qml/FeaturedSection.qml
+        qml/CategoryList.qml
+        qml/SearchBar.qml
+        qml/ApplicationGrid.qml
+        qml/ApplicationCard.qml
+        qml/ApplicationDetails.qml
+        qml/InstallButton.qml
+        qml/StoreSettingsPage.qml
         qml/NotificationCenter.qml
         qml/NotificationPopup.qml
         qml/FileManagerWindow.qml

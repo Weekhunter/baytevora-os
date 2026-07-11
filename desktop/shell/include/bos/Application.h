@@ -43,9 +43,31 @@ private:
     void loadInterface();
 
     /**
+     * @brief Sprint 22: loads the login screen before the desktop session.
+     */
+    void loadLoginInterface();
+
+    /**
+     * @brief Sprint 22: starts the desktop session and loads the desktop UI.
+     */
+    void startDesktopSession();
+
+    /**
+     * @brief Registers the QML types and enums required by the shell.
+     */
+    void registerQmlTypes();
+
+    /**
+     * @brief Exposes the Baytevora Design Language token managers to QML.
+     */
+    void exposeDesignManagers();
+
+    /**
      * @brief Connects QML engine signals used for error handling.
      */
     void connectSignals();
+
+    QObject *m_loginWindow = nullptr;
 
     QGuiApplication &m_app;
     std::unique_ptr<QQmlApplicationEngine> m_engine;

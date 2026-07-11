@@ -16,6 +16,7 @@ class ApplicationRegistry;
 class FileManagerApplication;
 class NotificationManager;
 class SettingsApplication;
+class StoreApplication;
 class TerminalApplication;
 class WindowManager;
 
@@ -98,6 +99,14 @@ public:
      */
     void setTerminalApplication(TerminalApplication *terminal);
 
+    /**
+     * @brief Registers the StoreApplication handler for Baytevora Store launches.
+     *
+     * The handler is invoked instead of the generic demonstration window path
+     * when the user launches Baytevora Store.
+     */
+    void setStoreApplication(StoreApplication *store);
+
     QVariantList applications() const;
     QVariantList runningApplications() const;
 
@@ -125,6 +134,7 @@ private:
     FileManagerApplication *m_fileManagerApplication = nullptr;
     SettingsApplication *m_settingsApplication = nullptr;
     TerminalApplication *m_terminalApplication = nullptr;
+    StoreApplication *m_storeApplication = nullptr;
 
     QSet<QString> m_running;
     QMap<int, QString> m_windowToApp;

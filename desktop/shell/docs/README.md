@@ -2,9 +2,9 @@
 
 ## Overview
 
-The Baytevora Desktop Environment (BDE) Shell implemented through Sprint 20.
+The Baytevora Desktop Environment (BDE) Shell implemented through Sprint 26.
 
-The shell includes a modular session/module system, window manager with focus and state control, taskbar, launcher, application framework, notification service, desktop icons, a global clipboard service, a global keyboard shortcut manager, the Baytevora Search Service (BSS), and the Baytevora Power Management Service (BPS). Each sprint is built on top of the previous one without rewriting earlier work.
+The shell includes a modular session/module system, window manager with focus and state control, taskbar, launcher, application framework, notification service, desktop icons, a global clipboard service, a global keyboard shortcut manager, the Baytevora Search Service (BSS), the Baytevora Power Management Service (BPS), the Baytevora Drag & Drop Framework (BDDF), the Baytevora Login Manager (BLM), the Baytevora Lock Screen (BLS), the Baytevora Update Manager (BUM), the Baytevora Package Manager (BPM), and the Baytevora Store Foundation (BSF). Each sprint is built on top of the previous one without rewriting earlier work.
 
 ## Technology Stack
 
@@ -123,6 +123,36 @@ The application will open a borderless fullscreen window with a dark blue backgr
 | `include/bos/PowerAction.h` | Data model for one power action |
 | `include/bos/PowerManager.h` | Central power action manager |
 | `include/bos/PowerModule.h` | Desktop module that owns the PowerManager |
+| `include/bos/DragType.h` | Enum for drag payload types |
+| `include/bos/DragOperationState.h` | Enum for drag lifecycle states |
+| `include/bos/DragData.h` | Lightweight immutable drag payload |
+| `include/bos/DragOperation.h` | Represents one active drag session |
+| `include/bos/DragManager.h` | Central drag & drop controller |
+| `include/bos/DragModule.h` | Desktop module that owns the DragManager |
+| `include/bos/User.h` | Lightweight immutable user data model |
+| `include/bos/UserManager.h` | Owns available users and current selection |
+| `include/bos/LoginState.h` | Enum for login lifecycle states |
+| `include/bos/LoginManager.h` | Coordinates the login/logout flow |
+| `include/bos/LoginModule.h` | Desktop module that owns the LoginManager |
+| `include/bos/LockState.h` | Enum for lock lifecycle states |
+| `include/bos/LockManager.h` | Coordinates the lock/unlock flow |
+| `include/bos/LockModule.h` | Desktop module that owns the LockManager |
+| `include/bos/UpdateState.h` | Enum for update lifecycle states |
+| `include/bos/UpdateInfo.h` | Lightweight immutable update data model |
+| `include/bos/UpdateManager.h` | Coordinates update checks and metadata |
+| `include/bos/UpdateModule.h` | Desktop module that owns the UpdateManager |
+| `include/bos/PackageState.h` | Enum for package lifecycle states |
+| `include/bos/PackageType.h` | Enum for package type classification |
+| `include/bos/PackageInfo.h` | Lightweight immutable package data model |
+| `include/bos/PackageDatabase.h` | Owns placeholder package metadata |
+| `include/bos/PackageManager.h` | Coordinates placeholder package operations |
+| `include/bos/PackageModule.h` | Desktop module that owns the PackageManager |
+| `include/bos/StoreCategory.h` | Enum for store category classification |
+| `include/bos/StoreItem.h` | Lightweight immutable store catalog data model |
+| `include/bos/StoreCatalog.h` | Owns placeholder store catalog entries |
+| `include/bos/StoreManager.h` | Coordinates store catalog and install requests |
+| `include/bos/StoreModule.h` | Desktop module that owns the StoreManager |
+| `include/bos/StoreApplication.h` | Native Baytevora Store application handler |
 | `qml/Desktop.qml` | Root window: borderless fullscreen container for the desktop surface |
 | `qml/DesktopSurface.qml` | Desktop surface container that fills the window and renders windows |
 | `qml/Wallpaper.qml` | Reusable wallpaper component with image scaling and fallback color |
@@ -1242,6 +1272,7 @@ SearchModule
 - Taskbar integration:
   - Added `PowerMenu.qml` and `PowerMenuItem.qml`.
   - Added a **P** power button to the far right of `Taskbar.qml`; clicking toggles the menu.
+
   - `PowerMenu` is anchored above the power button and lists all actions. Selecting an item calls `powerManager.executeAction(type)`.
   - Escape closes the menu (`Keys.onEscapePressed`).
   - Clicking outside the menu closes it via a taskbar overlay and a desktop surface overlay in `Desktop.qml`.
@@ -1275,3 +1306,253 @@ PowerModule
             Launcher (SearchField + SearchResults)
             Settings (Search page)
 ```
+
+## Sprint 21 Changes
+
+- Implemented the first version of the Baytevora Drag & Drop Framework (BDDF):
+  - `DragType` (`include/bos/DragType.h`, `src/DragType.cpp`) — enum with `Text`, `FilePath`, `DesktopItem`, and `Application`, exposed to QML as `DragType`.
+  - `DragOperationState` (`include/bos/DragOperationState.h`, `src/DragOperationState.cpp`) — enum with `Idle`, `Started`, `Dragging`, `Dropped`, and `Cancelled`, exposed to QML as `DragOperationState`.
+  - `DragData` (`include/bos/DragData.h`, `src/DragData.cpp`) — lightweight immutable payload with `type` and `value`. Converts to a `QVariantMap` for QML.
+  - `DragOperation` (`include/bos/DragOperation.h`, `src/DragOperation.cpp`) — represents one drag session with `state`, `source`, `target`, payload, and position.
+  - `DragManager` (`include/bos/DragManager.h`, `src/DragManager.cpp`) — central controller with `beginDrag()`, `updatePosition()`, `setTarget()`, `clearTarget()`, `completeDrop()`, and `cancelDrag()`. Exposes `active`, `currentOperation`, `currentDragType`, `currentSource`, `currentTarget`, and `currentPosition`. Sends information notifications via `NotificationManager`.
+  - `DragModule` (`include/bos/DragModule.h`, `src/DragModule.cpp`) — `DesktopModule` subclass that owns the `DragManager`.
+- Registered `DragModule` in `SessionManager`. Exposed `dragManager` as a QML context property and registered the `DragType` and `DragOperationState` enums from `Application.cpp`. Wired `NotificationManager` into `DragManager`.
+- QML components:
+  - `DragIndicator.qml` — small reusable drag preview using design tokens.
+  - `DragOverlay.qml` — global feedback overlay that follows the drag position.
+  - `DropTarget.qml` — reusable component with hover state, accept/reject visual feedback, and `dragEntered`, `dragExited`, `dragDropped` signals.
+- Desktop integration: `DesktopIcon.qml` starts a `DragType.DesktopItem` drag after an 8 px threshold and completes it on release.
+- File Manager integration: `FileList.qml` rows are now `DropTarget`s accepting `DesktopItem` and `Application` drags. Each row can also be dragged as `DragType.FilePath` and logs accepted drops without performing any filesystem operation.
+- Launcher integration: `LauncherButton.qml` starts a `DragType.Application` drag after a threshold; release cancels the drag (drop ignored) as a placeholder.
+- Settings integration: added a read-only **Drag & Drop** page (`src/SettingsManager.cpp`, `qml/SettingsPage.qml`) showing framework status, current state, current drag type, and the last completed operation.
+- Updated `CMakeLists.txt` (Sprint 21, new sources/headers/QML files) and this README.
+- No forbidden features are implemented: no file moving, copying, cut/paste, clipboard integration, window dragging, desktop rearranging, cross-window/cross-application drag, drag images, spring-loading, drop animations, auto-scroll, undo, touch gestures, multi-item drag, external file drag, or any filesystem modification.
+
+### Drag & Drop Architecture
+
+```
+DragModule
+        |
+        +-- DragManager
+                |
+                +-- DragOperation
+                        |
+                        +-- DragData
+                                |
+                                v
+            DesktopIcon    FileList    LauncherButton
+            (DesktopItem)   (FilePath)   (Application)
+                                |
+                                v
+                          DropTarget
+```
+
+## Sprint 22 Changes
+
+- Implemented the first version of the Baytevora Login Manager (BLM):
+  - `User` (`include/bos/User.h`, `src/User.cpp`) — lightweight immutable data model with `username`, `displayName`, `avatarPath`, `administrator`, and `lastLogin`, exposed to QML as a map.
+  - `UserManager` (`include/bos/UserManager.h`, `src/UserManager.cpp`) — owns the local user list and the currently selected user; exposes `users`, `currentUser`, `selectUser()`, and `userCount()`.
+  - `LoginState` (`include/bos/LoginState.h`, `src/LoginState.cpp`) — enum with `Booting`, `WaitingForSelection`, `LoggingIn`, and `LoggedIn`, exposed to QML as `LoginState`.
+  - `LoginManager` (`include/bos/LoginManager.h`, `src/LoginManager.cpp`) — coordinates the login flow. Provides `login()`, `logout()`, `cancel()`, and `selectUser()`. `login()` is a placeholder that always succeeds. Sends "Welcome back." and "Session ended." information notifications through `NotificationManager`.
+  - `LoginModule` (`include/bos/LoginModule.h`, `src/LoginModule.cpp`) — `DesktopModule` subclass that owns the `LoginManager`.
+- Registered `LoginModule` first in `SessionManager` so the login manager is available before the desktop session.
+- Updated `Application.cpp` startup sequence:
+  - Initialize session (registers modules and instantiates managers).
+  - Register QML types and expose BDL design managers.
+  - Expose `loginManager` to QML.
+  - Load `LoginScreen.qml`.
+  - On `LoginManager::loggedIn`, start `SessionManager`, expose desktop module context properties, wire notification managers, create application handlers, and load `Desktop.qml`.
+- QML components:
+  - `LoginScreen.qml` — fullscreen login window with shared wallpaper background, logo placeholder, `Clock`, `UserList`, and `LoginButton`.
+  - `UserList.qml` — vertical list of users with selection support.
+  - `LoginButton.qml` — flat BDL-styled button that calls `loginManager.login()`.
+  - `Clock.qml` reused from the taskbar.
+- Settings integration: extended the **System** page (`qml/SettingsPage.qml`) to display the current logged-in user and the session state read-only.
+- Updated `CMakeLists.txt` (Sprint 22, new sources/headers/QML files) and this README.
+- No forbidden features are implemented: no passwords, PAM, Linux user integration, biometrics, PIN, face unlock, fingerprint, encryption, auto login, fast user switching, remote login, multiple simultaneous sessions, guest accounts, session persistence, or power management integration.
+
+### Login Architecture
+
+```
+Application
+        |
+        +-- SessionManager.initialize()
+                |
+                +-- LoginModule (LoginManager + UserManager)
+                +-- WindowManager, Launcher, DesktopIcons, ...
+        |
+        v
+   LoginScreen (QML)
+        |
+        +-- LoginManager.login()
+                |
+                v
+        loggedIn signal
+                |
+                v
+   SessionManager.start()
+   expose desktop modules
+   load Desktop.qml
+```
+
+## Sprint 23 Changes
+
+- Implemented the first version of the Baytevora Lock Screen (BLS):
+  - `LockState` (`include/bos/LockState.h`, `src/LockState.cpp`) — enum with `Unlocked`, `Locking`, `Locked`, and `Unlocking`, exposed to QML as `LockState`.
+  - `LockManager` (`include/bos/LockManager.h`, `src/LockManager.cpp`) — coordinates lock/unlock state. Provides `lock()`, `unlock()`, `lockState`, `isLocked`, and `stateName()`. Emits `locked`/`unlocked` signals and sends "Session locked."/"Session unlocked." information notifications through `NotificationManager`.
+  - `LockModule` (`include/bos/LockModule.h`, `src/LockModule.cpp`) — `DesktopModule` subclass that owns the `LockManager`.
+- Registered `LockModule` in `SessionManager`.
+- Exposed `lockManager` and `LockState` to QML from `Application.cpp` after the desktop session starts.
+- QML components:
+  - `LockScreen.qml` — full-screen desktop overlay that appears when locked. Shows the current time (reusing `Clock.qml`), current date, a user avatar placeholder, the selected user's display name, and `UnlockButton`. A full-screen `MouseArea` blocks pointer events so the desktop cannot be interacted with while locked.
+  - `UnlockButton.qml` — flat BDL-styled button that calls `lockManager.unlock()`.
+- Added a "Lock" action to the existing `PowerMenu.qml` that calls `lockManager.lock()`.
+- Extended the Settings **System** page (`qml/SettingsPage.qml`) to display the current lock state read-only.
+- Updated `CMakeLists.txt` (Sprint 23, new sources/headers/QML files) and this README.
+- No forbidden features are implemented: no passwords, PIN, biometrics, face unlock, fingerprint, Linux session locking, encrypted sessions, screen saver, automatic locking, idle timers, multi-user switching, session persistence, or power management integration.
+
+### Lock Architecture
+
+```
+Desktop session
+        |
+        +-- LockModule (LockManager)
+                |
+                +-- LockScreen.qml overlay
+                |       visible when isLocked
+                |       blocks desktop input
+                |
+                +-- PowerMenu "Lock" action -> lock()
+                +-- UnlockButton -> unlock()
+```
+
+The desktop session and all running applications remain alive while the screen is locked. Unlocking returns to the existing session without restarting applications.
+
+## Sprint 24 Changes
+
+- Implemented the first version of the Baytevora Update Manager (BUM):
+  - `UpdateState` (`include/bos/UpdateState.h`, `src/UpdateState.cpp`) — enum with `Idle`, `Checking`, `UpdatesAvailable`, `Downloading`, `ReadyToInstall`, `UpToDate`, and `Error`, exposed to QML as `UpdateState`.
+  - `UpdateInfo` (`include/bos/UpdateInfo.h`, `src/UpdateInfo.cpp`) — lightweight immutable update data model with `version`, `title`, `description`, `size`, `releaseDate`, and `type`, exposed as a `QVariantMap`.
+  - `UpdateManager` (`include/bos/UpdateManager.h`, `src/UpdateManager.cpp`) — coordinates the update lifecycle. Exposes `currentVersion`, `latestVersion`, `updateState`, `updatesAvailable`, and `availableUpdates`. Provides `checkForUpdates()` and `clearUpdates()`.
+  - `UpdateModule` (`include/bos/UpdateModule.h`, `src/UpdateModule.cpp`) — `DesktopModule` subclass that owns the `UpdateManager`.
+- Registered `UpdateModule` in `SessionManager`.
+- Exposed `updateManager` and `UpdateState` to QML from `Application.cpp` after the desktop session starts.
+- Notifications:
+  - "Checking for updates..." when a check begins.
+  - "Updates available" / "Baytevora OS Preview Update is ready." after the placeholder check.
+- QML components:
+  - `UpdatesPage.qml` — dedicated Settings page showing current version, latest version, update state, available update count, and the Check for Updates button.
+  - `UpdateCard.qml` — reusable card rendering a single available update.
+  - `CheckUpdatesButton.qml` — BDL-styled button that calls `updateManager.checkForUpdates()`.
+- Added a new "Updates" entry in `SettingsManager` and embedded `UpdatesPage` inside `SettingsPage.qml`.
+- Updated `CMakeLists.txt` (Sprint 24, new sources/headers/QML files) and this README.
+- No forbidden features are implemented: no networking, HTTP/HTTPS, downloads, installation, restart, automatic updates, scheduling, delta updates, rollback, cryptographic verification, repositories, package management, background services, or real version servers.
+
+### Update Architecture
+
+```
+Desktop session
+        |
+        +-- UpdateModule (UpdateManager)
+                |
+                +-- checkForUpdates()
+                |       |
+                |       +-- State: Checking (1.2s placeholder delay)
+                |       |
+                |       +-- State: UpdatesAvailable
+                |       |
+                |       +-- Notifications
+                |
+                +-- UpdatesPage / UpdateCard / CheckUpdatesButton
+```
+
+The placeholder update data uses version `0.2.0-alpha`, title `Baytevora OS Preview Update`, description `Placeholder update used for framework validation.`, size `128 MB`, and the current timestamp as the release date. Future sprints will replace the simulated delay with an online update service, add download/install flows, and allow applications to register their own updates.
+
+## Sprint 25 Changes
+
+- Implemented the first version of the Baytevora Package Manager (BPM):
+  - `PackageState` (`include/bos/PackageState.h`, `src/PackageState.cpp`) — enum with `Available`, `Installed`, `UpdateAvailable`, and `Disabled`.
+  - `PackageType` (`include/bos/PackageType.h`, `src/PackageType.cpp`) — enum with `System`, `Application`, and `Library`.
+  - `PackageInfo` (`include/bos/PackageInfo.h`, `src/PackageInfo.cpp`) — lightweight immutable package data model with `packageId`, `name`, `version`, `description`, `developer`, `category`, `installed`, `packageType`, `state`, and `size`, exposed as a `QVariantMap`.
+  - `PackageDatabase` (`include/bos/PackageDatabase.h`, `src/PackageDatabase.cpp`) — owns the placeholder package catalog and provides lookup by packageId.
+  - `PackageManager` (`include/bos/PackageManager.h`, `src/PackageManager.cpp`) — coordinates placeholder package operations. Exposes `packages`, `installedPackages`, `availablePackages`, `packageCount`, and methods `installPackage(id)`, `uninstallPackage(id)`, `enablePackage(id)`, `disablePackage(id)`, and `package(id)`. Helper methods `stateName()` and `typeName()` convert enum values to readable strings.
+  - `PackageModule` (`include/bos/PackageModule.h`, `src/PackageModule.cpp`) — `DesktopModule` subclass that owns the `PackageManager`.
+- Registered `PackageModule` in `SessionManager`.
+- Exposed `packageManager`, `PackageState`, and `PackageType` to QML from `Application.cpp` after the desktop session starts.
+- Seeded placeholder packages: File Manager, Terminal, Settings, Browser, Calculator, and Notes.
+- Notifications:
+  - Install requested, uninstall requested, package enabled, package disabled, package already installed.
+- QML components:
+  - `PackagesPage.qml` — dedicated Settings page showing installed/available/total counts and a scrollable package list.
+  - `PackageList.qml` — reusable vertical list of PackageCards.
+  - `PackageCard.qml` — card rendering package metadata, type, size, status badge, and placeholder install/uninstall/enable/disable action buttons.
+  - `PackageStatus.qml` — colored status badge using `packageManager.stateName()`.
+- Added a new "Packages" entry in `SettingsManager` and embedded `PackagesPage` inside `SettingsPage.qml`.
+- Updated `CMakeLists.txt` (Sprint 25, new sources/headers/QML files) and this README.
+- No forbidden features are implemented: no downloads, repositories, dependency resolution, filesystem modification, archives, compression, extraction, install/removal scripts, package signatures, networking, automatic updates, background installation, root permissions, sandboxing, containerization, or rollback.
+
+### Package Architecture
+
+```
+Desktop session
+        |
+        +-- PackageModule (PackageManager)
+                |
+                +-- PackageDatabase
+                |       +-- PackageInfo records
+                |
+                +-- PackagesPage / PackageCard / PackageList / PackageStatus
+```
+
+The BPM is the foundation for the future Baytevora Store. Future sprints will replace placeholder operations with real package installation, repository access, dependency resolution, cryptographic verification, and application self-registration.
+
+## Sprint 26 Changes
+
+- Implemented the first version of the Baytevora Store Foundation (BSF):
+  - `StoreCategory` (`include/bos/StoreCategory.h`, `src/StoreCategory.cpp`) — enum with `Featured`, `Productivity`, `Development`, `Utilities`, `System`, and `Entertainment`, exposed to QML as `StoreCategory`.
+  - `StoreItem` (`include/bos/StoreItem.h`, `src/StoreItem.cpp`) — lightweight immutable catalog model with `packageId`, `name`, `description`, `developer`, `version`, `rating`, `downloads`, `category`, `installed`, `featured`, and `iconPath`, exposed as a `QVariantMap`.
+  - `StoreCatalog` (`include/bos/StoreCatalog.h`, `src/StoreCatalog.cpp`) — owns placeholder store catalog entries and provides featured/all/category lookup.
+  - `StoreManager` (`include/bos/StoreManager.h`, `src/StoreManager.cpp`) — coordinates the catalog. Exposes `featuredItems`, `allItems`, `categories`, and methods `item()`, `search()`, `categoryItems()`, and `requestInstall()`. All install requests delegate to `PackageManager.installPackage()`.
+  - `StoreModule` (`include/bos/StoreModule.h`, `src/StoreModule.cpp`) — `DesktopModule` subclass that owns the `StoreManager`.
+  - `StoreApplication` (`include/bos/StoreApplication.h`, `src/StoreApplication.cpp`) — native application handler that opens a 1000×700 window titled "Baytevora Store".
+- Registered `StoreModule` in `SessionManager` and `StoreApplication` in `ApplicationManager`.
+- Exposed `storeManager` and `StoreCategory` to QML from `Application.cpp` after the desktop session starts.
+- Added a placeholder "Baytevora Store" entry to the `ApplicationManager` registry so it appears in the launcher and taskbar.
+- Seeded placeholder catalog entries: File Manager, Settings, Terminal, Browser, Calculator, Notes, System Monitor, Image Viewer, Text Editor, Music Player, Video Player, and Archive Manager.
+- Notifications:
+  - Install requested, already installed, and package unavailable messages.
+- QML components:
+  - `StoreWindow.qml` — main store window with sidebar, search, featured section, and application grid/details.
+  - `StoreSidebar.qml` — left sidebar (renamed from `Sidebar.qml` to avoid conflict with the file manager sidebar).
+  - `CategoryList.qml` — selectable category list.
+  - `SearchBar.qml` — local search input.
+  - `FeaturedSection.qml` — horizontal featured apps strip.
+  - `ApplicationGrid.qml` — grid of application cards.
+  - `ApplicationCard.qml` — card showing app icon, name, developer, description, and install state.
+  - `ApplicationDetails.qml` — full details panel for a selected application.
+  - `InstallButton.qml` — BDL-styled install/installed button.
+  - `StoreSettingsPage.qml` — read-only Settings page showing catalog size, featured apps, and installed app count.
+- Added a new "Store" entry in `SettingsManager` and embedded `StoreSettingsPage` inside `SettingsPage.qml`.
+- Updated `WindowFrame.qml` to load `StoreWindow.qml` for the "Baytevora Store" application window.
+- Updated `CMakeLists.txt` (Sprint 26, new sources/headers/QML files) and this README.
+- No forbidden features are implemented: no networking, downloads, repositories, payments, accounts, licensing, activation, ratings API, reviews, purchases, automatic installation, filesystem modification, package extraction, background services, sandboxing, or rollback.
+
+### Store Architecture
+
+```
+ApplicationManager
+        |
+        +-- StoreApplication
+                |
+                +-- WindowManager.registerWindow("Baytevora Store")
+                        |
+                        +-- WindowFrame -> StoreWindow.qml
+                                |
+                                +-- StoreManager (via storeManager context property)
+                                        |
+                                        +-- StoreCatalog (StoreItem records)
+                                        |
+                                        +-- PackageManager.installPackage(packageId)
+```
+
+The BSF is the foundation for the future Baytevora Store. Future sprints will replace the placeholder catalog with an online repository, add user accounts and licensing, enable ratings/reviews, and implement real package download and installation through the Package Manager.
