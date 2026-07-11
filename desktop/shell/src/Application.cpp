@@ -8,6 +8,7 @@
 #include "bos/ApplicationManager.h"
 #include "bos/ClipboardModule.h"
 #include "bos/DesignTokens.h"
+#include "bos/DragManager.h"
 #include "bos/DragModule.h"
 #include "bos/DragOperationState.h"
 #include "bos/DragType.h"
@@ -23,8 +24,10 @@
 #include "bos/FileSystemModel.h"
 #include "bos/IconManager.h"
 #include "bos/LauncherModule.h"
+#include "bos/LoginManager.h"
 #include "bos/LoginModule.h"
 #include "bos/LoginState.h"
+#include "bos/LockManager.h"
 #include "bos/LockModule.h"
 #include "bos/LockState.h"
 #include "bos/ModuleManager.h"
@@ -36,9 +39,14 @@
 #include "bos/StoreCategory.h"
 #include "bos/StoreManager.h"
 #include "bos/StoreModule.h"
+#include "bos/UpdateManager.h"
 #include "bos/UpdateModule.h"
 #include "bos/UpdateState.h"
+#include "bos/ClipboardManager.h"
 #include "bos/NotificationModule.h"
+#include "bos/PowerManager.h"
+#include "bos/SearchManager.h"
+#include "bos/ShortcutManager.h"
 #include "bos/PowerActionType.h"
 #include "bos/PowerModule.h"
 #include "bos/SettingsManager.h"
@@ -105,7 +113,7 @@ void Application::registerQmlTypes()
     // Sprint 18: register the ShortcutContext enum so QML integrations can use
     // ShortcutContext.Global, ShortcutContext.Application, and ShortcutContext.Window.
     qmlRegisterUncreatableMetaObject(
-        bos::shell::ShortcutContext::staticMetaObject,
+        bos::shell::staticMetaObject,
         "BOS.Shell", 1, 0, "ShortcutContext",
         QStringLiteral("ShortcutContext is an enum and cannot be instantiated"));
 
@@ -355,14 +363,6 @@ void Application::startDesktopSession()
         }
     }
 
-    // Sprint 19: expose the SettingsApplication so search results can request a
-    // specific settings page.
-    if (m_sessionManager->applicationManager() && m_sessionManager->applicationManager()->settingsApplication()) {
-        m_engine->rootContext()->setContextProperty(
-            QStringLiteral("settingsApplication"),
-            m_sessionManager->applicationManager()->settingsApplication());
-    }
-
     // Sprint 20: expose the PowerManager so the taskbar and settings can use
     // the Baytevora Power Management Service.
     if (auto *powerModule = dynamic_cast<PowerModule*>(
@@ -495,6 +495,8 @@ void Application::startDesktopSession()
     if (applicationManager) {
         applicationManager->setSettingsApplication(settingsPtr);
     }
+    // Sprint 19: expose settingsApplication now that settingsPtr is created and wired.
+    m_engine->rootContext()->setContextProperty(QStringLiteral("settingsApplication"), settingsPtr);
     settings->setParent(m_engine.get());
     settings.release();
 

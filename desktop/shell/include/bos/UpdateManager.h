@@ -5,6 +5,7 @@
 #include <QVariantList>
 #include <QVariantMap>
 
+#include "bos/UpdateInfo.h"
 #include "bos/UpdateState.h"
 
 namespace bos::shell {

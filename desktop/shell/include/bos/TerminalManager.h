@@ -7,9 +7,9 @@
 #include <QObject>
 #include <QString>
 
-namespace bos::shell {
+#include "bos/TerminalSession.h"
 
-class TerminalSession;
+namespace bos::shell {
 
 /**
  * @brief Command processor and output buffer for one Terminal window.

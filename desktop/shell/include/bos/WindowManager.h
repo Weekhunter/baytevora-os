@@ -7,10 +7,9 @@
 #include <vector>
 
 #include "bos/DesktopModule.h"
+#include "bos/Window.h"
 
 namespace bos::shell {
-
-class Window;
 
 /**
  * @brief Manages desktop windows for the Baytevora Desktop Environment.
