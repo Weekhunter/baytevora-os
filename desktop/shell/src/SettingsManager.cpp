@@ -17,6 +17,10 @@ SettingsManager::SettingsManager(QObject *parent)
     m_pages.append(SettingsPage(QStringLiteral("shortcuts"), QStringLiteral("Shortcuts")));
     m_pages.append(SettingsPage(QStringLiteral("search"), QStringLiteral("Search")));
     m_pages.append(SettingsPage(QStringLiteral("power"), QStringLiteral("Power")));
+    m_pages.append(SettingsPage(QStringLiteral("dragdrop"), QStringLiteral("Drag & Drop")));
+    m_pages.append(SettingsPage(QStringLiteral("updates"), QStringLiteral("Updates")));
+    m_pages.append(SettingsPage(QStringLiteral("packages"), QStringLiteral("Packages")));
+    m_pages.append(SettingsPage(QStringLiteral("store"), QStringLiteral("Store")));
     m_pages.append(SettingsPage(QStringLiteral("about"), QStringLiteral("About")));
 
     m_currentPage = m_pages.first().id();

@@ -5,7 +5,13 @@
 #include "bos/ApplicationManager.h"
 #include "bos/ClipboardModule.h"
 #include "bos/DesktopIconsModule.h"
+#include "bos/DragModule.h"
+#include "bos/LoginModule.h"
+#include "bos/LockModule.h"
+#include "bos/PackageModule.h"
 #include "bos/PowerModule.h"
+#include "bos/StoreModule.h"
+#include "bos/UpdateModule.h"
 #include "bos/SearchModule.h"
 #include "bos/ShortcutModule.h"
 #include "bos/DesktopSurfaceModule.h"
@@ -38,11 +44,20 @@ void SessionManager::initialize()
     // Register placeholder modules from previous sprints, the WindowManager
     // framework, the Taskbar module, and the Launcher module. Additional
     // desktop modules will be added here as they are implemented.
+    // Sprint 22: register the LoginModule first so the login manager is
+    // available before the desktop session starts.
+    m_moduleManager->registerModule(std::make_unique<LoginModule>());
+
     m_moduleManager->registerModule(std::make_unique<DesktopSurfaceModule>());
     m_moduleManager->registerModule(std::make_unique<DesktopIconsModule>());
     m_moduleManager->registerModule(std::make_unique<ClipboardModule>());
     m_moduleManager->registerModule(std::make_unique<SearchModule>());
     m_moduleManager->registerModule(std::make_unique<PowerModule>());
+    m_moduleManager->registerModule(std::make_unique<DragModule>());
+    m_moduleManager->registerModule(std::make_unique<LockModule>());
+    m_moduleManager->registerModule(std::make_unique<UpdateModule>());
+    m_moduleManager->registerModule(std::make_unique<PackageModule>());
+    m_moduleManager->registerModule(std::make_unique<StoreModule>());
     m_moduleManager->registerModule(std::make_unique<ShortcutModule>());
     m_moduleManager->registerModule(std::make_unique<WallpaperModule>());
     m_moduleManager->registerModule(std::make_unique<WindowManager>());

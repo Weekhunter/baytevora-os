@@ -8,6 +8,7 @@
 #include "bos/FileManagerApplication.h"
 #include "bos/NotificationManager.h"
 #include "bos/SettingsApplication.h"
+#include "bos/StoreApplication.h"
 #include "bos/TerminalApplication.h"
 #include "bos/WindowManager.h"
 
@@ -83,6 +84,11 @@ void ApplicationManager::setTerminalApplication(TerminalApplication *terminal)
     m_terminalApplication = terminal;
 }
 
+void ApplicationManager::setStoreApplication(StoreApplication *store)
+{
+    m_storeApplication = store;
+}
+
 SettingsApplication *ApplicationManager::settingsApplication() const
 {
     return m_settingsApplication;
@@ -155,6 +161,12 @@ bool ApplicationManager::launchApplication(const QString &name)
             qWarning() << QStringLiteral("[BDE] Failed to open Terminal");
             return false;
         }
+    } else if (name == QStringLiteral("Baytevora Store") && m_storeApplication) {
+        windowId = m_storeApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Baytevora Store");
+            return false;
+        }
     } else {
         windowId = m_windowManager->createApplicationWindow(info->name());
         if (windowId < 0) {
@@ -196,7 +208,8 @@ void ApplicationManager::registerPlaceholderApplications()
         {QStringLiteral("settings"), QStringLiteral("Settings"), QStringLiteral("System settings"), QStringLiteral("System"), QStringLiteral("ST"), false},
         {QStringLiteral("browser"), QStringLiteral("Browser"), QStringLiteral("Web browser"), QStringLiteral("Internet"), QStringLiteral("BR"), false},
         {QStringLiteral("calculator"), QStringLiteral("Calculator"), QStringLiteral("Basic calculator"), QStringLiteral("Utilities"), QStringLiteral("CA"), true},
-        {QStringLiteral("notes"), QStringLiteral("Notes"), QStringLiteral("Simple notes"), QStringLiteral("Productivity"), QStringLiteral("NO"), false}
+        {QStringLiteral("notes"), QStringLiteral("Notes"), QStringLiteral("Simple notes"), QStringLiteral("Productivity"), QStringLiteral("NO"), false},
+        {QStringLiteral("store"), QStringLiteral("Baytevora Store"), QStringLiteral("Discover and install applications"), QStringLiteral("System"), QStringLiteral("ST"), false}
     };
 
     for (const auto &placeholder : placeholders) {
