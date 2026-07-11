@@ -11,8 +11,18 @@ Rectangle {
     id: root
 
     property var settingsManager: null
+    property var lastCompletedOperation: null
 
     color: "transparent"
+
+    Connections {
+        target: dragManager
+        function onDragCompleted() {
+            if (dragManager) {
+                root.lastCompletedOperation = dragManager.currentOperation;
+            }
+        }
+    }
 
     Column {
         anchors.fill: parent
@@ -187,6 +197,23 @@ Rectangle {
                     label: "Session Uptime"
                     value: root.settingsManager ? root.settingsManager.uptime : ""
                 }
+
+                InfoRow {
+                    label: "Current User"
+                    value: loginManager && loginManager.selectedUser
+                           ? loginManager.selectedUser.displayName
+                           : "—"
+                }
+
+                InfoRow {
+                    label: "Session State"
+                    value: loginManager ? loginManager.stateName() : "—"
+                }
+
+                InfoRow {
+                    label: "Lock State"
+                    value: lockManager ? lockManager.stateName() : "—"
+                }
             }
         }
 
@@ -330,6 +357,89 @@ Rectangle {
                     label: "Session Uptime"
                     value: root.settingsManager ? root.settingsManager.uptime : "—"
                 }
+            }
+        }
+
+        // Drag & Drop
+        Rectangle {
+            width: parent.width
+            height: childrenRect.height + 48
+            color: "#ffffff"
+            radius: 12
+            visible: root.settingsManager && root.settingsManager.currentPage === "dragdrop"
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 24
+                spacing: 14
+
+                InfoRow {
+                    label: "Framework Status"
+                    value: dragManager ? "Active" : "Inactive"
+                }
+
+                InfoRow {
+                    label: "Current State"
+                    value: dragManager && dragManager.currentOperation
+                           ? dragManager.currentOperation.stateName
+                           : "Idle"
+                }
+
+                InfoRow {
+                    label: "Current Drag Type"
+                    value: dragManager && dragManager.currentOperation
+                           ? dragManager.currentOperation.data.typeName
+                           : "None"
+                }
+
+                InfoRow {
+                    label: "Last Completed Operation"
+                    value: root.lastCompletedOperation
+                           ? (root.lastCompletedOperation.source + " → " + root.lastCompletedOperation.target)
+                           : "—"
+                }
+            }
+        }
+
+        // Updates
+        Rectangle {
+            width: parent.width
+            height: childrenRect.height + 48
+            color: "#ffffff"
+            radius: 12
+            visible: root.settingsManager && root.settingsManager.currentPage === "updates"
+
+            UpdatesPage {
+                anchors.fill: parent
+                anchors.margins: 24
+            }
+        }
+
+        // Packages
+        Rectangle {
+            width: parent.width
+            height: childrenRect.height + 48
+            color: "#ffffff"
+            radius: 12
+            visible: root.settingsManager && root.settingsManager.currentPage === "packages"
+
+            PackagesPage {
+                anchors.fill: parent
+                anchors.margins: 24
+            }
+        }
+
+        // Store
+        Rectangle {
+            width: parent.width
+            height: childrenRect.height + 48
+            color: "#ffffff"
+            radius: 12
+            visible: root.settingsManager && root.settingsManager.currentPage === "store"
+
+            StoreSettingsPage {
+                anchors.fill: parent
+                anchors.margins: 24
             }
         }
 

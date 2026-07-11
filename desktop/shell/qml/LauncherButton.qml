@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief A flat, reusable button for an entry in the launcher grid.
@@ -48,7 +49,42 @@ Rectangle {
     }
 
     MouseArea {
+        id: launcherMouseArea
+
+        property point pressPos: Qt.point(0, 0)
+        property bool dragHappened: false
+
         anchors.fill: parent
-        onClicked: root.clicked()
+        onPressed: {
+            pressPos = Qt.point(mouse.x, mouse.y);
+            dragHappened = false;
+        }
+        onPositionChanged: {
+            const dx = mouse.x - pressPos.x;
+            const dy = mouse.y - pressPos.y;
+            if (!dragHappened && Math.sqrt(dx * dx + dy * dy) > 8) {
+                dragHappened = true;
+                if (dragManager) {
+                    dragManager.beginDrag(DragType.Application,
+                                          "launcher-" + root.appName,
+                                          root.appName);
+                }
+            }
+            if (dragHappened && dragManager) {
+                const globalPos = root.mapToGlobal(mouse.x, mouse.y);
+                dragManager.updatePosition(globalPos.x, globalPos.y);
+            }
+        }
+        onReleased: {
+            if (dragHappened && dragManager && dragManager.active) {
+                console.log("[BDE] Launcher drag dropped (ignored)");
+                dragManager.cancelDrag();
+            }
+        }
+        onClicked: {
+            if (!dragHappened) {
+                root.clicked();
+            }
+        }
     }
 }

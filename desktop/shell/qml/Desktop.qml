@@ -39,6 +39,18 @@ Window {
         anchors.right: parent.right
     }
 
+    // Sprint 21: global drag feedback overlay that follows the active drag
+    // operation. It is rendered above all other desktop content.
+    DragOverlay {
+        z: 250
+    }
+
+    // Sprint 23: session lock overlay. When active it covers the desktop and
+    // blocks interaction with running applications.
+    LockScreen {
+        z: 300
+    }
+
     // Sprint 20: clicking on the desktop surface while the power menu is open
     // closes the menu. The overlay sits below the taskbar so taskbar controls
     // remain usable.

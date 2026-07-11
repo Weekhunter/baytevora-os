@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief A single desktop icon.
@@ -76,9 +77,41 @@ Rectangle {
     }
 
     MouseArea {
+        id: iconMouseArea
+
+        property point pressPos: Qt.point(0, 0)
+        property bool dragHappened: false
+
         anchors.fill: parent
+        onPressed: {
+            pressPos = Qt.point(mouse.x, mouse.y);
+            dragHappened = false;
+        }
+        onPositionChanged: {
+            const dx = mouse.x - pressPos.x;
+            const dy = mouse.y - pressPos.y;
+            if (!dragHappened && Math.sqrt(dx * dx + dy * dy) > 8) {
+                dragHappened = true;
+                if (dragManager) {
+                    dragManager.beginDrag(DragType.DesktopItem,
+                                          "desktop-" + root.itemId,
+                                          root.displayName);
+                }
+            }
+            if (dragHappened && dragManager) {
+                const globalPos = root.mapToGlobal(mouse.x, mouse.y);
+                dragManager.updatePosition(globalPos.x, globalPos.y);
+            }
+        }
+        onReleased: {
+            if (dragHappened && dragManager && dragManager.active) {
+                dragManager.completeDrop(dragManager.currentTarget);
+            }
+        }
         onClicked: {
-            singleClickTimer.start();
+            if (!dragHappened) {
+                singleClickTimer.start();
+            }
         }
         onDoubleClicked: {
             singleClickTimer.stop();

@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import BOS.Shell
 
 /**
  * @brief File list view for the File Manager.
@@ -76,12 +77,19 @@ Rectangle {
             clip: true
             model: root.fileSystemModel
 
-            delegate: Rectangle {
+            delegate: DropTarget {
+                id: fileDropTarget
+
                 width: ListView.view.width
                 height: 28
+                targetId: model.name
+                acceptedTypes: [DragType.DesktopItem, DragType.Application]
                 color: {
                     if (root.isSelected(model.name)) {
                         return "#2563EB";
+                    }
+                    if (dragManager && dragManager.currentTarget === model.name && isAccepted) {
+                        return ThemeManager ? ThemeManager.primaryColor : "#2563EB";
                     }
                     return index % 2 === 0 ? "#0f172a" : "#162032";
                 }
@@ -114,8 +122,40 @@ Rectangle {
 
                 MouseArea {
                     anchors.fill: parent
+                    propagateComposedEvents: true
+
+                    property point pressPos: Qt.point(0, 0)
+                    property bool dragHappened: false
+
+                    onPressed: {
+                        pressPos = Qt.point(mouse.x, mouse.y);
+                        dragHappened = false;
+                    }
+                    onPositionChanged: {
+                        const dx = mouse.x - pressPos.x;
+                        const dy = mouse.y - pressPos.y;
+                        if (!dragHappened && Math.sqrt(dx * dx + dy * dy) > 8) {
+                            dragHappened = true;
+                            if (dragManager) {
+                                dragManager.beginDrag(DragType.FilePath,
+                                                      "filemanager-" + model.name,
+                                                      model.name);
+                            }
+                        }
+                        if (dragHappened && dragManager) {
+                            const globalPos = fileDropTarget.mapToGlobal(mouse.x, mouse.y);
+                            dragManager.updatePosition(globalPos.x, globalPos.y);
+                        }
+                    }
+                    onReleased: {
+                        if (dragHappened && dragManager && dragManager.active) {
+                            dragManager.completeDrop(dragManager.currentTarget);
+                        }
+                    }
                     onClicked: {
-                        root.selectedFileNames = [model.name];
+                        if (!dragHappened) {
+                            root.selectedFileNames = [model.name];
+                        }
                     }
                     onDoubleClicked: {
                         if (model.isFolder) {
@@ -127,6 +167,10 @@ Rectangle {
                             console.log("[BDE] File open request: " + model.name);
                         }
                     }
+                }
+
+                onDragDropped: {
+                    console.log("[BDE] File manager drop accepted on: " + model.name);
                 }
             }
 

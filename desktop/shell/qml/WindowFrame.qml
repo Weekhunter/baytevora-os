@@ -112,6 +112,9 @@ Rectangle {
                 if (root.applicationName === "Terminal") {
                     return "TerminalWindow.qml";
                 }
+                if (root.applicationName === "Baytevora Store") {
+                    return "StoreWindow.qml";
+                }
                 return "";
             }
 

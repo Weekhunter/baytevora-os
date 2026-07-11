@@ -57,5 +57,22 @@ Rectangle {
                 }
             }
         }
+
+        // Sprint 23: lock action. It is rendered alongside the power actions
+        // and delegates to the LockManager.
+        PowerMenuItem {
+            width: column.width
+            itemTitle: "Lock"
+            itemDescription: "Lock this session"
+            itemEnabled: lockManager ? !lockManager.isLocked : false
+
+            onActivated: {
+                if (lockManager) {
+                    lockManager.lock();
+                }
+                root.menuOpen = false;
+                root.menuClosed();
+            }
+        }
     }
 }
