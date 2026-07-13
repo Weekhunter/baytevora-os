@@ -1,45 +1,81 @@
 import QtQuick
 
 /**
- * @brief BDL-styled search bar for the Baytevora Store.
+ * @brief Search bar for the File Manager.
+ *
+ * Emits searchRequested with query, extension filter, and recursive flag.
  */
 Rectangle {
     id: root
 
-    property string text: input.text
+    property var fileSystemModel: null
 
-    signal searchAccepted()
-
-    height: 40
-    width: parent ? parent.width : 400
-    color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155"
-    radius: DesignTokens ? DesignTokens.radiusMedium : 8
-    border.color: ThemeManager ? ThemeManager.borderColor : "#475569"
+    height: AdaptiveLayoutManager.toolbarHeight
+    width: parent ? parent.width : 600
+    color: ThemeManager.surfaceColor
+    border.color: ThemeManager.borderColor
     border.width: 1
 
-    TextInput {
-        id: input
+    signal searchRequested(string query, string extensionFilter, bool recursive)
 
+    Row {
         anchors.fill: parent
-        anchors.margins: SpacingManager ? SpacingManager.space12 : 12
-        verticalAlignment: TextInput.AlignVCenter
-        color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-        font.pixelSize: TypographyManager ? TypographyManager.body : 14
-        font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
-        clip: true
+        anchors.margins: SpacingManager.space8
+        spacing: SpacingManager.space8
 
-        Keys.onReturnPressed: root.searchAccepted()
-        Keys.onEnterPressed: root.searchAccepted()
-    }
+        TextField {
+            id: queryField
 
-    Text {
-        visible: input.text.length === 0
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.leftMargin: SpacingManager ? SpacingManager.space12 : 12
-        text: "Search apps..."
-        color: ThemeManager ? ThemeManager.textSecondary : "#CBD5E1"
-        font.pixelSize: TypographyManager ? TypographyManager.body : 14
-        font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            width: parent.width * 0.45 - parent.spacing * 2
+            height: parent.height
+            placeholderText: "Search files..."
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.caption
+            background: Rectangle {
+                color: ThemeManager.backgroundColor
+                radius: DesignTokens.radiusSmall
+            }
+        }
+
+        TextField {
+            id: extensionField
+
+            width: parent.width * 0.2 - parent.spacing
+            height: parent.height
+            placeholderText: "Extension"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.caption
+            background: Rectangle {
+                color: ThemeManager.backgroundColor
+                radius: DesignTokens.radiusSmall
+            }
+        }
+
+        CheckBox {
+            id: recursiveBox
+
+            text: "Recursive"
+            anchors.verticalCenter: parent.verticalCenter
+            checked: false
+        }
+
+        BrowserToolButton {
+            label: "Search"
+            anchors.verticalCenter: parent.verticalCenter
+            onClicked: {
+                root.searchRequested(queryField.text, extensionField.text, recursiveBox.checked);
+            }
+        }
+
+        BrowserToolButton {
+            label: "Clear"
+            anchors.verticalCenter: parent.verticalCenter
+            onClicked: {
+                queryField.text = "";
+                extensionField.text = "";
+                recursiveBox.checked = false;
+                root.searchRequested("", "", false);
+            }
+        }
     }
 }

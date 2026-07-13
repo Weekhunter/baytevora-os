@@ -25,7 +25,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.leftMargin: 14
         text: root.itemTitle
-        color: "#e2e8f0"
+        color: "ThemeManager.textSecondary"
         font.pixelSize: 14
         elide: Text.ElideRight
     }

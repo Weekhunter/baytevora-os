@@ -20,7 +20,7 @@ Rectangle {
     Text {
         anchors.centerIn: parent
         text: root.symbol
-        color: "#e2e8f0"
+        color: "ThemeManager.textSecondary"
         font.pixelSize: 12
     }
 

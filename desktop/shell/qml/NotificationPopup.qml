@@ -20,20 +20,20 @@ Rectangle {
     signal dismissed()
 
     width: 340
-    height: contentColumn.height + (SpacingManager ? SpacingManager.space24 : 24)
+    height: contentColumn.height + (SpacingManager.space24)
     color: {
         switch (severity) {
         case "success":
-            return ThemeManager ? ThemeManager.successColor : "#166534";
+            return ThemeManager.successColor;
         case "warning":
-            return ThemeManager ? ThemeManager.warningColor : "#92400e";
+            return ThemeManager.warningColor;
         case "error":
-            return ThemeManager ? ThemeManager.errorColor : "#991b1b";
+            return ThemeManager.errorColor;
         default:
-            return ThemeManager ? ThemeManager.primaryColor : "#1e3a8a";
+            return ThemeManager.primaryColor;
         }
     }
-    radius: DesignTokens ? DesignTokens.radiusMedium : 8
+    radius: DesignTokens.radiusMedium
 
     Column {
         id: contentColumn
@@ -42,21 +42,21 @@ Rectangle {
             left: parent.left
             right: parent.right
             top: parent.top
-            margins: SpacingManager ? SpacingManager.space12 : 12
+            margins: SpacingManager.space12
         }
-        spacing: SpacingManager ? SpacingManager.space8 : 8
+        spacing: SpacingManager.space8
 
         Row {
             width: parent.width
-            spacing: SpacingManager ? SpacingManager.space8 : 8
+            spacing: SpacingManager.space8
 
             Text {
                 width: parent.width - closeButton.width - parent.spacing
                 text: root.notificationTitle
-                color: ThemeManager ? ThemeManager.textPrimary : "#ffffff"
-                font.pixelSize: TypographyManager ? TypographyManager.title : 15
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.title
                 font.weight: Font.DemiBold
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                font.family: TypographyManager.fontFamily
                 wrapMode: Text.Wrap
             }
 
@@ -65,8 +65,8 @@ Rectangle {
 
                 width: 20
                 text: "\u00D7"
-                color: ThemeManager ? ThemeManager.textPrimary : "#ffffff"
-                font.pixelSize: TypographyManager ? TypographyManager.heading : 20
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.heading
                 horizontalAlignment: Text.AlignRight
 
                 MouseArea {
@@ -79,28 +79,28 @@ Rectangle {
         Text {
             width: parent.width
             text: root.message
-            color: ThemeManager ? ThemeManager.textSecondary : "#e2e8f0"
-            font.pixelSize: TypographyManager ? TypographyManager.body : 13
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textSecondary
+            font.pixelSize: TypographyManager.body
+            font.family: TypographyManager.fontFamily
             wrapMode: Text.Wrap
         }
 
         Row {
             width: parent.width
-            spacing: SpacingManager ? SpacingManager.space8 : 8
+            spacing: SpacingManager.space8
 
             Text {
                 text: root.sourceApplication
-                color: ThemeManager ? ThemeManager.textSecondary : "#bfdbfe"
-                font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textSecondary
+                font.pixelSize: TypographyManager.caption
+                font.family: TypographyManager.fontFamily
             }
 
             Text {
                 text: root.timestamp
-                color: ThemeManager ? ThemeManager.textSecondary : "#bfdbfe"
-                font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textSecondary
+                font.pixelSize: TypographyManager.caption
+                font.family: TypographyManager.fontFamily
             }
         }
     }

@@ -13,8 +13,8 @@ Rectangle {
 
     property alias powerMenu: powerMenu
 
-    color: ThemeManager ? ThemeManager.taskbarBackground : "#1e293b"
-    height: 40
+    color: ThemeManager.taskbarBackground
+    height: AdaptiveLayoutManager.taskbarHeight
     anchors.bottom: parent.bottom
     anchors.left: parent.left
     anchors.right: parent.right
@@ -25,7 +25,7 @@ Rectangle {
         anchors.top: parent.top
         width: parent.width
         height: 1
-        color: ThemeManager ? ThemeManager.borderColor : "#475569"
+        color: ThemeManager.borderColor
     }
 
     // Clicking on the taskbar outside the power menu closes the menu.
@@ -44,7 +44,7 @@ Rectangle {
         id: bosButton
 
         anchors.left: parent.left
-        anchors.leftMargin: SpacingManager ? SpacingManager.space8 : 8
+        anchors.leftMargin: SpacingManager.space8
         anchors.verticalCenter: parent.verticalCenter
         width: 48
         text: "BOS"
@@ -68,7 +68,7 @@ Rectangle {
         id: clock
 
         anchors.right: powerButton.left
-        anchors.rightMargin: SpacingManager ? SpacingManager.space4 : 4
+        anchors.rightMargin: SpacingManager.space4
         anchors.verticalCenter: parent.verticalCenter
         height: parent.height
     }
@@ -77,7 +77,7 @@ Rectangle {
         id: powerButton
 
         anchors.right: parent.right
-        anchors.rightMargin: SpacingManager ? SpacingManager.space8 : 8
+        anchors.rightMargin: SpacingManager.space8
         anchors.verticalCenter: parent.verticalCenter
         z: 11
         width: 40
@@ -95,8 +95,8 @@ Rectangle {
 
         anchors.bottom: parent.top
         anchors.right: parent.right
-        anchors.rightMargin: SpacingManager ? SpacingManager.space8 : 8
-        anchors.bottomMargin: SpacingManager ? SpacingManager.space4 : 4
+        anchors.rightMargin: SpacingManager.space8
+        anchors.bottomMargin: SpacingManager.space4
         z: 11
     }
 }

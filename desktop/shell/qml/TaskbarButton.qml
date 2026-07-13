@@ -14,7 +14,7 @@ Rectangle {
 
     signal clicked()
 
-    color: active ? "#334155" : "transparent"
+    color: active ? "ThemeManager.surfaceSecondaryColor" : "transparent"
     implicitWidth: label.implicitWidth + 24
     height: parent ? parent.height : 40
 
@@ -27,7 +27,7 @@ Rectangle {
         anchors.leftMargin: 12
         anchors.rightMargin: 12
         text: root.text
-        color: "#e2e8f0"
+        color: "ThemeManager.textSecondary"
         font.pixelSize: 13
         elide: Text.ElideRight
     }

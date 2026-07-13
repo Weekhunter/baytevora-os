@@ -13,29 +13,31 @@ Rectangle {
 
     property var packageData: null
 
+    signal packageSelected(string packageId)
+
     width: parent ? parent.width : 200
     height: content.height + 32
-    color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155"
-    radius: DesignTokens ? DesignTokens.radiusMedium : 8
-    border.color: ThemeManager ? ThemeManager.borderColor : "#475569"
+    color: ThemeManager.surfaceSecondaryColor
+    radius: DesignTokens.radiusMedium
+    border.color: ThemeManager.borderColor
     border.width: 1
 
     Column {
         id: content
 
         anchors.fill: parent
-        anchors.margins: SpacingManager ? SpacingManager.space16 : 16
-        spacing: SpacingManager ? SpacingManager.space8 : 8
+        anchors.margins: SpacingManager.space16
+        spacing: SpacingManager.space8
 
         Row {
             width: parent.width
-            spacing: SpacingManager ? SpacingManager.space12 : 12
+            spacing: SpacingManager.space12
 
             Text {
                 text: root.packageData ? root.packageData.name : ""
-                color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                font.pixelSize: TypographyManager ? TypographyManager.title : 18
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.title
+                font.family: TypographyManager.fontFamily
                 font.weight: Font.DemiBold
             }
 
@@ -51,66 +53,94 @@ Rectangle {
 
         Text {
             text: root.packageData ? root.packageData.version : ""
-            color: ThemeManager ? ThemeManager.textSecondary : "#CBD5E1"
-            font.pixelSize: TypographyManager ? TypographyManager.body : 14
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textSecondary
+            font.pixelSize: TypographyManager.body
+            font.family: TypographyManager.fontFamily
         }
 
         Text {
             text: root.packageData ? root.packageData.description : ""
             width: parent.width
             wrapMode: Text.WordWrap
-            color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-            font.pixelSize: TypographyManager ? TypographyManager.body : 14
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.body
+            font.family: TypographyManager.fontFamily
         }
 
         Row {
-            spacing: SpacingManager ? SpacingManager.space12 : 12
+            spacing: SpacingManager.space12
 
             Text {
                 text: root.packageData && packageManager
                       ? packageManager.typeName(root.packageData.packageType)
                       : ""
-                color: ThemeManager ? ThemeManager.accentColor : "#38bdf8"
-                font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.accentColor
+                font.pixelSize: TypographyManager.caption
+                font.family: TypographyManager.fontFamily
                 font.weight: Font.DemiBold
             }
 
             Text {
                 text: root.packageData ? root.packageData.category : ""
-                color: ThemeManager ? ThemeManager.textSecondary : "#CBD5E1"
-                font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textSecondary
+                font.pixelSize: TypographyManager.caption
+                font.family: TypographyManager.fontFamily
             }
 
             Text {
                 text: root.packageData ? root.packageData.size : ""
-                color: ThemeManager ? ThemeManager.textSecondary : "#CBD5E1"
-                font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textSecondary
+                font.pixelSize: TypographyManager.caption
+                font.family: TypographyManager.fontFamily
             }
         }
 
         Row {
-            spacing: SpacingManager ? SpacingManager.space8 : 8
+            spacing: SpacingManager.space8
+
+            Rectangle {
+                width: depsLabel.width + 16
+                height: 28
+                radius: DesignTokens.radiusSmall
+                color: ThemeManager.surfaceColor
+                border.color: ThemeManager.borderColor
+                border.width: 1
+
+                Text {
+                    id: depsLabel
+
+                    anchors.centerIn: parent
+                    text: "Dependencies"
+                    color: ThemeManager.textPrimary
+                    font.pixelSize: TypographyManager.caption
+                    font.family: TypographyManager.fontFamily
+                }
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        if (root.packageData) {
+                            root.packageSelected(root.packageData.packageId);
+                        }
+                    }
+                }
+            }
 
             Rectangle {
                 visible: root.packageData && root.packageData.installed
                 width: uninstallLabel.width + 16
                 height: 28
-                radius: DesignTokens ? DesignTokens.radiusSmall : 4
-                color: ThemeManager ? ThemeManager.errorColor : "#ef4444"
+                radius: DesignTokens.radiusSmall
+                color: ThemeManager.errorColor
 
                 Text {
                     id: uninstallLabel
 
                     anchors.centerIn: parent
                     text: "Uninstall"
-                    color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                    font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                    font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                    color: ThemeManager.textPrimary
+                    font.pixelSize: TypographyManager.caption
+                    font.family: TypographyManager.fontFamily
                 }
 
                 MouseArea {
@@ -127,17 +157,17 @@ Rectangle {
                 visible: root.packageData && !root.packageData.installed
                 width: installLabel.width + 16
                 height: 28
-                radius: DesignTokens ? DesignTokens.radiusSmall : 4
-                color: ThemeManager ? ThemeManager.successColor : "#22c55e"
+                radius: DesignTokens.radiusSmall
+                color: ThemeManager.successColor
 
                 Text {
                     id: installLabel
 
                     anchors.centerIn: parent
                     text: "Install"
-                    color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                    font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                    font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                    color: ThemeManager.textPrimary
+                    font.pixelSize: TypographyManager.caption
+                    font.family: TypographyManager.fontFamily
                 }
 
                 MouseArea {
@@ -154,17 +184,17 @@ Rectangle {
                 visible: root.packageData && root.packageData.state === PackageState.Installed
                 width: disableLabel.width + 16
                 height: 28
-                radius: DesignTokens ? DesignTokens.radiusSmall : 4
-                color: ThemeManager ? ThemeManager.warningColor : "#f59e0b"
+                radius: DesignTokens.radiusSmall
+                color: ThemeManager.warningColor
 
                 Text {
                     id: disableLabel
 
                     anchors.centerIn: parent
                     text: "Disable"
-                    color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                    font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                    font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                    color: ThemeManager.textPrimary
+                    font.pixelSize: TypographyManager.caption
+                    font.family: TypographyManager.fontFamily
                 }
 
                 MouseArea {
@@ -181,17 +211,17 @@ Rectangle {
                 visible: root.packageData && root.packageData.state === PackageState.Disabled
                 width: enableLabel.width + 16
                 height: 28
-                radius: DesignTokens ? DesignTokens.radiusSmall : 4
-                color: ThemeManager ? ThemeManager.successColor : "#22c55e"
+                radius: DesignTokens.radiusSmall
+                color: ThemeManager.successColor
 
                 Text {
                     id: enableLabel
 
                     anchors.centerIn: parent
                     text: "Enable"
-                    color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                    font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                    font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                    color: ThemeManager.textPrimary
+                    font.pixelSize: TypographyManager.caption
+                    font.family: TypographyManager.fontFamily
                 }
 
                 MouseArea {

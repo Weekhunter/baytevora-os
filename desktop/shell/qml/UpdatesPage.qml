@@ -1,96 +1,118 @@
 import QtQuick
 
 /**
- * @brief Settings page for Baytevora Update Manager (BUM).
- *
- * UpdatesPage shows the current version, latest version, update state,
- * available update count, a list of UpdateCards, and the Check for Updates
- * button.
+ * @brief Updates page for the Baytevora Store Phase 2.
  */
-Rectangle {
+Column {
     id: root
 
-    width: parent ? parent.width : 400
-    height: parent ? parent.height : 300
-    color: "transparent"
+    signal refreshRequested()
 
-    Column {
-        anchors.fill: parent
-        spacing: SpacingManager ? SpacingManager.space16 : 16
+    width: parent ? parent.width : 600
+    spacing: SpacingManager.space16
 
-        Rectangle {
-            width: parent.width
-            height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: DesignTokens ? DesignTokens.radiusLarge : 16
+    Row {
+        width: parent.width
+        spacing: SpacingManager.space12
 
-            Column {
-                anchors.fill: parent
-                anchors.margins: SpacingManager ? SpacingManager.space24 : 24
-                spacing: SpacingManager ? SpacingManager.space14 : 14
+        Text {
+            text: "Available Updates"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.title
+            font.family: TypographyManager.fontFamily
+            font.weight: Font.DemiBold
+        }
 
-                Text {
-                    text: "Updates"
-                    color: ThemeManager ? ThemeManager.textPrimary : "#0f172a"
-                    font.pixelSize: TypographyManager ? TypographyManager.title : 18
-                    font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
-                    font.weight: Font.DemiBold
-                }
-
-                InfoRow {
-                    label: "Current Version"
-                    value: updateManager ? updateManager.currentVersion : "—"
-                }
-
-                InfoRow {
-                    label: "Latest Version"
-                    value: updateManager ? updateManager.latestVersion : "—"
-                }
-
-                InfoRow {
-                    label: "Update State"
-                    value: updateManager ? updateManager.stateName() : "—"
-                }
-
-                InfoRow {
-                    label: "Available Updates"
-                    value: updateManager ? updateManager.updatesAvailable.toString() : "—"
-                }
-
-                CheckUpdatesButton {
-                    anchors.left: parent.left
-                }
-            }
+        Item {
+            height: parent.height
+            width: parent.width - x - refreshButton.width - parent.spacing
         }
 
         Rectangle {
-            width: parent.width
-            height: childrenRect.height + 32
-            visible: updateManager && updateManager.updatesAvailable > 0
-            color: "#ffffff"
-            radius: DesignTokens ? DesignTokens.radiusLarge : 16
+            id: refreshButton
 
-            Column {
+            width: refreshLabel.width + 24
+            height: 32
+            radius: DesignTokens.radiusSmall
+            color: ThemeManager.accentColor
+
+            Text {
+                id: refreshLabel
+
+                anchors.centerIn: parent
+                text: "Refresh"
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.caption
+                font.family: TypographyManager.fontFamily
+                font.weight: Font.DemiBold
+            }
+
+            MouseArea {
                 anchors.fill: parent
-                anchors.margins: SpacingManager ? SpacingManager.space24 : 24
-                spacing: SpacingManager ? SpacingManager.space12 : 12
+                onClicked: root.refreshRequested()
+            }
+        }
+    }
 
-                Text {
-                    text: "Available Updates"
-                    color: ThemeManager ? ThemeManager.textPrimary : "#0f172a"
-                    font.pixelSize: TypographyManager ? TypographyManager.title : 18
-                    font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
-                    font.weight: Font.DemiBold
+    Repeater {
+        model: storeManager ? storeManager.updates : []
+
+        delegate: Rectangle {
+            width: parent.width
+            height: 64
+            radius: DesignTokens.radiusSmall
+            color: ThemeManager.surfaceSecondaryColor
+            border.color: ThemeManager.borderColor
+            border.width: 1
+
+            Row {
+                anchors.fill: parent
+                anchors.margins: SpacingManager.space12
+                spacing: SpacingManager.space12
+
+                Rectangle {
+                    width: 40
+                    height: 40
+                    radius: DesignTokens.radiusSmall
+                    color: ThemeManager.accentColor
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: modelData.applicationId.charAt(0).toUpperCase()
+                        color: ThemeManager.textPrimary
+                        font.pixelSize: TypographyManager.title
+                        font.family: TypographyManager.fontFamily
+                        font.weight: Font.Bold
+                    }
                 }
 
-                Repeater {
-                    model: updateManager ? updateManager.availableUpdates : []
+                Column {
+                    spacing: SpacingManager.space4
 
-                    UpdateCard {
-                        updateData: modelData
+                    Text {
+                        text: modelData.applicationId
+                        color: ThemeManager.textPrimary
+                        font.pixelSize: TypographyManager.body
+                        font.family: TypographyManager.fontFamily
+                        font.weight: Font.DemiBold
+                    }
+
+                    Text {
+                        text: modelData.installedVersion + " → " + modelData.availableVersion
+                        color: ThemeManager.textSecondary
+                        font.pixelSize: TypographyManager.caption
+                        font.family: TypographyManager.fontFamily
                     }
                 }
             }
         }
+    }
+
+    Text {
+        visible: storeManager && storeManager.updates.length === 0
+        text: "All applications are up to date."
+        color: ThemeManager.textSecondary
+        font.pixelSize: TypographyManager.body
+        font.family: TypographyManager.fontFamily
     }
 }

@@ -13,54 +13,54 @@ Rectangle {
 
     width: parent ? parent.width : 200
     height: childrenRect.height + 32
-    color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155"
-    radius: DesignTokens ? DesignTokens.radiusMedium : 8
-    border.color: ThemeManager ? ThemeManager.borderColor : "#475569"
+    color: ThemeManager.surfaceSecondaryColor
+    radius: DesignTokens.radiusMedium
+    border.color: ThemeManager.borderColor
     border.width: 1
 
     Column {
         anchors.fill: parent
-        anchors.margins: SpacingManager ? SpacingManager.space16 : 16
-        spacing: SpacingManager ? SpacingManager.space6 : 6
+        anchors.margins: SpacingManager.space16
+        spacing: SpacingManager.space6
 
         Text {
             text: root.updateData ? root.updateData.title : ""
-            color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-            font.pixelSize: TypographyManager ? TypographyManager.title : 18
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.title
+            font.family: TypographyManager.fontFamily
             font.weight: Font.DemiBold
         }
 
         Text {
             text: root.updateData ? root.updateData.version : ""
-            color: ThemeManager ? ThemeManager.textSecondary : "#CBD5E1"
-            font.pixelSize: TypographyManager ? TypographyManager.body : 14
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textSecondary
+            font.pixelSize: TypographyManager.body
+            font.family: TypographyManager.fontFamily
         }
 
         Row {
-            spacing: SpacingManager ? SpacingManager.space12 : 12
+            spacing: SpacingManager.space12
 
             Text {
                 text: root.updateData ? root.updateData.type : ""
-                color: ThemeManager ? ThemeManager.accentColor : "#38bdf8"
-                font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.accentColor
+                font.pixelSize: TypographyManager.caption
+                font.family: TypographyManager.fontFamily
                 font.weight: Font.DemiBold
             }
 
             Text {
                 text: root.updateData ? root.updateData.size : ""
-                color: ThemeManager ? ThemeManager.textSecondary : "#CBD5E1"
-                font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textSecondary
+                font.pixelSize: TypographyManager.caption
+                font.family: TypographyManager.fontFamily
             }
 
             Text {
                 text: root.updateData ? root.updateData.releaseDate : ""
-                color: ThemeManager ? ThemeManager.textSecondary : "#CBD5E1"
-                font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textSecondary
+                font.pixelSize: TypographyManager.caption
+                font.family: TypographyManager.fontFamily
             }
         }
 
@@ -68,9 +68,9 @@ Rectangle {
             text: root.updateData ? root.updateData.description : ""
             width: parent.width
             wrapMode: Text.WordWrap
-            color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-            font.pixelSize: TypographyManager ? TypographyManager.body : 14
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.body
+            font.family: TypographyManager.fontFamily
         }
     }
 }

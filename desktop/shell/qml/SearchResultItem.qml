@@ -23,7 +23,7 @@ Rectangle {
         anchors.fill: parent
         anchors.leftMargin: 12
         anchors.rightMargin: 12
-        spacing: 8
+        spacing: SpacingManager.space8
 
         Column {
             anchors.verticalCenter: parent.verticalCenter
@@ -32,7 +32,7 @@ Rectangle {
 
             Text {
                 text: root.resultTitle
-                color: "#e2e8f0"
+                color: "ThemeManager.textSecondary"
                 font.pixelSize: 14
                 font.weight: Font.DemiBold
                 width: parent.width
@@ -41,7 +41,7 @@ Rectangle {
 
             Text {
                 text: root.resultSubtitle + (root.resultProvider.length > 0 ? "  • " + root.resultProvider : "")
-                color: "#94a3b8"
+                color: "ThemeManager.textDisabled"
                 font.pixelSize: 12
                 width: parent.width
                 elide: Text.ElideRight

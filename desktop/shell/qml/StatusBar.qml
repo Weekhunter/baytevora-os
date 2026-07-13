@@ -3,7 +3,7 @@ import QtQuick
 /**
  * @brief Status bar for the File Manager.
  *
- * Shows the current item count and the current folder name. Both values are
+ * Shows the current path, item count, and current folder name. All values are
  * bound to the FileSystemModel properties and update automatically.
  */
 Rectangle {
@@ -11,26 +11,41 @@ Rectangle {
 
     property var fileSystemModel: null
 
-    color: "#1e293b"
+    height: AdaptiveLayoutManager.titleBarHeight
+    color: ThemeManager.surfaceColor
+    border.color: ThemeManager.borderColor
+    border.width: 1
 
     Row {
         anchors.fill: parent
-        anchors.leftMargin: 12
-        anchors.rightMargin: 12
-        spacing: 16
+        anchors.leftMargin: SpacingManager.space12
+        anchors.rightMargin: SpacingManager.space12
+        spacing: SpacingManager.space16
+
+        Text {
+            width: parent.width * 0.6
+            anchors.verticalCenter: parent.verticalCenter
+            text: root.fileSystemModel ? root.fileSystemModel.path : ""
+            color: ThemeManager.textSecondary
+            font.pixelSize: TypographyManager.caption
+            font.family: TypographyManager.fontFamily
+            elide: Text.ElideLeft
+        }
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.fileSystemModel ? root.fileSystemModel.itemCount + " items" : ""
-            color: "#94a3b8"
-            font.pixelSize: 12
+            color: ThemeManager.textSecondary
+            font.pixelSize: TypographyManager.caption
+            font.family: TypographyManager.fontFamily
         }
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.fileSystemModel ? root.fileSystemModel.currentFolderName : ""
-            color: "#94a3b8"
-            font.pixelSize: 12
+            color: ThemeManager.textSecondary
+            font.pixelSize: TypographyManager.caption
+            font.family: TypographyManager.fontFamily
         }
     }
 }

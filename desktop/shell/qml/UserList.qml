@@ -9,7 +9,7 @@ import QtQuick
 Column {
     id: root
 
-    spacing: SpacingManager ? SpacingManager.space8 : 8
+    spacing: SpacingManager.space8
     width: 200
 
     Repeater {
@@ -23,60 +23,60 @@ Column {
 
             width: root.width
             height: 56
-            radius: DesignTokens ? DesignTokens.radiusMedium : 8
+            radius: DesignTokens.radiusMedium
             color: isSelected
-                   ? (ThemeManager ? ThemeManager.primaryColor : "#2563EB")
-                   : (ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155")
+                   ? (ThemeManager.primaryColor)
+                   : (ThemeManager.surfaceSecondaryColor)
             border.color: isSelected
-                          ? (ThemeManager ? ThemeManager.accentColor : "#38bdf8")
-                          : (ThemeManager ? ThemeManager.borderColor : "#475569")
+                          ? (ThemeManager.accentColor)
+                          : (ThemeManager.borderColor)
             border.width: isSelected ? 2 : 1
 
             Row {
                 anchors.fill: parent
-                anchors.margins: SpacingManager ? SpacingManager.space12 : 12
-                spacing: SpacingManager ? SpacingManager.space12 : 12
+                anchors.margins: SpacingManager.space12
+                spacing: SpacingManager.space12
 
                 Rectangle {
                     anchors.verticalCenter: parent.verticalCenter
                     width: 36
                     height: 36
                     radius: width / 2
-                    color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155"
+                    color: ThemeManager.surfaceSecondaryColor
 
                     Text {
                         anchors.centerIn: parent
                         text: modelData.displayName.length > 0
                               ? modelData.displayName.charAt(0).toUpperCase()
                               : "?"
-                        color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                        font.pixelSize: TypographyManager ? TypographyManager.body : 14
-                        font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                        color: ThemeManager.textPrimary
+                        font.pixelSize: TypographyManager.body
+                        font.family: TypographyManager.fontFamily
                         font.weight: Font.DemiBold
                     }
                 }
 
                 Column {
                     anchors.verticalCenter: parent.verticalCenter
-                    spacing: SpacingManager ? SpacingManager.space2 : 2
+                    spacing: SpacingManager.space2
 
                     Text {
                         text: modelData.displayName
                         color: isSelected
-                               ? (ThemeManager ? ThemeManager.textPrimary : "#F8FAFC")
-                               : (ThemeManager ? ThemeManager.textPrimary : "#F8FAFC")
-                        font.pixelSize: TypographyManager ? TypographyManager.body : 14
-                        font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                               ? (ThemeManager.textPrimary)
+                               : (ThemeManager.textPrimary)
+                        font.pixelSize: TypographyManager.body
+                        font.family: TypographyManager.fontFamily
                         font.weight: Font.DemiBold
                     }
 
                     Text {
                         text: modelData.administrator ? "Administrator" : "User"
                         color: isSelected
-                               ? (ThemeManager ? ThemeManager.textPrimary : "#F8FAFC")
-                               : (ThemeManager ? ThemeManager.textPrimary : "#F8FAFC")
-                        font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-                        font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                               ? (ThemeManager.textPrimary)
+                               : (ThemeManager.textPrimary)
+                        font.pixelSize: TypographyManager.caption
+                        font.family: TypographyManager.fontFamily
                     }
                 }
             }

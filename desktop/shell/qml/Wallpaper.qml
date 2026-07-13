@@ -15,7 +15,7 @@ Item {
     property url source
 
     /** Background color used when the wallpaper image cannot be loaded. */
-    property color fallbackColor: "#0f172a"
+    property color fallbackColor: "ThemeManager.backgroundColor"
 
     /**
      * The actual image item. fillMode is set to PreserveAspectCrop so the image

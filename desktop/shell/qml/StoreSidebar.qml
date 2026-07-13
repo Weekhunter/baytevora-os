@@ -13,19 +13,19 @@ Rectangle {
     signal categorySelected(int category)
 
     width: 220
-    color: ThemeManager ? ThemeManager.backgroundColor : "#0f172a"
-    radius: DesignTokens ? DesignTokens.radiusMedium : 8
+    color: ThemeManager.backgroundColor
+    radius: DesignTokens.radiusMedium
 
     Column {
         anchors.fill: parent
-        anchors.margins: SpacingManager ? SpacingManager.space16 : 16
-        spacing: SpacingManager ? SpacingManager.space24 : 24
+        anchors.margins: SpacingManager.space16
+        spacing: SpacingManager.space24
 
         Text {
             text: "Baytevora Store"
-            color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-            font.pixelSize: TypographyManager ? TypographyManager.headline : 24
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.headline
+            font.family: TypographyManager.fontFamily
             font.weight: Font.Bold
         }
 

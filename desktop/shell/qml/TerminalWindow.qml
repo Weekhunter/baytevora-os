@@ -11,7 +11,7 @@ import QtQuick.Controls
 Rectangle {
     id: root
 
-    color: "#0c0c0c"
+    color: "ThemeManager.backgroundColor"
 
     TerminalManager {
         id: terminalManager
@@ -23,13 +23,13 @@ Rectangle {
 
         TerminalToolbar {
             width: parent.width
-            height: 38
+            height: AdaptiveLayoutManager.toolbarHeight
             terminalManager: terminalManager
         }
 
         TerminalView {
             width: parent.width
-            height: parent.height - 38 - 24
+            height: parent.height - (AdaptiveLayoutManager.toolbarHeight) - 24
             terminalManager: terminalManager
         }
 

@@ -1,13 +1,16 @@
 import QtQuick
 
 /**
- * @brief Settings page for the Baytevora Package Manager (BPM).
+ * @brief Package list page for the Baytevora Package Manager Phase 2.
  *
  * PackagesPage shows installed and available package counts and a scrollable
- * list of PackageCards.
+ * list of PackageCards. Selecting a package emits packageSelected so other
+ * views can inspect its dependencies.
  */
 Rectangle {
     id: root
+
+    signal packageSelected(string packageId)
 
     width: parent ? parent.width : 400
     height: parent ? parent.height : 300
@@ -15,26 +18,28 @@ Rectangle {
 
     Column {
         anchors.fill: parent
-        spacing: SpacingManager ? SpacingManager.space16 : 16
+        spacing: SpacingManager.space16
 
         Rectangle {
             width: parent.width
             height: summaryColumn.height + 48
-            color: "#ffffff"
-            radius: DesignTokens ? DesignTokens.radiusLarge : 16
+            color: ThemeManager.surfaceSecondaryColor
+            radius: DesignTokens.radiusLarge
+            border.color: ThemeManager.borderColor
+            border.width: 1
 
             Column {
                 id: summaryColumn
 
                 anchors.fill: parent
-                anchors.margins: SpacingManager ? SpacingManager.space24 : 24
-                spacing: SpacingManager ? SpacingManager.space14 : 14
+                anchors.margins: SpacingManager.space24
+                spacing: SpacingManager.space14
 
                 Text {
                     text: "Packages"
-                    color: "#0f172a"
-                    font.pixelSize: TypographyManager ? TypographyManager.title : 18
-                    font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                    color: ThemeManager.textPrimary
+                    font.pixelSize: TypographyManager.title
+                    font.family: TypographyManager.fontFamily
                     font.weight: Font.DemiBold
                 }
 
@@ -58,12 +63,14 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: parent.height - summaryColumn.height - 64
-            color: "#ffffff"
-            radius: DesignTokens ? DesignTokens.radiusLarge : 16
+            color: ThemeManager.surfaceSecondaryColor
+            radius: DesignTokens.radiusLarge
+            border.color: ThemeManager.borderColor
+            border.width: 1
 
             Flickable {
                 anchors.fill: parent
-                anchors.margins: SpacingManager ? SpacingManager.space16 : 16
+                anchors.margins: SpacingManager.space16
                 contentHeight: packageList.height
                 clip: true
 
@@ -72,6 +79,7 @@ Rectangle {
 
                     width: parent.width
                     model: packageManager ? packageManager.packages : []
+                    onPackageSelected: (packageId) => root.packageSelected(packageId)
                 }
             }
         }

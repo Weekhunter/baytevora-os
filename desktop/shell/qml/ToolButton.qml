@@ -13,13 +13,13 @@ Rectangle {
 
     width: 32
     height: 32
-    color: root.enabled && mouseArea.containsMouse ? "#334155" : "transparent"
-    radius: 4
+    color: root.enabled && mouseArea.containsMouse ? "ThemeManager.surfaceSecondaryColor" : "transparent"
+    radius: DesignTokens.radiusSmall
 
     Text {
         anchors.centerIn: parent
         text: root.symbol
-        color: root.enabled ? "#e2e8f0" : "#64748b"
+        color: root.enabled ? "ThemeManager.textSecondary" : "ThemeManager.textDisabled"
         font.pixelSize: 16
     }
 

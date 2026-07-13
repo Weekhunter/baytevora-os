@@ -13,14 +13,14 @@ TextField {
 
     placeholderText: "Search..."
     focus: launcher ? launcher.visible : false
-    color: "#e2e8f0"
-    placeholderTextColor: "#94a3b8"
+    color: "ThemeManager.textSecondary"
+    placeholderTextColor: "ThemeManager.textDisabled"
     font.pixelSize: 14
 
     background: Rectangle {
-        color: "#0f172a"
-        border.color: "#475569"
+        color: "ThemeManager.backgroundColor"
+        border.color: "ThemeManager.borderColor"
         border.width: 1
-        radius: DesignTokens ? DesignTokens.radiusSmall : 6
+        radius: DesignTokens.radiusSmall
     }
 }

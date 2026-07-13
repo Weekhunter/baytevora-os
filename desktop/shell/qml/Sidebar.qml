@@ -12,7 +12,7 @@ Rectangle {
 
     property var fileSystemModel: null
 
-    color: "#1e293b"
+    color: "ThemeManager.surfaceColor"
 
     Column {
         id: sidebarColumn
@@ -23,7 +23,7 @@ Rectangle {
 
         Text {
             text: "Locations"
-            color: "#94a3b8"
+            color: "ThemeManager.textDisabled"
             font.pixelSize: 12
             font.weight: Font.DemiBold
         }
@@ -43,14 +43,14 @@ Rectangle {
                 width: sidebarColumn.width
                 height: 28
                 color: "transparent"
-                radius: 4
+                radius: DesignTokens.radiusSmall
 
                 Text {
                     anchors.verticalCenter: parent.verticalCenter
                     anchors.left: parent.left
                     anchors.leftMargin: 8
                     text: modelData.name
-                    color: "#e2e8f0"
+                    color: "ThemeManager.textSecondary"
                     font.pixelSize: 13
                 }
 

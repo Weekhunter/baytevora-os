@@ -13,7 +13,7 @@ Rectangle {
 
     property var terminalManager: null
 
-    color: "#1e1e1e"
+    color: "ThemeManager.surfaceColor"
 
     RowLayout {
         anchors.fill: parent
@@ -22,7 +22,7 @@ Rectangle {
 
         Text {
             text: root.terminalManager ? root.terminalManager.currentDirectory : ""
-            color: "#94a3b8"
+            color: "ThemeManager.textDisabled"
             font.pixelSize: 13
         }
 
@@ -42,7 +42,7 @@ Rectangle {
 
         Text {
             text: root.terminalManager ? root.terminalManager.status : ""
-            color: "#22c55e"
+            color: "ThemeManager.successColor"
             font.pixelSize: 13
         }
     }

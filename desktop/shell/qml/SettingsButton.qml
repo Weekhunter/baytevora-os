@@ -12,15 +12,15 @@ Rectangle {
 
     width: Math.max(100, label.implicitWidth + 32)
     height: 36
-    color: mouseArea.containsMouse ? "#cbd5e1" : "#e2e8f0"
-    radius: 8
+    color: mouseArea.containsMouse ? "ThemeManager.textSecondary" : "ThemeManager.textSecondary"
+    radius: DesignTokens.radiusMedium
 
     Text {
         id: label
 
         anchors.centerIn: parent
         text: root.text
-        color: "#334155"
+        color: "ThemeManager.surfaceSecondaryColor"
         font.pixelSize: 14
     }
 

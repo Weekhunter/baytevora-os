@@ -11,7 +11,7 @@ import QtQuick
 Rectangle {
     id: root
 
-    color: "#f8fafc"
+    color: "ThemeManager.surfaceSecondaryColor"
 
     SettingsManager {
         id: settingsManager

@@ -32,8 +32,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "appearance"
 
             Column {
@@ -43,7 +43,7 @@ Rectangle {
 
                 Text {
                     text: "Theme"
-                    color: "#334155"
+                    color: "ThemeManager.surfaceSecondaryColor"
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
                 }
@@ -69,7 +69,7 @@ Rectangle {
 
                 Text {
                     text: "Accent Color"
-                    color: "#334155"
+                    color: "ThemeManager.surfaceSecondaryColor"
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
                 }
@@ -95,7 +95,7 @@ Rectangle {
 
                 Text {
                     text: "Font Size"
-                    color: "#334155"
+                    color: "ThemeManager.surfaceSecondaryColor"
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
                 }
@@ -125,8 +125,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "wallpaper"
 
             Column {
@@ -136,14 +136,14 @@ Rectangle {
 
                 Text {
                     text: "Current Wallpaper"
-                    color: "#334155"
+                    color: "ThemeManager.surfaceSecondaryColor"
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
                 }
 
                 Text {
                     text: root.settingsManager ? root.settingsManager.wallpaperPath : ""
-                    color: "#64748b"
+                    color: "ThemeManager.textDisabled"
                     font.pixelSize: 14
                     wrapMode: Text.WrapAnywhere
                     width: parent.width
@@ -169,8 +169,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "system"
 
             Column {
@@ -221,8 +221,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "clipboard"
 
             Column {
@@ -257,8 +257,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "shortcuts"
 
             Column {
@@ -278,7 +278,7 @@ Rectangle {
 
                 Text {
                     text: "Registered Shortcuts"
-                    color: "#334155"
+                    color: "ThemeManager.surfaceSecondaryColor"
                     font.pixelSize: 16
                     font.weight: Font.DemiBold
                 }
@@ -288,7 +288,7 @@ Rectangle {
 
                     Text {
                         text: modelData.name + " (" + modelData.keySequence + ")"
-                        color: "#475569"
+                        color: "ThemeManager.borderColor"
                         font.pixelSize: 14
                     }
                 }
@@ -299,8 +299,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "search"
 
             Column {
@@ -334,8 +334,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "power"
 
             Column {
@@ -364,8 +364,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "dragdrop"
 
             Column {
@@ -405,8 +405,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "updates"
 
             UpdatesPage {
@@ -419,8 +419,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "packages"
 
             PackagesPage {
@@ -433,8 +433,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "store"
 
             StoreSettingsPage {
@@ -447,8 +447,8 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "#ffffff"
-            radius: 12
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "about"
 
             Column {
@@ -458,32 +458,32 @@ Rectangle {
 
                 Text {
                     text: "Baytevora OS"
-                    color: "#0f172a"
+                    color: "ThemeManager.backgroundColor"
                     font.pixelSize: 22
                     font.weight: Font.DemiBold
                 }
 
                 Text {
                     text: "Version 0.13.0"
-                    color: "#64748b"
+                    color: "ThemeManager.textDisabled"
                     font.pixelSize: 14
                 }
 
                 Text {
                     text: "Build 2026.07.09.13"
-                    color: "#64748b"
+                    color: "ThemeManager.textDisabled"
                     font.pixelSize: 14
                 }
 
                 Text {
                     text: "Copyright \u00A9 2026 Baytevora Labs"
-                    color: "#64748b"
+                    color: "ThemeManager.textDisabled"
                     font.pixelSize: 14
                 }
 
                 Text {
                     text: "Baytevora Labs"
-                    color: "#64748b"
+                    color: "ThemeManager.textDisabled"
                     font.pixelSize: 14
                 }
             }

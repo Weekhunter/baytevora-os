@@ -11,12 +11,12 @@ Rectangle {
 
     property var settingsManager: null
 
-    color: "#f8fafc"
+    color: "ThemeManager.surfaceSecondaryColor"
 
     Column {
         anchors.fill: parent
         anchors.margins: 32
-        spacing: 24
+        spacing: SpacingManager.space24
 
         Text {
             id: pageTitle
@@ -31,7 +31,7 @@ Rectangle {
                 }
                 return "Settings";
             }
-            color: "#0f172a"
+            color: "ThemeManager.backgroundColor"
             font.pixelSize: 28
             font.weight: Font.DemiBold
         }

@@ -10,7 +10,7 @@ Rectangle {
 
     property var terminalManager: null
 
-    color: "#1e1e1e"
+    color: "ThemeManager.surfaceColor"
 
     Row {
         anchors.fill: parent
@@ -21,14 +21,14 @@ Rectangle {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.terminalManager ? root.terminalManager.status : ""
-            color: "#94a3b8"
+            color: "ThemeManager.textDisabled"
             font.pixelSize: 12
         }
 
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.terminalManager ? root.terminalManager.lineCount + " lines" : ""
-            color: "#64748b"
+            color: "ThemeManager.textDisabled"
             font.pixelSize: 12
         }
     }

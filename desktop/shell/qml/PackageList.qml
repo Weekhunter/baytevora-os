@@ -9,14 +9,17 @@ Column {
     property var model: []
     property bool readOnly: false
 
-    spacing: SpacingManager ? SpacingManager.space12 : 12
+    signal packageSelected(string packageId)
+
+    spacing: SpacingManager.space12
     width: parent ? parent.width : 400
 
     Repeater {
         model: root.model
 
-        PackageCard {
+        delegate: PackageCard {
             packageData: modelData
+            onPackageSelected: (packageId) => root.packageSelected(packageId)
         }
     }
 }

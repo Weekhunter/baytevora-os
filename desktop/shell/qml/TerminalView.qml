@@ -19,7 +19,7 @@ Rectangle {
     property int __clearShortcutId: -1
     property int __selectAllShortcutId: -1
 
-    color: "#0c0c0c"
+    color: "ThemeManager.backgroundColor"
 
     Component.onCompleted: {
         if (shortcutManager) {
@@ -84,7 +84,7 @@ Rectangle {
 
                 readOnly: true
                 text: root.terminalManager ? root.terminalManager.output : ""
-                color: "#e2e8f0"
+                color: "ThemeManager.textSecondary"
                 font.family: "monospace"
                 font.pixelSize: 14
                 wrapMode: TextEdit.Wrap
@@ -112,7 +112,7 @@ Rectangle {
                 text: root.terminalManager && root.terminalManager.session
                       ? root.terminalManager.session.prompt + " "
                       : ""
-                color: "#22c55e"
+                color: "ThemeManager.successColor"
                 font.family: "monospace"
                 font.pixelSize: 14
             }
@@ -122,15 +122,15 @@ Rectangle {
 
                 width: parent.width - promptLabel.width - parent.spacing - copyButton.width - pasteButton.width - 3 * parent.spacing
                 height: parent.height
-                color: "#e2e8f0"
+                color: "ThemeManager.textSecondary"
                 font.family: "monospace"
                 font.pixelSize: 14
                 background: Rectangle {
-                    color: "#171717"
-                    radius: 4
+                    color: "ThemeManager.surfaceSecondaryColor"
+                    radius: DesignTokens.radiusSmall
                 }
                 placeholderText: "Type a command..."
-                placeholderTextColor: "#64748b"
+                placeholderTextColor: "ThemeManager.textDisabled"
 
                 Keys.onReturnPressed: {
                     if (root.terminalManager) {

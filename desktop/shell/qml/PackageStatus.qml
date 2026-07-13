@@ -10,16 +10,16 @@ Rectangle {
 
     height: 22
     width: statusText.width + 16
-    radius: DesignTokens ? DesignTokens.radiusSmall : 4
+    radius: DesignTokens.radiusSmall
     color: {
         if (!packageManager) {
-            return ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155";
+            return ThemeManager.surfaceSecondaryColor;
         }
         const stateName = packageManager.stateName(root.packageState);
-        if (stateName === "Installed") return ThemeManager ? ThemeManager.successColor : "#22c55e";
-        if (stateName === "Update Available") return ThemeManager ? ThemeManager.warningColor : "#f59e0b";
-        if (stateName === "Disabled") return ThemeManager ? ThemeManager.errorColor : "#ef4444";
-        return ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155";
+        if (stateName === "Installed") return ThemeManager.successColor;
+        if (stateName === "Update Available") return ThemeManager.warningColor;
+        if (stateName === "Disabled") return ThemeManager.errorColor;
+        return ThemeManager.surfaceSecondaryColor;
     }
 
     Text {
@@ -27,9 +27,9 @@ Rectangle {
 
         anchors.centerIn: parent
         text: packageManager ? packageManager.stateName(root.packageState) : ""
-        color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-        font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-        font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+        color: ThemeManager.textPrimary
+        font.pixelSize: TypographyManager.caption
+        font.family: TypographyManager.fontFamily
         font.weight: Font.DemiBold
     }
 }

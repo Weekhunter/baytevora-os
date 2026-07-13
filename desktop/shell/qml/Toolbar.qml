@@ -2,11 +2,7 @@ import QtQuick
 import Qt.labs.platform
 
 /**
- * @brief Toolbar for the File Manager.
- *
- * Provides back/forward (disabled for Sprint 12), up, refresh, home, and a
- * read-only current path display. Navigation actions delegate to the
- * FileSystemModel.
+ * @brief File Manager toolbar with Back, Forward, Up, Refresh, Home, and Search.
  */
 Rectangle {
     id: root
@@ -14,25 +10,47 @@ Rectangle {
     property var fileSystemModel: null
     property var selectedFileNames: []
 
-    color: "#1e293b"
+    signal showSearch()
+
+    color: ThemeManager.surfaceColor
+    border.color: ThemeManager.borderColor
+    border.width: 1
 
     Row {
         anchors.fill: parent
-        anchors.margins: 4
-        spacing: 4
+        anchors.margins: SpacingManager.space8
+        spacing: SpacingManager.space8
 
-        ToolButton {
-            symbol: "\u2190"
-            enabled: false
+        BrowserToolButton {
+            id: backButton
+
+            label: "Back"
+            enabled: root.fileSystemModel ? root.fileSystemModel.canGoBack : false
+            opacity: enabled ? 1.0 : 0.4
+            onClicked: {
+                if (root.fileSystemModel) {
+                    root.fileSystemModel.goBack();
+                }
+            }
         }
 
-        ToolButton {
-            symbol: "\u2192"
-            enabled: false
+        BrowserToolButton {
+            id: forwardButton
+
+            label: "Forward"
+            enabled: root.fileSystemModel ? root.fileSystemModel.canGoForward : false
+            opacity: enabled ? 1.0 : 0.4
+            onClicked: {
+                if (root.fileSystemModel) {
+                    root.fileSystemModel.goForward();
+                }
+            }
         }
 
-        ToolButton {
-            symbol: "\u2191"
+        BrowserToolButton {
+            id: upButton
+
+            label: "Up"
             onClicked: {
                 if (root.fileSystemModel) {
                     root.fileSystemModel.cdUp();
@@ -40,8 +58,10 @@ Rectangle {
             }
         }
 
-        ToolButton {
-            symbol: "\u27F3"
+        BrowserToolButton {
+            id: refreshButton
+
+            label: "Refresh"
             onClicked: {
                 if (root.fileSystemModel) {
                     root.fileSystemModel.refresh();
@@ -49,48 +69,36 @@ Rectangle {
             }
         }
 
-        ToolButton {
-            symbol: "\u2302"
+        BrowserToolButton {
+            id: homeButton
+
+            label: "Home"
             onClicked: {
                 if (root.fileSystemModel) {
-                    const homePath = StandardPaths.standardLocations(StandardPaths.HomeLocation);
-                    if (homePath.length > 0) {
-                        root.fileSystemModel.path = homePath[0];
-                    }
+                    root.fileSystemModel.goHome();
                 }
-                console.log("[BDE] Home directory opened");
             }
         }
 
-        ToolButton {
-            symbol: "\u25A2"
+        BrowserToolButton {
+            id: searchButton
+
+            label: "Search"
+            onClicked: root.showSearch()
+        }
+
+        BrowserToolButton {
+            id: copyButton
+
+            label: "Copy"
             enabled: root.selectedFileNames.length > 0
+            opacity: enabled ? 1.0 : 0.4
             onClicked: {
                 if (clipboardManager && root.selectedFileNames.length > 0) {
                     const name = root.selectedFileNames[0];
                     clipboardManager.copyText(name);
                     console.log("[BDE] File name copied: " + name);
                 }
-            }
-        }
-
-        Rectangle {
-            // Fill remaining toolbar width after six 32px buttons and spacing.
-            width: parent.width - 6 * 32 - 5 * 4
-            height: parent.height
-            color: "#0f172a"
-            radius: 4
-
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 8
-                anchors.right: parent.right
-                anchors.rightMargin: 8
-                text: root.fileSystemModel ? root.fileSystemModel.path : ""
-                color: "#e2e8f0"
-                font.pixelSize: 13
-                elide: Text.ElideLeft
             }
         }
     }

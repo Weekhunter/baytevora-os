@@ -19,10 +19,10 @@ Rectangle {
     height: column.height + 16
     visible: menuOpen
     focus: menuOpen
-    color: ThemeManager ? ThemeManager.launcherBackground : "#1e293b"
-    border.color: ThemeManager ? ThemeManager.borderColor : "#475569"
+    color: ThemeManager.launcherBackground
+    border.color: ThemeManager.borderColor
     border.width: 1
-    radius: DesignTokens ? DesignTokens.radiusMedium : 8
+    radius: DesignTokens.radiusMedium
 
     Keys.onEscapePressed: {
         root.menuOpen = false;
@@ -35,9 +35,9 @@ Rectangle {
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        anchors.topMargin: 8
-        anchors.bottomMargin: 8
-        spacing: 4
+        anchors.topMargin: SpacingManager.space8
+        anchors.bottomMargin: SpacingManager.space8
+        spacing: SpacingManager.space4
 
         Repeater {
             model: powerManager ? powerManager.actions : []

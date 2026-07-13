@@ -12,19 +12,19 @@ Rectangle {
 
     Rectangle {
         anchors.fill: parent
-        color: "#ffffff"
-        radius: DesignTokens ? DesignTokens.radiusLarge : 16
+        color: "ThemeManager.surfaceSecondaryColor"
+        radius: DesignTokens.radiusLarge
 
         Column {
             anchors.fill: parent
-            anchors.margins: SpacingManager ? SpacingManager.space24 : 24
-            spacing: SpacingManager ? SpacingManager.space14 : 14
+            anchors.margins: SpacingManager.space24
+            spacing: SpacingManager.space14
 
             Text {
                 text: "Baytevora Store"
-                color: "#0f172a"
-                font.pixelSize: TypographyManager ? TypographyManager.title : 18
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: "ThemeManager.backgroundColor"
+                font.pixelSize: TypographyManager.title
+                font.family: TypographyManager.fontFamily
                 font.weight: Font.DemiBold
             }
 

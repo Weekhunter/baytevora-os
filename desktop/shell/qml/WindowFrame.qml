@@ -22,10 +22,10 @@ Rectangle {
     /** Current window state: "normal", "minimized", "maximized", or "closed". */
     property string state: "normal"
 
-    color: ThemeManager ? ThemeManager.windowBackground : "#1e293b"
+    color: ThemeManager.windowBackground
     border.color: isActive
-                  ? (ThemeManager ? ThemeManager.borderColor : "#475569")
-                  : (ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155")
+                  ? (ThemeManager.borderColor)
+                  : (ThemeManager.surfaceSecondaryColor)
     border.width: isActive ? 2 : 1
     z: isActive ? 1 : 0
 
@@ -49,21 +49,21 @@ Rectangle {
             id: titleBar
 
             width: parent.width
-            height: 32
+            height: AdaptiveLayoutManager.titleBarHeight
             color: isActive
-                  ? (ThemeManager ? ThemeManager.surfaceColor : "#1e293b")
-                  : (ThemeManager ? ThemeManager.backgroundColor : "#0f172a")
+                  ? (ThemeManager.surfaceColor)
+                  : (ThemeManager.backgroundColor)
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
-                anchors.leftMargin: SpacingManager ? SpacingManager.space12 : 12
+                anchors.leftMargin: SpacingManager.space12
                 anchors.right: buttonRow.left
-                anchors.rightMargin: SpacingManager ? SpacingManager.space8 : 8
+                anchors.rightMargin: SpacingManager.space8
                 text: root.title
-                color: ThemeManager ? ThemeManager.textPrimary : "#e2e8f0"
-                font.pixelSize: TypographyManager ? TypographyManager.body : 14
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.body
+                font.family: TypographyManager.fontFamily
                 elide: Text.ElideRight
             }
 
@@ -114,6 +114,48 @@ Rectangle {
                 }
                 if (root.applicationName === "Baytevora Store") {
                     return "StoreWindow.qml";
+                }
+                if (root.applicationName === "Package Manager") {
+                    return "PackageManagerWindow.qml";
+                }
+                if (root.applicationName === "Browser") {
+                    return "BrowserWindow.qml";
+                }
+                if (root.applicationName === "Notes") {
+                    return "NotesWindow.qml";
+                }
+                if (root.applicationName === "Image Viewer") {
+                    return "ImageViewerWindow.qml";
+                }
+                if (root.applicationName === "Calculator") {
+                    return "CalculatorWindow.qml";
+                }
+                if (root.applicationName === "Baytevora PDF Studio") {
+                    return "PdfStudioWindow.qml";
+                }
+                if (root.applicationName === "Archive Manager") {
+                    return "ArchiveWindow.qml";
+                }
+                if (root.applicationName === "Media Player") {
+                    return "MediaPlayerWindow.qml";
+                }
+                if (root.applicationName === "Text Editor") {
+                    return "TextEditorWindow.qml";
+                }
+                if (root.applicationName === "System Monitor") {
+                    return "SystemMonitorWindow.qml";
+                }
+                if (root.applicationName === "Task Manager") {
+                    return "TaskManagerWindow.qml";
+                }
+                if (root.applicationName === "Network Manager") {
+                    return "NetworkManagerWindow.qml";
+                }
+                if (root.applicationName === "Storage Manager") {
+                    return "StorageManagerWindow.qml";
+                }
+                if (root.applicationName === "Print Manager") {
+                    return "PrintManagerWindow.qml";
                 }
                 return "";
             }
