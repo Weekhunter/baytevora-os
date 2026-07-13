@@ -10,6 +10,7 @@
 #include "bos/LockModule.h"
 #include "bos/PackageModule.h"
 #include "bos/PowerModule.h"
+#include "bos/BrowserModule.h"
 #include "bos/StoreModule.h"
 #include "bos/UpdateModule.h"
 #include "bos/SearchModule.h"
@@ -58,6 +59,7 @@ void SessionManager::initialize()
     m_moduleManager->registerModule(std::make_unique<UpdateModule>());
     m_moduleManager->registerModule(std::make_unique<PackageModule>());
     m_moduleManager->registerModule(std::make_unique<StoreModule>());
+    m_moduleManager->registerModule(std::make_unique<BrowserModule>());
     m_moduleManager->registerModule(std::make_unique<ShortcutModule>());
     m_moduleManager->registerModule(std::make_unique<WallpaperModule>());
     m_moduleManager->registerModule(std::make_unique<WindowManager>());

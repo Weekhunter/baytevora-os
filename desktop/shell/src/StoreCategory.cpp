@@ -2,28 +2,14 @@
 
 namespace bos::shell {
 
-StoreCategory::StoreCategory(QObject *parent)
-    : QObject(parent)
+QVariantMap StoreCategory::toMap() const
 {
-}
-
-QString StoreCategory::name(StoreCategory::Value category)
-{
-    switch (category) {
-    case Featured:
-        return QStringLiteral("Featured");
-    case Productivity:
-        return QStringLiteral("Productivity");
-    case Development:
-        return QStringLiteral("Development");
-    case Utilities:
-        return QStringLiteral("Utilities");
-    case System:
-        return QStringLiteral("System");
-    case Entertainment:
-        return QStringLiteral("Entertainment");
-    }
-    return QStringLiteral("Unknown");
+    QVariantMap map;
+    map[QStringLiteral("categoryId")] = categoryId;
+    map[QStringLiteral("name")] = name;
+    map[QStringLiteral("icon")] = icon;
+    map[QStringLiteral("applicationCount")] = applicationCount;
+    return map;
 }
 
 } // namespace bos::shell

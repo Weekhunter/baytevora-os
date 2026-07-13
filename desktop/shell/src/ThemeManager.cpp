@@ -1,13 +1,92 @@
 #include "bos/ThemeManager.h"
 
+#include <QGuiApplication>
+#include <QScreen>
+#include <QtMath>
+
 namespace bos::shell {
 
 ThemeManager::ThemeManager(QObject *parent)
     : QObject(parent)
 {
+    updateMetrics();
 }
 
 ThemeManager::~ThemeManager() = default;
+
+void ThemeManager::recalculateMetrics()
+{
+    updateMetrics();
+}
+
+void ThemeManager::updateMetrics()
+{
+    double dpr = 1.0;
+    int logicalDpi = 96;
+    int screenHeight = 1080;
+    int screenWidth = 1920;
+
+    if (QScreen *screen = QGuiApplication::primaryScreen()) {
+        dpr = screen->devicePixelRatio();
+        logicalDpi = screen->logicalDotsPerInch();
+        const QRect geometry = screen->availableGeometry();
+        screenWidth = geometry.width();
+        screenHeight = geometry.height();
+    }
+
+    const double dpiScale = logicalDpi / 96.0;
+    const double resolutionScale = qMin(screenWidth / 1920.0, screenHeight / 1080.0);
+
+    const double newScaleFactor = qBound(0.8, qMax(dpr, qMax(dpiScale, resolutionScale)), 3.0);
+    const bool newHighDpi = dpr > 1.0;
+    const bool newCompactMode = (screenWidth < 1280) || (screenHeight < 720);
+    const bool newTouchMode = newHighDpi || (newScaleFactor >= 1.5);
+
+    if (m_scaleFactor == newScaleFactor && m_iconScale == newScaleFactor
+        && m_textScale == newScaleFactor && m_highDpi == newHighDpi
+        && m_compactMode == newCompactMode && m_touchMode == newTouchMode) {
+        return;
+    }
+
+    m_scaleFactor = newScaleFactor;
+    m_iconScale = newScaleFactor;
+    m_textScale = newScaleFactor;
+    m_highDpi = newHighDpi;
+    m_compactMode = newCompactMode;
+    m_touchMode = newTouchMode;
+
+    emit metricsChanged();
+}
+
+bool ThemeManager::compactMode() const
+{
+    return m_compactMode;
+}
+
+bool ThemeManager::touchMode() const
+{
+    return m_touchMode;
+}
+
+bool ThemeManager::highDpi() const
+{
+    return m_highDpi;
+}
+
+double ThemeManager::scaleFactor() const
+{
+    return m_scaleFactor;
+}
+
+double ThemeManager::iconScale() const
+{
+    return m_iconScale;
+}
+
+double ThemeManager::textScale() const
+{
+    return m_textScale;
+}
 
 QString ThemeManager::primaryColor() const
 {

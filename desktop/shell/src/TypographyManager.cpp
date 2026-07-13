@@ -1,5 +1,7 @@
 #include "bos/TypographyManager.h"
 
+#include <QtMath>
+
 namespace bos::shell {
 
 TypographyManager::TypographyManager(QObject *parent)
@@ -9,6 +11,21 @@ TypographyManager::TypographyManager(QObject *parent)
 
 TypographyManager::~TypographyManager() = default;
 
+void TypographyManager::setScaleFactor(double scaleFactor)
+{
+    if (qFuzzyCompare(m_scaleFactor, scaleFactor)) {
+        return;
+    }
+    m_scaleFactor = scaleFactor;
+    emit displayChanged();
+    emit headingChanged();
+    emit titleChanged();
+    emit subtitleChanged();
+    emit bodyChanged();
+    emit captionChanged();
+    emit smallChanged();
+}
+
 QString TypographyManager::fontFamily() const
 {
     return QStringLiteral("Inter, sans-serif");
@@ -16,37 +33,42 @@ QString TypographyManager::fontFamily() const
 
 int TypographyManager::displaySize() const
 {
-    return 32;
+    return scaled(32);
 }
 
 int TypographyManager::heading() const
 {
-    return 24;
+    return scaled(24);
 }
 
 int TypographyManager::title() const
 {
-    return 18;
+    return scaled(18);
 }
 
 int TypographyManager::subtitle() const
 {
-    return 16;
+    return scaled(16);
 }
 
 int TypographyManager::body() const
 {
-    return 14;
+    return scaled(14);
 }
 
 int TypographyManager::caption() const
 {
-    return 12;
+    return scaled(12);
 }
 
 int TypographyManager::small() const
 {
-    return 10;
+    return scaled(10);
+}
+
+int TypographyManager::scaled(int baseSize) const
+{
+    return qRound(baseSize * m_scaleFactor);
 }
 
 } // namespace bos::shell
