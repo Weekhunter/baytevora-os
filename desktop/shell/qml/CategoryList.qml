@@ -10,7 +10,7 @@ Column {
 
     signal categorySelected(int category)
 
-    spacing: SpacingManager ? SpacingManager.space8 : 8
+    spacing: SpacingManager.space8
     width: parent ? parent.width : 200
 
     Repeater {
@@ -19,21 +19,21 @@ Column {
         Rectangle {
             width: root.width
             height: 36
-            radius: DesignTokens ? DesignTokens.radiusSmall : 4
+            radius: DesignTokens.radiusSmall
             color: root.selectedCategory === index
-                   ? (ThemeManager ? ThemeManager.accentColor : "#38bdf8")
+                   ? (ThemeManager.accentColor)
                    : "transparent"
 
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
-                anchors.leftMargin: SpacingManager ? SpacingManager.space12 : 12
+                anchors.leftMargin: SpacingManager.space12
                 text: modelData
                 color: root.selectedCategory === index
-                       ? (ThemeManager ? ThemeManager.textPrimary : "#F8FAFC")
-                       : (ThemeManager ? ThemeManager.textSecondary : "#CBD5E1")
-                font.pixelSize: TypographyManager ? TypographyManager.body : 14
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                       ? (ThemeManager.textPrimary)
+                       : (ThemeManager.textSecondary)
+                font.pixelSize: TypographyManager.body
+                font.family: TypographyManager.fontFamily
                 font.weight: root.selectedCategory === index ? Font.DemiBold : Font.Normal
             }
 

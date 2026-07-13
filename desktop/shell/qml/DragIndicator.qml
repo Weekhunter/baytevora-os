@@ -14,37 +14,37 @@ Rectangle {
 
     width: 100
     height: 80
-    color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155"
-    border.color: ThemeManager ? ThemeManager.borderColor : "#475569"
+    color: ThemeManager.surfaceSecondaryColor
+    border.color: ThemeManager.borderColor
     border.width: 1
-    radius: DesignTokens ? DesignTokens.radiusMedium : 8
+    radius: DesignTokens.radiusMedium
 
     Column {
         anchors.centerIn: parent
-        spacing: SpacingManager ? SpacingManager.space4 : 4
+        spacing: SpacingManager.space4
 
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
-            width: IconManager ? IconManager.large : 32
+            width: IconManager.large
             height: width
-            color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155"
-            radius: DesignTokens ? DesignTokens.radiusSmall : 6
+            color: ThemeManager.surfaceSecondaryColor
+            radius: DesignTokens.radiusSmall
 
             Text {
                 anchors.centerIn: parent
                 text: root.draggedIcon.length > 0 ? root.draggedIcon.substring(0, 2) : "Dr"
-                color: ThemeManager ? ThemeManager.textPrimary : "#e2e8f0"
-                font.pixelSize: TypographyManager ? TypographyManager.body : 14
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.body
+                font.family: TypographyManager.fontFamily
             }
         }
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.draggedName
-            color: ThemeManager ? ThemeManager.textPrimary : "#e2e8f0"
-            font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.caption
+            font.family: TypographyManager.fontFamily
             elide: Text.ElideRight
             width: root.width - 16
             horizontalAlignment: Text.AlignHCenter

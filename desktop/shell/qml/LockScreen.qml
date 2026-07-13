@@ -13,7 +13,7 @@ Rectangle {
 
     anchors.fill: parent
     visible: lockManager ? lockManager.isLocked : false
-    color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#0f172a"
+    color: ThemeManager.surfaceSecondaryColor
     z: 300
 
     // Capture all pointer events while locked so the desktop underneath cannot
@@ -26,7 +26,7 @@ Rectangle {
 
     Column {
         anchors.centerIn: parent
-        spacing: SpacingManager ? SpacingManager.space16 : 16
+        spacing: SpacingManager.space16
         width: Math.min(parent.width * 0.8, 320)
 
         Clock {
@@ -37,9 +37,9 @@ Rectangle {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: Qt.formatDate(new Date(), "dddd, MMMM d")
-            color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-            font.pixelSize: TypographyManager ? TypographyManager.subtitle : 16
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.subtitle
+            font.family: TypographyManager.fontFamily
         }
 
         Rectangle {
@@ -47,8 +47,8 @@ Rectangle {
             width: 72
             height: 72
             radius: width / 2
-            color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155"
-            border.color: ThemeManager ? ThemeManager.borderColor : "#475569"
+            color: ThemeManager.surfaceSecondaryColor
+            border.color: ThemeManager.borderColor
             border.width: 2
 
             Text {
@@ -60,9 +60,9 @@ Rectangle {
                     }
                     return "?";
                 }
-                color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                font.pixelSize: TypographyManager ? TypographyManager.displaySize : 48
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.displaySize
+                font.family: TypographyManager.fontFamily
                 font.weight: Font.Bold
             }
         }
@@ -72,9 +72,9 @@ Rectangle {
             text: loginManager && loginManager.selectedUser
                   ? loginManager.selectedUser.displayName
                   : "Baytevora User"
-            color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-            font.pixelSize: TypographyManager ? TypographyManager.title : 18
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.title
+            font.family: TypographyManager.fontFamily
             font.weight: Font.DemiBold
         }
 

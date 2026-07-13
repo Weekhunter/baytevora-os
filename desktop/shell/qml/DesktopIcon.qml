@@ -20,29 +20,29 @@ Rectangle {
     width: 64
     height: 80
     color: root.selected
-        ? (ThemeManager ? ThemeManager.primaryColor : "#2563EB")
+        ? (ThemeManager.primaryColor)
         : "transparent"
-    radius: DesignTokens ? DesignTokens.radiusMedium : 8
+    radius: DesignTokens.radiusMedium
     opacity: ThemeManager ? 1.0 : 1.0
 
     Column {
         anchors.fill: parent
-        anchors.margins: SpacingManager ? SpacingManager.space4 : 4
-        spacing: SpacingManager ? SpacingManager.space4 : 4
+        anchors.margins: SpacingManager.space4
+        spacing: SpacingManager.space4
 
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
-            width: IconManager ? IconManager.large : 32
+            width: IconManager.large
             height: width
-            color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155"
-            radius: DesignTokens ? DesignTokens.radiusSmall : 6
+            color: ThemeManager.surfaceSecondaryColor
+            radius: DesignTokens.radiusSmall
 
             Text {
                 anchors.centerIn: parent
                 text: root.displayName.length > 0 ? root.displayName.charAt(0).toUpperCase() : "?"
-                color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                font.pixelSize: TypographyManager ? TypographyManager.title : 18
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.title
+                font.family: TypographyManager.fontFamily
                 font.weight: Font.Bold
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -54,10 +54,10 @@ Rectangle {
             width: parent.width
             text: root.displayName
             color: root.selected
-                ? (ThemeManager ? ThemeManager.textPrimary : "#F8FAFC")
-                : (ThemeManager ? ThemeManager.textPrimary : "#F8FAFC")
-            font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                ? (ThemeManager.textPrimary)
+                : (ThemeManager.textPrimary)
+            font.pixelSize: TypographyManager.caption
+            font.family: TypographyManager.fontFamily
             horizontalAlignment: Text.AlignHCenter
             wrapMode: Text.Wrap
             elide: Text.ElideRight

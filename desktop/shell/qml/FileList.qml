@@ -7,8 +7,8 @@ import BOS.Shell
  *
  * Displays name, type, size, and last modified time for each entry in the
  * current directory. Folders are listed before files by the model. Double-clicking
- * a folder navigates into it; double-clicking a file logs a request without
- * launching the file.
+ * a folder navigates into it; double-clicking a file adds it to recent files and
+ * requests to open it. A context menu provides common file actions.
  */
 Rectangle {
     id: root
@@ -20,7 +20,9 @@ Rectangle {
     property int modifiedColumnWidth: parent.width - nameColumnWidth - typeColumnWidth - sizeColumnWidth - 1
     property var selectedFileNames: []
 
-    color: "#0f172a"
+    color: ThemeManager.backgroundColor
+    border.color: ThemeManager.borderColor
+    border.width: 1
 
     function selectAllVisible() {
         const names = root.fileSystemModel ? root.fileSystemModel.fileNames() : [];
@@ -32,6 +34,30 @@ Rectangle {
         return root.selectedFileNames.indexOf(name) !== -1;
     }
 
+    function selectedFilePath(name) {
+        if (!root.fileSystemModel || !root.fileSystemModel.path) {
+            return "";
+        }
+        const separator = root.fileSystemModel.path.endsWith("/") ? "" : "/";
+        return root.fileSystemModel.path + separator + name;
+    }
+
+    function openFileByExtension(path, name) {
+        if (typeof applicationManager === "undefined" || !applicationManager) {
+            return;
+        }
+        const lower = name.toLowerCase();
+        if (lower.endsWith(".bnote")) {
+            applicationManager.openFileWithApplication("Notes", path);
+        } else if (lower.endsWith(".png") || lower.endsWith(".jpg")
+                   || lower.endsWith(".jpeg") || lower.endsWith(".bmp")
+                   || lower.endsWith(".gif") || lower.endsWith(".webp")) {
+            applicationManager.openFileWithApplication("Image Viewer", path);
+        } else if (lower.endsWith(".pdf")) {
+            applicationManager.openFileWithApplication("Baytevora PDF Studio", path);
+        }
+    }
+
     Column {
         anchors.fill: parent
         spacing: 0
@@ -40,11 +66,13 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: 28
-            color: "#1e293b"
+            color: ThemeManager.surfaceColor
+            border.color: ThemeManager.borderColor
+            border.width: 1
 
             Row {
                 anchors.fill: parent
-                anchors.leftMargin: 12
+                anchors.leftMargin: SpacingManager.space12
                 spacing: 0
 
                 HeaderLabel {
@@ -86,17 +114,19 @@ Rectangle {
                 acceptedTypes: [DragType.DesktopItem, DragType.Application]
                 color: {
                     if (root.isSelected(model.name)) {
-                        return "#2563EB";
+                        return ThemeManager.primaryColor;
                     }
                     if (dragManager && dragManager.currentTarget === model.name && isAccepted) {
-                        return ThemeManager ? ThemeManager.primaryColor : "#2563EB";
+                        return ThemeManager.primaryColor;
                     }
-                    return index % 2 === 0 ? "#0f172a" : "#162032";
+                    return index % 2 === 0
+                        ? (ThemeManager.backgroundColor)
+                        : (ThemeManager.surfaceColor);
                 }
 
                 Row {
                     anchors.fill: parent
-                    anchors.leftMargin: 12
+                    anchors.leftMargin: SpacingManager.space12
                     spacing: 0
 
                     CellLabel {
@@ -121,7 +151,10 @@ Rectangle {
                 }
 
                 MouseArea {
+                    id: fileMouse
+
                     anchors.fill: parent
+                    acceptedButtons: Qt.LeftButton | Qt.RightButton
                     propagateComposedEvents: true
 
                     property point pressPos: Qt.point(0, 0)
@@ -164,6 +197,9 @@ Rectangle {
                             root.fileSystemModel.path = currentPath + separator + model.name;
                             console.log("[BDE] Folder entered");
                         } else {
+                            const filePath = root.selectedFilePath(model.name);
+                            root.fileSystemModel.addRecentFile(filePath);
+                            root.openFileByExtension(filePath, model.name);
                             console.log("[BDE] File open request: " + model.name);
                         }
                     }
@@ -175,6 +211,100 @@ Rectangle {
             }
 
             ScrollBar.vertical: ScrollBar {}
+        }
+    }
+
+    Menu {
+        id: contextMenu
+
+        MenuItem {
+            text: "Open"
+            onTriggered: {
+                const name = root.selectedFileNames[0] || "";
+                if (!name || !root.fileSystemModel) {
+                    return;
+                }
+                const path = root.selectedFilePath(name);
+                const index = root.fileSystemModel.fileNames().indexOf(name);
+                const isFolder = index >= 0 ? (root.fileSystemModel.data(root.fileSystemModel.index(index, 0), FileSystemModel.IsFolderRole) || false) : false;
+                if (isFolder) {
+                    root.fileSystemModel.path = path;
+                } else {
+                    root.fileSystemModel.addRecentFile(path);
+                    root.openFileByExtension(path, name);
+                    console.log("[BDE] Open: " + name);
+                }
+            }
+        }
+
+        MenuItem {
+            text: "Open With"
+            onTriggered: {
+                console.log("[BDE] Open With placeholder");
+            }
+        }
+
+        MenuSeparator {}
+
+        MenuItem {
+            text: "Rename"
+            onTriggered: {
+                console.log("[BDE] Rename placeholder: " + (root.selectedFileNames[0] || ""));
+            }
+        }
+
+        MenuItem {
+            text: "Copy"
+            onTriggered: {
+                if (clipboardManager && root.selectedFileNames.length > 0) {
+                    const name = root.selectedFileNames[0];
+                    clipboardManager.copyText(name);
+                    console.log("[BDE] Copy: " + name);
+                }
+            }
+        }
+
+        MenuItem {
+            text: "Cut"
+            onTriggered: {
+                console.log("[BDE] Cut placeholder: " + (root.selectedFileNames[0] || ""));
+            }
+        }
+
+        MenuItem {
+            text: "Paste"
+            onTriggered: {
+                console.log("[BDE] Paste placeholder");
+            }
+        }
+
+        MenuItem {
+            text: "Delete"
+            onTriggered: {
+                console.log("[BDE] Delete placeholder: " + (root.selectedFileNames[0] || ""));
+            }
+        }
+
+        MenuSeparator {}
+
+        MenuItem {
+            text: "Properties"
+            onTriggered: {
+                console.log("[BDE] Properties placeholder: " + (root.selectedFileNames[0] || ""));
+            }
+        }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        z: 100
+        onPressed: {
+            if (mouse.button === Qt.RightButton) {
+                contextMenu.x = mouse.x;
+                contextMenu.y = mouse.y;
+                contextMenu.open();
+            }
         }
     }
 }

@@ -15,7 +15,7 @@ Window {
     visible: true
     flags: Qt.FramelessWindowHint
     visibility: Window.FullScreen
-    color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#0f172a"
+    color: ThemeManager.surfaceSecondaryColor
 
     DesktopSurface {
         anchors.fill: parent
@@ -23,7 +23,7 @@ Window {
 
     Column {
         anchors.centerIn: parent
-        spacing: SpacingManager ? SpacingManager.space32 : 32
+        spacing: SpacingManager.space32
         width: Math.min(parent.width * 0.8, 360)
 
         // Logo placeholder
@@ -31,15 +31,15 @@ Window {
             anchors.horizontalCenter: parent.horizontalCenter
             width: 80
             height: 80
-            radius: DesignTokens ? DesignTokens.radiusLarge : 16
-            color: ThemeManager ? ThemeManager.primaryColor : "#2563EB"
+            radius: DesignTokens.radiusLarge
+            color: ThemeManager.primaryColor
 
             Text {
                 anchors.centerIn: parent
                 text: "B"
-                color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                font.pixelSize: TypographyManager ? TypographyManager.displaySize : 48
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.displaySize
+                font.family: TypographyManager.fontFamily
                 font.weight: Font.Bold
             }
         }
@@ -47,9 +47,9 @@ Window {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: "Baytevora OS"
-            color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-            font.pixelSize: TypographyManager ? TypographyManager.title : 18
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.title
+            font.family: TypographyManager.fontFamily
             font.weight: Font.DemiBold
         }
 

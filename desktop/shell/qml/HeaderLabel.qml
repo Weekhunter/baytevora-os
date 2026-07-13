@@ -6,7 +6,7 @@ import QtQuick
 Text {
     height: parent.height
     verticalAlignment: Text.AlignVCenter
-    color: "#94a3b8"
+    color: "ThemeManager.textDisabled"
     font.pixelSize: 12
     font.weight: Font.DemiBold
 }

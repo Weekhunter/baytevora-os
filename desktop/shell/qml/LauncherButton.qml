@@ -21,20 +21,20 @@ Rectangle {
 
     Column {
         anchors.centerIn: parent
-        spacing: 8
+        spacing: SpacingManager.space8
 
         // Placeholder icon: a small geometric square with the icon text inside.
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             width: 40
             height: 40
-            color: "#334155"
-            radius: 4
+            color: "ThemeManager.surfaceSecondaryColor"
+            radius: DesignTokens.radiusSmall
 
             Text {
                 anchors.centerIn: parent
                 text: root.iconName.length > 0 ? root.iconName : root.appName.substring(0, 2)
-                color: "#e2e8f0"
+                color: "ThemeManager.textSecondary"
                 font.pixelSize: 16
             }
         }
@@ -42,7 +42,7 @@ Rectangle {
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.appName
-            color: "#e2e8f0"
+            color: "ThemeManager.textSecondary"
             font.pixelSize: 12
             elide: Text.ElideRight
         }

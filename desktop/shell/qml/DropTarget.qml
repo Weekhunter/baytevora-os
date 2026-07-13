@@ -21,11 +21,11 @@ Rectangle {
     default property alias content: contentArea.children
 
     color: dragManager && dragManager.currentTarget === root.targetId && root.isAccepted
-           ? (ThemeManager ? ThemeManager.primaryColor : "#2563EB")
+           ? (ThemeManager.primaryColor)
            : "transparent"
     border.color: dragManager && dragManager.currentTarget === root.targetId && root.isAccepted
-                  ? (ThemeManager ? ThemeManager.accentColor : "#38bdf8")
-                  : (ThemeManager ? ThemeManager.borderColor : "#475569")
+                  ? (ThemeManager.accentColor)
+                  : (ThemeManager.borderColor)
     border.width: dragManager && dragManager.currentTarget === root.targetId && root.isAccepted ? 2 : 0
 
     property bool isHovered: false
@@ -36,7 +36,7 @@ Rectangle {
         id: contentArea
 
         anchors.fill: parent
-        anchors.margins: SpacingManager ? SpacingManager.space2 : 2
+        anchors.margins: SpacingManager.space2
         color: "transparent"
     }
 

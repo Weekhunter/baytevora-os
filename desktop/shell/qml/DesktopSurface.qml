@@ -48,7 +48,7 @@ Item {
 
         anchors.fill: parent
         source: wallpaperSource
-        fallbackColor: "#0f172a"
+        fallbackColor: "ThemeManager.backgroundColor"
     }
 
     /**

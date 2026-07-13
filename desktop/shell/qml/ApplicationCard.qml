@@ -12,56 +12,56 @@ Rectangle {
 
     width: parent ? parent.width : 240
     height: 220
-    color: ThemeManager ? ThemeManager.surfaceSecondaryColor : "#334155"
-    radius: DesignTokens ? DesignTokens.radiusMedium : 8
-    border.color: ThemeManager ? ThemeManager.borderColor : "#475569"
+    color: ThemeManager.surfaceSecondaryColor
+    radius: DesignTokens.radiusMedium
+    border.color: ThemeManager.borderColor
     border.width: 1
 
     Column {
         anchors.fill: parent
-        anchors.margins: SpacingManager ? SpacingManager.space16 : 16
-        spacing: SpacingManager ? SpacingManager.space8 : 8
+        anchors.margins: SpacingManager.space16
+        spacing: SpacingManager.space8
 
         Rectangle {
             width: 48
             height: 48
-            radius: DesignTokens ? DesignTokens.radiusSmall : 4
-            color: ThemeManager ? ThemeManager.accentColor : "#38bdf8"
+            radius: DesignTokens.radiusSmall
+            color: ThemeManager.accentColor
 
             Text {
                 anchors.centerIn: parent
                 text: root.itemData ? root.itemData.name.charAt(0).toUpperCase() : "?"
-                color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-                font.pixelSize: TypographyManager ? TypographyManager.headline : 24
-                font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+                color: ThemeManager.textPrimary
+                font.pixelSize: TypographyManager.headline
+                font.family: TypographyManager.fontFamily
                 font.weight: Font.Bold
             }
         }
 
         Text {
             text: root.itemData ? root.itemData.name : ""
-            color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-            font.pixelSize: TypographyManager ? TypographyManager.title : 18
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.title
+            font.family: TypographyManager.fontFamily
             font.weight: Font.DemiBold
         }
 
         Text {
             text: root.itemData ? root.itemData.developer : ""
-            color: ThemeManager ? ThemeManager.textSecondary : "#CBD5E1"
-            font.pixelSize: TypographyManager ? TypographyManager.caption : 12
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textSecondary
+            font.pixelSize: TypographyManager.caption
+            font.family: TypographyManager.fontFamily
         }
 
         Text {
-            text: root.itemData ? root.itemData.description : ""
+            text: root.itemData ? root.itemData.shortDescription : ""
             width: parent.width
             wrapMode: Text.WordWrap
             maximumLineCount: 2
             elide: Text.ElideRight
-            color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-            font.pixelSize: TypographyManager ? TypographyManager.body : 14
-            font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+            color: ThemeManager.textPrimary
+            font.pixelSize: TypographyManager.body
+            font.family: TypographyManager.fontFamily
         }
 
         Item {
@@ -73,7 +73,7 @@ Rectangle {
             installed: root.itemData ? root.itemData.installed : false
             onClicked: {
                 if (storeManager && root.itemData) {
-                    storeManager.requestInstall(root.itemData.packageId);
+                    storeManager.requestInstall(root.itemData.applicationId);
                 }
             }
         }

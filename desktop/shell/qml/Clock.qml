@@ -18,7 +18,7 @@ Rectangle {
     Text {
         anchors.centerIn: parent
         text: root.timeText
-        color: "#e2e8f0"
+        color: "ThemeManager.textSecondary"
         font.pixelSize: 14
     }
 

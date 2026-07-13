@@ -10,14 +10,14 @@ Column {
 
     signal openDetails(var item)
 
-    spacing: SpacingManager ? SpacingManager.space12 : 12
+    spacing: SpacingManager.space12
     width: parent ? parent.width : 600
 
     Text {
         text: "Featured"
-        color: ThemeManager ? ThemeManager.textPrimary : "#F8FAFC"
-        font.pixelSize: TypographyManager ? TypographyManager.title : 18
-        font.family: TypographyManager ? TypographyManager.fontFamily : "Inter, sans-serif"
+        color: ThemeManager.textPrimary
+        font.pixelSize: TypographyManager.title
+        font.family: TypographyManager.fontFamily
         font.weight: Font.DemiBold
     }
 
@@ -30,7 +30,7 @@ Column {
         Row {
             id: featuredRow
 
-            spacing: SpacingManager ? SpacingManager.space16 : 16
+            spacing: SpacingManager.space16
 
             Repeater {
                 model: root.model

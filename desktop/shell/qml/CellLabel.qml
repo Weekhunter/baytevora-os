@@ -6,7 +6,7 @@ import QtQuick
 Text {
     height: parent.height
     verticalAlignment: Text.AlignVCenter
-    color: "#e2e8f0"
+    color: "ThemeManager.textSecondary"
     font.pixelSize: 13
     elide: Text.ElideRight
 }

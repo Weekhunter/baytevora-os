@@ -29,35 +29,11 @@ Item {
         }
     }
 
-    property int __escapeShortcutId: -1
-
-    Component.onCompleted: {
-        if (shortcutManager) {
-            __escapeShortcutId = shortcutManager.registerShortcut("Launcher Close", "Escape",
-                                                                   ShortcutContext.Global,
-                                                                   "Close the launcher");
-        }
-    }
-
-    Component.onDestruction: {
-        if (shortcutManager && __escapeShortcutId !== -1) {
-            shortcutManager.removeShortcut(__escapeShortcutId);
-        }
-    }
-
-    Connections {
-        target: shortcutManager
-        function onShortcutActivated(id) {
-            if (id === __escapeShortcutId && launcher) {
-                launcher.closeLauncher();
-            }
-        }
-    }
-
-    Keys.onEscapePressed: {
+    Keys.onEscapePressed: (event) => {
         if (launcher) {
-            launcher.closeLauncher()
+            launcher.closeLauncher();
         }
+        event.accepted = true;
     }
 
     // Full-screen overlay behind the panel. Clicking it closes the launcher.
@@ -76,14 +52,14 @@ Item {
 
         anchors.bottom: parent.bottom
         anchors.left: parent.left
-        anchors.bottomMargin: 40
-        anchors.leftMargin: SpacingManager ? SpacingManager.space8 : 8
+        anchors.bottomMargin: AdaptiveLayoutManager.taskbarHeight
+        anchors.leftMargin: SpacingManager.space8
         width: 320
         height: 280
-        color: ThemeManager ? ThemeManager.launcherBackground : "#1e293b"
-        border.color: ThemeManager ? ThemeManager.borderColor : "#475569"
+        color: ThemeManager.launcherBackground
+        border.color: ThemeManager.borderColor
         border.width: 1
-        radius: DesignTokens ? DesignTokens.radiusMedium : 8
+        radius: DesignTokens.radiusMedium
 
         // Absorb clicks on the panel so they do not propagate to the overlay.
         MouseArea {
@@ -92,8 +68,8 @@ Item {
 
         Column {
             anchors.fill: parent
-            anchors.margins: SpacingManager ? SpacingManager.space16 : 16
-            spacing: SpacingManager ? SpacingManager.space12 : 12
+            anchors.margins: SpacingManager.space16
+            spacing: SpacingManager.space12
 
             LauncherHeader {
                 id: header

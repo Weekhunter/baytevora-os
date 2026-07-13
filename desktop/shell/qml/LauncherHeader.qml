@@ -14,14 +14,14 @@ Column {
 
     Text {
         text: "Baytevora OS"
-        color: "#e2e8f0"
+        color: "ThemeManager.textSecondary"
         font.pixelSize: 18
         font.weight: Font.Bold
     }
 
     Text {
         text: "Welcome"
-        color: "#94a3b8"
+        color: "ThemeManager.textDisabled"
         font.pixelSize: 14
     }
 }

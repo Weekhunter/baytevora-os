@@ -16,7 +16,7 @@ Window {
     visible: true
     flags: Qt.FramelessWindowHint
     visibility: Window.FullScreen
-    color: "#0f172a"
+    color: "ThemeManager.backgroundColor"
 
     DesktopSurface {
         anchors.fill: parent
@@ -49,6 +49,28 @@ Window {
     // blocks interaction with running applications.
     LockScreen {
         z: 300
+    }
+
+    // Sprint 26.5: single Escape dispatcher. The launcher and notification center
+    // previously both registered a global Escape shortcut, which caused a conflict.
+    // Launcher now consumes Escape locally when it has focus, and this dispatcher
+    // handles Escape for the notification center when no focused overlay consumed it.
+    Item {
+        anchors.fill: parent
+        focus: true
+        z: 5
+
+        Keys.onEscapePressed: (event) => {
+            if (launcher && launcher.visible) {
+                launcher.closeLauncher();
+                event.accepted = true;
+                return;
+            }
+            if (notificationManager && notificationManager.notifications.length > 0) {
+                notificationManager.clearNotifications();
+                event.accepted = true;
+            }
+        }
     }
 
     // Sprint 20: clicking on the desktop surface while the power menu is open

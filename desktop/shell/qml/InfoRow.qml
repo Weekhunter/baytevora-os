@@ -1,7 +1,7 @@
 import QtQuick
 
 /**
- * @brief Read-only label/value row used by the System settings page.
+ * @brief Read-only label/value row used by the Store details and settings pages.
  */
 Row {
     id: root
@@ -9,19 +9,21 @@ Row {
     property string label: ""
     property string value: ""
 
-    spacing: 16
+    spacing: SpacingManager.space16
 
     Text {
         width: 140
         text: root.label
-        color: "#334155"
-        font.pixelSize: 14
+        color: ThemeManager.textSecondary
+        font.pixelSize: TypographyManager.body
+        font.family: TypographyManager.fontFamily
         font.weight: Font.DemiBold
     }
 
     Text {
         text: root.value
-        color: "#64748b"
-        font.pixelSize: 14
+        color: ThemeManager.textPrimary
+        font.pixelSize: TypographyManager.body
+        font.family: TypographyManager.fontFamily
     }
 }

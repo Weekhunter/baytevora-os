@@ -11,7 +11,7 @@ Flow {
     signal openDetails(var item)
 
     width: parent ? parent.width : 600
-    spacing: SpacingManager ? SpacingManager.space16 : 16
+    spacing: SpacingManager.space16
 
     Repeater {
         model: root.model
