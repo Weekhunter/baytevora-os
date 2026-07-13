@@ -1,33 +1,20 @@
 #pragma once
 
-#include <QObject>
+#include <QString>
+#include <QVariantMap>
 
 namespace bos::shell {
 
 /**
- * @brief Categories exposed by the Baytevora Store.
- *
- * StoreCategory is exposed to QML as StoreCategory so the store UI can filter
- * by Featured, Productivity, Development, Utilities, System, and
- * Entertainment.
+ * @brief Model for a Baytevora Store category.
  */
-class StoreCategory : public QObject {
-    Q_OBJECT
+struct StoreCategory {
+    int categoryId = 0;
+    QString name;
+    QString icon;
+    int applicationCount = 0;
 
-public:
-    enum Value {
-        Featured,
-        Productivity,
-        Development,
-        Utilities,
-        System,
-        Entertainment
-    };
-    Q_ENUM(Value)
-
-    explicit StoreCategory(QObject *parent = nullptr);
-
-    static QString name(StoreCategory::Value category);
+    QVariantMap toMap() const;
 };
 
 } // namespace bos::shell

@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QString>
+#include <QStringList>
 #include <QVariantMap>
 
-#include "bos/StoreCategory.h"
+#include "bos/StoreCategoryEnum.h"
 
 namespace bos::shell {
 
@@ -14,17 +15,23 @@ namespace bos::shell {
  * exposed to QML as a QVariantMap.
  */
 struct StoreItem {
-    QString packageId;
+    QString applicationId;
     QString name;
-    QString description;
-    QString developer;
     QString version;
-    double rating = 0.0;
-    int downloads = 0;
-    StoreCategory::Value category = StoreCategory::Utilities;
+    QString developer;
+    StoreCategoryEnum::Value category = StoreCategoryEnum::Utilities;
+    QString shortDescription;
+    QString longDescription;
     bool installed = false;
-    bool featured = false;
+    QString installedVersion;
+    QString latestVersion;
+    QStringList screenshots;
+    QString changelog;
+    double rating = 0.0;
+    QString size;
     QString iconPath;
+    bool featured = false;
+    int downloads = 0;
 
     QVariantMap toMap() const;
 };

@@ -9,8 +9,9 @@ namespace bos::shell {
  * @brief Provides the BOS color palette to QML.
  *
  * ThemeManager exposes read-only properties for all semantic and surface
- * colors defined by BDL v1. Future theme engine work will replace these
- * values without changing QML.
+ * colors defined by BDL v2. It also provides adaptive read-only metrics
+ * computed from the primary screen geometry and device pixel ratio.
+ * Future theme engine work will replace color values without changing QML.
  */
 class ThemeManager : public QObject {
     Q_OBJECT
@@ -34,6 +35,13 @@ class ThemeManager : public QObject {
     Q_PROPERTY(QString launcherBackground READ launcherBackground CONSTANT)
     Q_PROPERTY(QString notificationBackground READ notificationBackground CONSTANT)
 
+    Q_PROPERTY(bool compactMode READ compactMode NOTIFY metricsChanged)
+    Q_PROPERTY(bool touchMode READ touchMode NOTIFY metricsChanged)
+    Q_PROPERTY(bool highDpi READ highDpi NOTIFY metricsChanged)
+    Q_PROPERTY(double scaleFactor READ scaleFactor NOTIFY metricsChanged)
+    Q_PROPERTY(double iconScale READ iconScale NOTIFY metricsChanged)
+    Q_PROPERTY(double textScale READ textScale NOTIFY metricsChanged)
+
 public:
     explicit ThemeManager(QObject *parent = nullptr);
     ~ThemeManager() override;
@@ -56,6 +64,29 @@ public:
     QString taskbarBackground() const;
     QString launcherBackground() const;
     QString notificationBackground() const;
+
+    bool compactMode() const;
+    bool touchMode() const;
+    bool highDpi() const;
+    double scaleFactor() const;
+    double iconScale() const;
+    double textScale() const;
+
+public slots:
+    void recalculateMetrics();
+
+signals:
+    void metricsChanged();
+
+private:
+    void updateMetrics();
+
+    bool m_compactMode = false;
+    bool m_touchMode = false;
+    bool m_highDpi = false;
+    double m_scaleFactor = 1.0;
+    double m_iconScale = 1.0;
+    double m_textScale = 1.0;
 };
 
 } // namespace bos::shell
