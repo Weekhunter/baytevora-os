@@ -6,9 +6,48 @@
 #include <QtQml>
 
 #include "bos/ApplicationManager.h"
+#include "bos/BrowserApplication.h"
+#include "bos/BrowserManager.h"
+#include "bos/BrowserDownloadManager.h"
+#include "bos/BrowserBookmarkManager.h"
+#include "bos/BrowserHistoryManager.h"
+#include "bos/BrowserPermissionManager.h"
+#include "bos/BrowserPrivacySettings.h"
+#include "bos/ArchiveApplication.h"
+#include "bos/ArchiveManager.h"
+#include "bos/CalculatorApplication.h"
+#include "bos/CalculatorManager.h"
+#include "bos/MediaPlayerApplication.h"
+#include "bos/MediaPlayerManager.h"
+#include "bos/PdfStudioApplication.h"
+#include "bos/PdfStudioManager.h"
+#include "bos/PdfEditorTools.h"
+#include "bos/PdfAnnotationManager.h"
+#include "bos/NetworkApplication.h"
+#include "bos/NetworkManager.h"
+#include "bos/PrintApplication.h"
+#include "bos/PrintManager.h"
+#include "bos/StorageApplication.h"
+#include "bos/StorageManager.h"
+#include "bos/SystemMonitorApplication.h"
+#include "bos/SystemMonitorManager.h"
+#include "bos/TaskManagerApplication.h"
+#include "bos/TaskManager.h"
+#include "bos/TextEditorApplication.h"
+#include "bos/TextEditorManager.h"
+#include "bos/BrowserModule.h"
+#include "bos/AccessibilityManager.h"
+#include "bos/AdaptiveLayoutManager.h"
 #include "bos/ClipboardModule.h"
+#include "bos/ImageDocument.h"
+#include "bos/ImageMetadata.h"
+#include "bos/ImageSlideshowManager.h"
+#include "bos/ImageViewerApplication.h"
+#include "bos/ImageViewerManager.h"
+#include "bos/Note.h"
+#include "bos/NotesApplication.h"
+#include "bos/NotesManager.h"
 #include "bos/DesignTokens.h"
-#include "bos/DragManager.h"
 #include "bos/DragModule.h"
 #include "bos/DragOperationState.h"
 #include "bos/DragType.h"
@@ -22,12 +61,16 @@
 #include "bos/DesktopModel.h"
 #include "bos/FileManagerApplication.h"
 #include "bos/FileSystemModel.h"
+#include "bos/FileFavoriteManager.h"
+#include "bos/RecentFileManager.h"
+#include "bos/FileSearchManager.h"
+#include "bos/NoteFolder.h"
+#include "bos/NotesStorageManager.h"
+#include "bos/NoteSearchManager.h"
 #include "bos/IconManager.h"
 #include "bos/LauncherModule.h"
-#include "bos/LoginManager.h"
 #include "bos/LoginModule.h"
 #include "bos/LoginState.h"
-#include "bos/LockManager.h"
 #include "bos/LockModule.h"
 #include "bos/LockState.h"
 #include "bos/ModuleManager.h"
@@ -35,18 +78,15 @@
 #include "bos/PackageModule.h"
 #include "bos/PackageState.h"
 #include "bos/PackageType.h"
+#include "bos/PackageTransaction.h"
 #include "bos/StoreApplication.h"
-#include "bos/StoreCategory.h"
+#include "bos/PackageManagerApplication.h"
+#include "bos/StoreCategoryEnum.h"
 #include "bos/StoreManager.h"
 #include "bos/StoreModule.h"
-#include "bos/UpdateManager.h"
 #include "bos/UpdateModule.h"
 #include "bos/UpdateState.h"
-#include "bos/ClipboardManager.h"
 #include "bos/NotificationModule.h"
-#include "bos/PowerManager.h"
-#include "bos/SearchManager.h"
-#include "bos/ShortcutManager.h"
 #include "bos/PowerActionType.h"
 #include "bos/PowerModule.h"
 #include "bos/SettingsManager.h"
@@ -98,6 +138,19 @@ void Application::registerQmlTypes()
     // window can instantiate its own model instance from QML.
     qmlRegisterType<FileSystemModel>("BOS.Shell", 1, 0, "FileSystemModel");
 
+    // Sprint 45: register FileFavoriteManager, RecentFileManager, and
+    // FileSearchManager as uncreatable types because they are owned by the
+    // FileSystemModel for each File Manager window.
+    qmlRegisterUncreatableType<FileFavoriteManager>("BOS.Shell", 1, 0,
+                                                   "FileFavoriteManager",
+                                                   "FileFavoriteManager is exposed through FileSystemModel");
+    qmlRegisterUncreatableType<RecentFileManager>("BOS.Shell", 1, 0,
+                                                 "RecentFileManager",
+                                                 "RecentFileManager is exposed through FileSystemModel");
+    qmlRegisterUncreatableType<FileSearchManager>("BOS.Shell", 1, 0,
+                                                 "FileSearchManager",
+                                                 "FileSearchManager is exposed through FileSystemModel");
+
     // Sprint 13: register SettingsManager as a QML type so each Settings window
     // can instantiate its own independent manager.
     qmlRegisterType<SettingsManager>("BOS.Shell", 1, 0, "SettingsManager");
@@ -106,6 +159,113 @@ void Application::registerQmlTypes()
     // window can instantiate its own command processor and session.
     qmlRegisterType<TerminalManager>("BOS.Shell", 1, 0, "TerminalManager");
 
+    // Sprint 27: register BrowserManager as a QML type so each Browser window
+    // can create its own isolated BrowserManager instance.
+    qmlRegisterType<BrowserManager>("BOS.Shell", 1, 0, "BrowserManager");
+
+    // Sprint 42: register BrowserDownloadManager as an uncreatable QML type
+    // so the download manager exposed by BrowserManager can be used from QML.
+    qmlRegisterUncreatableType<BrowserDownloadManager>("BOS.Shell", 1, 0,
+                                                       "BrowserDownloadManager",
+                                                       "BrowserDownloadManager is exposed through BrowserManager");
+
+    // Sprint 43: register BrowserBookmarkManager and BrowserHistoryManager as
+    // uncreatable QML types so the managers exposed by BrowserManager can be
+    // used from the bookmarks and history windows.
+    qmlRegisterUncreatableType<BrowserBookmarkManager>("BOS.Shell", 1, 0,
+                                                       "BrowserBookmarkManager",
+                                                       "BrowserBookmarkManager is exposed through BrowserManager");
+    qmlRegisterUncreatableType<BrowserHistoryManager>("BOS.Shell", 1, 0,
+                                                       "BrowserHistoryManager",
+                                                       "BrowserHistoryManager is exposed through BrowserManager");
+
+    // Sprint 44: register BrowserPermissionManager and BrowserPrivacySettings as
+    // uncreatable QML types so they can be used from the privacy window.
+    qmlRegisterUncreatableType<BrowserPermissionManager>("BOS.Shell", 1, 0,
+                                                         "BrowserPermissionManager",
+                                                         "BrowserPermissionManager is exposed through BrowserManager");
+    qmlRegisterUncreatableType<BrowserPrivacySettings>("BOS.Shell", 1, 0,
+                                                       "BrowserPrivacySettings",
+                                                       "BrowserPrivacySettings is exposed through BrowserManager");
+
+    // Sprint 28: register NotesManager as a QML type so each Notes window can
+    // manage its own collection of in-memory notes.
+    qmlRegisterType<NotesManager>("BOS.Shell", 1, 0, "NotesManager");
+
+    // Sprint 46: register NoteFolder, NotesStorageManager, and
+    // NoteSearchManager as uncreatable types because they are owned by
+    // NotesManager for each Notes window.
+    qmlRegisterUncreatableType<NoteFolder>("BOS.Shell", 1, 0,
+                                           "NoteFolder",
+                                           "NoteFolder is exposed through NotesManager");
+    qmlRegisterUncreatableType<NotesStorageManager>("BOS.Shell", 1, 0,
+                                                    "NotesStorageManager",
+                                                    "NotesStorageManager is exposed through NotesManager");
+    qmlRegisterUncreatableType<NoteSearchManager>("BOS.Shell", 1, 0,
+                                                 "NoteSearchManager",
+                                                 "NoteSearchManager is exposed through NotesManager");
+
+    // Sprint 29: register ImageViewerManager as a QML type so each Image Viewer
+    // window can manage its own ImageDocument.
+    qmlRegisterType<ImageViewerManager>("BOS.Shell", 1, 0, "ImageViewerManager");
+
+    // Sprint 47: register ImageMetadata and ImageSlideshowManager as uncreatable
+    // types because they are owned by ImageViewerManager for each Image Viewer
+    // window.
+    qmlRegisterUncreatableType<ImageMetadata>("BOS.Shell", 1, 0,
+                                              "ImageMetadata",
+                                              "ImageMetadata is exposed through ImageViewerManager");
+    qmlRegisterUncreatableType<ImageSlideshowManager>("BOS.Shell", 1, 0,
+                                                     "ImageSlideshowManager",
+                                                     "ImageSlideshowManager is exposed through ImageViewerManager");
+
+    // Sprint 31: register CalculatorManager as a QML type so each Calculator
+    // window owns an independent CalculatorManager instance.
+    qmlRegisterType<CalculatorManager>("BOS.Shell", 1, 0, "CalculatorManager");
+
+    // Sprint D: register PdfStudioManager as a QML type so each Baytevora PDF
+    // Studio window owns an independent PdfStudioManager instance.
+    qmlRegisterType<PdfStudioManager>("BOS.Shell", 1, 0, "PdfStudioManager");
+    qmlRegisterUncreatableType<PdfEditorTools>("BOS.Shell", 1, 0,
+                                                "PdfEditorTools",
+                                                "PdfEditorTools exposes the tool enum only");
+    qmlRegisterUncreatableType<PdfAnnotationManager>("BOS.Shell", 1, 0,
+                                                      "PdfAnnotationManager",
+                                                      "PdfAnnotationManager is exposed through PdfStudioManager");
+
+    // Sprint 33: register ArchiveManager as a QML type so each Archive Manager
+    // window owns an independent ArchiveManager instance.
+    qmlRegisterType<ArchiveManager>("BOS.Shell", 1, 0, "ArchiveManager");
+
+    // Sprint 34: register MediaPlayerManager as a QML type so each Media Player
+    // window owns an independent MediaPlayerManager instance.
+    qmlRegisterType<MediaPlayerManager>("BOS.Shell", 1, 0, "MediaPlayerManager");
+
+    // Sprint 35: register TextEditorManager as a QML type so each Text Editor
+    // window owns an independent TextEditorManager instance.
+    qmlRegisterType<TextEditorManager>("BOS.Shell", 1, 0, "TextEditorManager");
+
+    // Sprint 36: register SystemMonitorManager as a QML type so each System
+    // Monitor window owns an independent SystemMonitorManager instance.
+    qmlRegisterType<SystemMonitorManager>("BOS.Shell", 1, 0, "SystemMonitorManager");
+
+    // Sprint 37: register TaskManager as a QML type so each Task Manager
+    // window owns an independent TaskManager instance.
+    qmlRegisterType<TaskManager>("BOS.Shell", 1, 0, "TaskManager");
+
+    // Sprint 38: register NetworkManager as a QML type so each Network
+    // Manager window owns an independent NetworkManager instance.
+    qmlRegisterType<NetworkManager>("BOS.Shell", 1, 0, "NetworkManager");
+
+    // Sprint 39: register StorageManager as a QML type so each Storage
+    // Manager window owns an independent StorageManager instance.
+    qmlRegisterType<StorageManager>("BOS.Shell", 1, 0, "StorageManager");
+
+    // Sprint 40: register PrintManager as a QML type so each Print
+    // Manager window owns an independent PrintManager instance, and expose
+    // a shared print manager for cross-application printing hooks.
+    qmlRegisterType<PrintManager>("BOS.Shell", 1, 0, "PrintManager");
+
     // Sprint 16: register DesktopModel as a QML type so the desktop surface
     // can render icons from the model exposed by DesktopManager.
     qmlRegisterType<DesktopModel>("BOS.Shell", 1, 0, "DesktopModel");
@@ -113,7 +273,7 @@ void Application::registerQmlTypes()
     // Sprint 18: register the ShortcutContext enum so QML integrations can use
     // ShortcutContext.Global, ShortcutContext.Application, and ShortcutContext.Window.
     qmlRegisterUncreatableMetaObject(
-        bos::shell::staticMetaObject,
+        bos::shell::ShortcutContext::staticMetaObject,
         "BOS.Shell", 1, 0, "ShortcutContext",
         QStringLiteral("ShortcutContext is an enum and cannot be instantiated"));
 
@@ -176,9 +336,17 @@ void Application::registerQmlTypes()
         "BOS.Shell", 1, 0, "PackageType",
         QStringLiteral("PackageType is an enum and cannot be instantiated"));
 
+    // Sprint 49: register package transaction and operation enums for QML.
+    qmlRegisterUncreatableType<bos::shell::PackageOperation>(
+        "BOS.Shell", 1, 0, "PackageOperation",
+        QStringLiteral("PackageOperation is an enum and cannot be instantiated"));
+    qmlRegisterUncreatableType<bos::shell::PackageTransactionState>(
+        "BOS.Shell", 1, 0, "PackageTransactionState",
+        QStringLiteral("PackageTransactionState is an enum and cannot be instantiated"));
+
     // Sprint 26: register the StoreCategory enum so the store UI can filter by
     // Featured, Productivity, Development, Utilities, System, and Entertainment.
-    qmlRegisterUncreatableType<bos::shell::StoreCategory>(
+    qmlRegisterUncreatableType<bos::shell::StoreCategoryEnum>(
         "BOS.Shell", 1, 0, "StoreCategory",
         QStringLiteral("StoreCategory is an enum and cannot be instantiated"));
 }
@@ -187,29 +355,56 @@ void Application::exposeDesignManagers()
 {
     // Sprint 15: expose BDL design managers as QML context properties so all
     // QML components can reference the same token sources.
+    // Sprint 30: extend ThemeManager with adaptive metrics and add
+    // AdaptiveLayoutManager and AccessibilityManager.
     auto themeManager = std::make_unique<ThemeManager>();
     auto designTokens = std::make_unique<DesignTokens>();
     auto typographyManager = std::make_unique<TypographyManager>();
     auto spacingManager = std::make_unique<SpacingManager>();
     auto iconManager = std::make_unique<IconManager>();
+    auto adaptiveLayoutManager = std::make_unique<AdaptiveLayoutManager>();
+    auto accessibilityManager = std::make_unique<AccessibilityManager>();
+
+    // Initialize adaptive scales before exposing managers to QML.
+    typographyManager->setScaleFactor(themeManager->textScale());
+    iconManager->setScaleFactor(themeManager->iconScale());
+    adaptiveLayoutManager->setScaleFactor(themeManager->scaleFactor());
+
+    // Propagate scale changes when the screen geometry or device pixel ratio
+    // changes so that typography, icon, and layout metrics stay consistent.
+    QObject::connect(themeManager.get(), &ThemeManager::metricsChanged,
+                     [theme = themeManager.get(),
+                      typography = typographyManager.get(),
+                      icons = iconManager.get(),
+                      layout = adaptiveLayoutManager.get()]() {
+        typography->setScaleFactor(theme->textScale());
+        icons->setScaleFactor(theme->iconScale());
+        layout->setScaleFactor(theme->scaleFactor());
+    });
 
     m_engine->rootContext()->setContextProperty(QStringLiteral("ThemeManager"), themeManager.get());
     m_engine->rootContext()->setContextProperty(QStringLiteral("DesignTokens"), designTokens.get());
     m_engine->rootContext()->setContextProperty(QStringLiteral("TypographyManager"), typographyManager.get());
     m_engine->rootContext()->setContextProperty(QStringLiteral("SpacingManager"), spacingManager.get());
     m_engine->rootContext()->setContextProperty(QStringLiteral("IconManager"), iconManager.get());
+    m_engine->rootContext()->setContextProperty(QStringLiteral("AdaptiveLayoutManager"), adaptiveLayoutManager.get());
+    m_engine->rootContext()->setContextProperty(QStringLiteral("AccessibilityManager"), accessibilityManager.get());
 
     themeManager->setParent(m_engine.get());
     designTokens->setParent(m_engine.get());
     typographyManager->setParent(m_engine.get());
     spacingManager->setParent(m_engine.get());
     iconManager->setParent(m_engine.get());
+    adaptiveLayoutManager->setParent(m_engine.get());
+    accessibilityManager->setParent(m_engine.get());
 
     themeManager.release();
     designTokens.release();
     typographyManager.release();
     spacingManager.release();
     iconManager.release();
+    adaptiveLayoutManager.release();
+    accessibilityManager.release();
 }
 
 void Application::loadLoginInterface()
@@ -280,14 +475,8 @@ int Application::run()
         loginManager->setNotificationManager(notificationManager);
     }
 
-    // Transition the login manager from Booting to WaitingForSelection so the
-    // login screen is presented immediately.
-    if (loginManager) {
-        loginManager->cancel();
-    }
-
-    // Sprint 22: when login succeeds, start the desktop session and hide the
-    // login screen.
+    // Sprint 26.5: establish signal connections before any state transition.
+    // This ensures login success/failure cannot race with the handlers.
     if (loginManager) {
         QObject::connect(loginManager, &LoginManager::loggedIn, &m_app, [this, loginManager]() {
             if (m_loginWindow) {
@@ -295,6 +484,19 @@ int Application::run()
             }
             startDesktopSession();
         }, Qt::QueuedConnection);
+
+        QObject::connect(loginManager, &LoginManager::loggedOut, &m_app, [this]() {
+            if (m_loginWindow) {
+                m_loginWindow->setProperty("visible", true);
+            }
+            m_sessionManager->stop();
+        }, Qt::QueuedConnection);
+    }
+
+    // Transition the login manager from Booting to WaitingForSelection so the
+    // login screen is presented immediately.
+    if (loginManager) {
+        loginManager->cancel();
     }
 
     loadLoginInterface();
@@ -361,6 +563,14 @@ void Application::startDesktopSession()
         if (auto *searchManager = searchModule->searchManager()) {
             m_engine->rootContext()->setContextProperty(QStringLiteral("searchManager"), searchManager);
         }
+    }
+
+    // Sprint 19: expose the SettingsApplication so search results can request a
+    // specific settings page.
+    if (m_sessionManager->applicationManager() && m_sessionManager->applicationManager()->settingsApplication()) {
+        m_engine->rootContext()->setContextProperty(
+            QStringLiteral("settingsApplication"),
+            m_sessionManager->applicationManager()->settingsApplication());
     }
 
     // Sprint 20: expose the PowerManager so the taskbar and settings can use
@@ -495,8 +705,6 @@ void Application::startDesktopSession()
     if (applicationManager) {
         applicationManager->setSettingsApplication(settingsPtr);
     }
-    // Sprint 19: expose settingsApplication now that settingsPtr is created and wired.
-    m_engine->rootContext()->setContextProperty(QStringLiteral("settingsApplication"), settingsPtr);
     settings->setParent(m_engine.get());
     settings.release();
 
@@ -531,6 +739,269 @@ void Application::startDesktopSession()
     }
     store->setParent(m_engine.get());
     store.release();
+
+    // Sprint 49: instantiate the Baytevora Package Manager application handler,
+    // wire it to the window and notification services, and register it with the
+    // coordinator.
+    auto packageManagerApp = std::make_unique<PackageManagerApplication>();
+    PackageManagerApplication *packageManagerAppPtr = packageManagerApp.get();
+    if (windowManager) {
+        packageManagerAppPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        packageManagerAppPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setPackageManagerApplication(packageManagerAppPtr);
+    }
+    packageManagerApp->setParent(m_engine.get());
+    packageManagerApp.release();
+
+    // Sprint 27: instantiate the Baytevora Browser application handler, wire it to
+    // the window and notification services, and register it with the coordinator.
+    auto browser = std::make_unique<BrowserApplication>();
+    BrowserApplication *browserPtr = browser.get();
+    if (windowManager) {
+        browserPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        browserPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setBrowserApplication(browserPtr);
+    }
+    browser->setParent(m_engine.get());
+    browser.release();
+
+    // Sprint 28: instantiate the Baytevora Notes application handler, wire it to
+    // the window and notification services, and register it with the coordinator.
+    auto notes = std::make_unique<NotesApplication>();
+    NotesApplication *notesPtr = notes.get();
+    if (windowManager) {
+        notesPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        notesPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setNotesApplication(notesPtr);
+    }
+
+    // Sprint 46: expose NotesApplication to QML so Notes windows can consume
+    // pending .bnote file open requests from the File Manager.
+    qmlRegisterSingletonInstance<NotesApplication>("BOS.Shell", 1, 0,
+                                                     "NotesApplication",
+                                                     notesPtr);
+
+    notes->setParent(m_engine.get());
+    notes.release();
+
+    // Sprint 29: instantiate the Baytevora Image Viewer application handler, wire
+    // it to the window and notification services, and register it with the coordinator.
+    auto imageViewer = std::make_unique<ImageViewerApplication>();
+    ImageViewerApplication *imageViewerPtr = imageViewer.get();
+    if (windowManager) {
+        imageViewerPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        imageViewerPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setImageViewerApplication(imageViewerPtr);
+    }
+
+    // Sprint 47: expose ImageViewerApplication to QML so Image Viewer windows can
+    // consume pending file open requests from the File Manager.
+    qmlRegisterSingletonInstance<ImageViewerApplication>("BOS.Shell", 1, 0,
+                                                           "ImageViewerApplication",
+                                                           imageViewerPtr);
+
+    imageViewer->setParent(m_engine.get());
+    imageViewer.release();
+
+    // Sprint 31: instantiate the Baytevora Calculator application handler, wire it
+    // to the window and notification services, and register it with the coordinator.
+    auto calculator = std::make_unique<CalculatorApplication>();
+    CalculatorApplication *calculatorPtr = calculator.get();
+    if (windowManager) {
+        calculatorPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        calculatorPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setCalculatorApplication(calculatorPtr);
+    }
+    calculator->setParent(m_engine.get());
+    calculator.release();
+
+    // Sprint D: instantiate the Baytevora PDF Studio application handler, wire it
+    // to the window, notification, and print services, and register it with the
+    // coordinator.
+    auto pdfStudio = std::make_unique<PdfStudioApplication>();
+    PdfStudioApplication *pdfStudioPtr = pdfStudio.get();
+    if (windowManager) {
+        pdfStudioPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        pdfStudioPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setPdfStudioApplication(pdfStudioPtr);
+    }
+    qmlRegisterSingletonInstance<PdfStudioApplication>("BOS.Shell", 1, 0,
+                                                         "PdfStudioApplication",
+                                                         pdfStudioPtr);
+    pdfStudio->setParent(m_engine.get());
+    pdfStudio.release();
+
+    // Sprint 33: instantiate the Baytevora Archive Manager application handler,
+    // wire it to the window and notification services, and register it with the
+    // application coordinator.
+    auto archive = std::make_unique<ArchiveApplication>();
+    ArchiveApplication *archivePtr = archive.get();
+    if (windowManager) {
+        archivePtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        archivePtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setArchiveApplication(archivePtr);
+    }
+    archive->setParent(m_engine.get());
+    archive.release();
+
+    // Sprint 34: instantiate the Baytevora Media Player application handler,
+    // wire it to the window and notification services, and register it with the
+    // application coordinator.
+    auto mediaPlayer = std::make_unique<MediaPlayerApplication>();
+    MediaPlayerApplication *mediaPlayerPtr = mediaPlayer.get();
+    if (windowManager) {
+        mediaPlayerPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        mediaPlayerPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setMediaPlayerApplication(mediaPlayerPtr);
+    }
+    mediaPlayer->setParent(m_engine.get());
+    mediaPlayer.release();
+
+    // Sprint 35: instantiate the Baytevora Text Editor application handler,
+    // wire it to the window and notification services, and register it with the
+    // application coordinator.
+    auto textEditor = std::make_unique<TextEditorApplication>();
+    TextEditorApplication *textEditorPtr = textEditor.get();
+    if (windowManager) {
+        textEditorPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        textEditorPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setTextEditorApplication(textEditorPtr);
+    }
+    textEditor->setParent(m_engine.get());
+    textEditor.release();
+
+    // Sprint 36: instantiate the Baytevora System Monitor application handler,
+    // wire it to the window and notification services, and register it with the
+    // application coordinator.
+    auto systemMonitor = std::make_unique<SystemMonitorApplication>();
+    SystemMonitorApplication *systemMonitorPtr = systemMonitor.get();
+    if (windowManager) {
+        systemMonitorPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        systemMonitorPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setSystemMonitorApplication(systemMonitorPtr);
+    }
+    systemMonitor->setParent(m_engine.get());
+    systemMonitor.release();
+
+    // Sprint 37: instantiate the Baytevora Task Manager application handler,
+    // wire it to the window and notification services, and register it with the
+    // application coordinator.
+    auto taskManagerApp = std::make_unique<TaskManagerApplication>();
+    TaskManagerApplication *taskManagerAppPtr = taskManagerApp.get();
+    if (windowManager) {
+        taskManagerAppPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        taskManagerAppPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setTaskManagerApplication(taskManagerAppPtr);
+    }
+    taskManagerApp->setParent(m_engine.get());
+    taskManagerApp.release();
+
+    // Sprint 38: instantiate the Baytevora Network Manager application
+    // handler, wire it to the window and notification services, and register
+    // it with the application coordinator.
+    auto networkApp = std::make_unique<NetworkApplication>();
+    NetworkApplication *networkAppPtr = networkApp.get();
+    if (windowManager) {
+        networkAppPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        networkAppPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setNetworkApplication(networkAppPtr);
+    }
+    networkApp->setParent(m_engine.get());
+    networkApp.release();
+
+    // Sprint 39: instantiate the Baytevora Storage Manager application
+    // handler, wire it to the window and notification services, and register
+    // it with the application coordinator.
+    auto storageApp = std::make_unique<StorageApplication>();
+    StorageApplication *storageAppPtr = storageApp.get();
+    if (windowManager) {
+        storageAppPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        storageAppPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setStorageApplication(storageAppPtr);
+    }
+    storageApp->setParent(m_engine.get());
+    storageApp.release();
+
+    // Sprint 40: instantiate the Baytevora Printing Framework application
+    // handler, wire it to the window and notification services, and register
+    // it with the application coordinator.
+    auto printApp = std::make_unique<PrintApplication>();
+    PrintApplication *printAppPtr = printApp.get();
+    if (windowManager) {
+        printAppPtr->setWindowManager(windowManager);
+    }
+    if (notificationManager) {
+        printAppPtr->setNotificationManager(notificationManager);
+    }
+    if (applicationManager) {
+        applicationManager->setPrintApplication(printAppPtr);
+    }
+    printApp->setParent(m_engine.get());
+    printApp.release();
+
+    // Sprint 40: create a shared PrintManager instance for cross-application
+    // printing hooks (PDF Viewer, Text Editor, Image Viewer, etc.). The
+    // Print Manager window still owns an independent PrintManager.
+    auto sharedPrintManager = std::make_unique<PrintManager>();
+    if (notificationManager) {
+        sharedPrintManager->setNotificationManager(notificationManager);
+    }
+    m_engine->rootContext()->setContextProperty(QStringLiteral("printManager"),
+                                                sharedPrintManager.get());
+    sharedPrintManager->setParent(m_engine.get());
+    sharedPrintManager.release();
 
     // Sprint 17: wire the NotificationManager into the ClipboardModule so a
     // manual clipboard clear can trigger an information notification.

@@ -4,11 +4,20 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QLocale>
+#include <QStandardPaths>
+
+#include "bos/FileFavoriteManager.h"
+#include "bos/RecentFileManager.h"
+#include "bos/FileSearchManager.h"
+#include "bos/NotificationManager.h"
 
 namespace bos::shell {
 
 FileSystemModel::FileSystemModel(QObject *parent)
     : QAbstractListModel(parent)
+    , m_favoriteManager(new FileFavoriteManager(this))
+    , m_recentFileManager(new RecentFileManager(this))
+    , m_searchManager(new FileSearchManager(this))
 {
 }
 
@@ -71,9 +80,15 @@ void FileSystemModel::setPath(const QString &path)
     m_path = path;
     loadDirectory();
 
+    if (!m_navigatingHistory) {
+        updateHistory();
+    }
+
     emit pathChanged();
     emit itemCountChanged();
     emit currentFolderNameChanged();
+    emit canGoBackChanged();
+    emit canGoForwardChanged();
 }
 
 int FileSystemModel::itemCount() const
@@ -90,6 +105,42 @@ QString FileSystemModel::currentFolderName() const
     const QString cleanPath = QDir::cleanPath(m_path);
     const QDir dir(cleanPath);
     return dir.dirName();
+}
+
+bool FileSystemModel::canGoBack() const
+{
+    return m_historyIndex > 0;
+}
+
+bool FileSystemModel::canGoForward() const
+{
+    return m_historyIndex >= 0 && m_historyIndex < m_history.size() - 1;
+}
+
+FileFavoriteManager *FileSystemModel::favoriteManager() const
+{
+    return m_favoriteManager;
+}
+
+RecentFileManager *FileSystemModel::recentFileManager() const
+{
+    return m_recentFileManager;
+}
+
+FileSearchManager *FileSystemModel::searchManager() const
+{
+    return m_searchManager;
+}
+
+void FileSystemModel::setNotificationManager(NotificationManager *notificationManager)
+{
+    m_notificationManager = notificationManager;
+    if (m_favoriteManager) {
+        m_favoriteManager->setNotificationManager(notificationManager);
+    }
+    if (m_recentFileManager) {
+        m_recentFileManager->setNotificationManager(notificationManager);
+    }
 }
 
 void FileSystemModel::refresh()
@@ -119,6 +170,50 @@ void FileSystemModel::cdUp()
 
     setPath(dir.absolutePath());
     qDebug() << QStringLiteral("[BDE] Folder entered");
+}
+
+void FileSystemModel::goBack()
+{
+    if (!canGoBack()) {
+        return;
+    }
+
+    --m_historyIndex;
+    const QString target = m_history.at(m_historyIndex);
+
+    m_navigatingHistory = true;
+    setPath(target);
+    m_navigatingHistory = false;
+}
+
+void FileSystemModel::goForward()
+{
+    if (!canGoForward()) {
+        return;
+    }
+
+    ++m_historyIndex;
+    const QString target = m_history.at(m_historyIndex);
+
+    m_navigatingHistory = true;
+    setPath(target);
+    m_navigatingHistory = false;
+}
+
+void FileSystemModel::goHome()
+{
+    const QString home = homeDirectory();
+    if (!home.isEmpty()) {
+        setPath(home);
+    }
+}
+
+void FileSystemModel::addRecentFile(const QString &filePath)
+{
+    if (!m_recentFileManager || filePath.isEmpty()) {
+        return;
+    }
+    m_recentFileManager->addRecentFile(filePath);
 }
 
 QString FileSystemModel::formatSize(qint64 bytes)
@@ -182,6 +277,35 @@ void FileSystemModel::loadDirectory()
 
     endResetModel();
     qDebug() << QStringLiteral("[BDE] Directory opened");
+}
+
+void FileSystemModel::updateHistory()
+{
+    if (m_historyIndex >= 0 && m_historyIndex < m_history.size() - 1) {
+        // Remove forward entries when a new path is set.
+        m_history = m_history.mid(0, m_historyIndex + 1);
+    }
+
+    if (m_history.isEmpty() || m_history.last() != m_path) {
+        m_history.append(m_path);
+        m_historyIndex = m_history.size() - 1;
+    }
+}
+
+void FileSystemModel::emitNotification(const QString &title, const QString &message)
+{
+    if (!m_notificationManager) {
+        return;
+    }
+    m_notificationManager->createNotification(title, message,
+                                              QStringLiteral("File Manager"),
+                                              QStringLiteral("info"));
+}
+
+QString FileSystemModel::homeDirectory() const
+{
+    const QStringList locations = QStandardPaths::standardLocations(QStandardPaths::HomeLocation);
+    return locations.isEmpty() ? QString() : locations.first();
 }
 
 } // namespace bos::shell

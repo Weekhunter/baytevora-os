@@ -5,8 +5,22 @@
 #include "bos/ApplicationInfo.h"
 #include "bos/ApplicationLauncher.h"
 #include "bos/ApplicationRegistry.h"
+#include "bos/ArchiveApplication.h"
+#include "bos/BrowserApplication.h"
+#include "bos/CalculatorApplication.h"
 #include "bos/FileManagerApplication.h"
+#include "bos/MediaPlayerApplication.h"
+#include "bos/NetworkApplication.h"
+#include "bos/PdfStudioApplication.h"
+#include "bos/PrintApplication.h"
+#include "bos/StorageApplication.h"
+#include "bos/SystemMonitorApplication.h"
+#include "bos/TaskManagerApplication.h"
+#include "bos/TextEditorApplication.h"
+#include "bos/ImageViewerApplication.h"
+#include "bos/NotesApplication.h"
 #include "bos/NotificationManager.h"
+#include "bos/PackageManagerApplication.h"
 #include "bos/SettingsApplication.h"
 #include "bos/StoreApplication.h"
 #include "bos/TerminalApplication.h"
@@ -89,6 +103,76 @@ void ApplicationManager::setStoreApplication(StoreApplication *store)
     m_storeApplication = store;
 }
 
+void ApplicationManager::setPackageManagerApplication(PackageManagerApplication *packageManager)
+{
+    m_packageManagerApplication = packageManager;
+}
+
+void ApplicationManager::setBrowserApplication(BrowserApplication *browser)
+{
+    m_browserApplication = browser;
+}
+
+void ApplicationManager::setNotesApplication(NotesApplication *notes)
+{
+    m_notesApplication = notes;
+}
+
+void ApplicationManager::setImageViewerApplication(ImageViewerApplication *imageViewer)
+{
+    m_imageViewerApplication = imageViewer;
+}
+
+void ApplicationManager::setCalculatorApplication(CalculatorApplication *calculator)
+{
+    m_calculatorApplication = calculator;
+}
+
+void ApplicationManager::setPdfStudioApplication(PdfStudioApplication *pdfStudio)
+{
+    m_pdfStudioApplication = pdfStudio;
+}
+
+void ApplicationManager::setArchiveApplication(ArchiveApplication *archive)
+{
+    m_archiveApplication = archive;
+}
+
+void ApplicationManager::setMediaPlayerApplication(MediaPlayerApplication *mediaPlayer)
+{
+    m_mediaPlayerApplication = mediaPlayer;
+}
+
+void ApplicationManager::setTextEditorApplication(TextEditorApplication *textEditor)
+{
+    m_textEditorApplication = textEditor;
+}
+
+void ApplicationManager::setSystemMonitorApplication(SystemMonitorApplication *systemMonitor)
+{
+    m_systemMonitorApplication = systemMonitor;
+}
+
+void ApplicationManager::setTaskManagerApplication(TaskManagerApplication *taskManager)
+{
+    m_taskManagerApplication = taskManager;
+}
+
+void ApplicationManager::setNetworkApplication(NetworkApplication *networkApplication)
+{
+    m_networkApplication = networkApplication;
+}
+
+void ApplicationManager::setStorageApplication(StorageApplication *storageApplication)
+{
+    m_storageApplication = storageApplication;
+}
+
+void ApplicationManager::setPrintApplication(PrintApplication *printApplication)
+{
+    m_printApplication = printApplication;
+}
+
 SettingsApplication *ApplicationManager::settingsApplication() const
 {
     return m_settingsApplication;
@@ -167,6 +251,90 @@ bool ApplicationManager::launchApplication(const QString &name)
             qWarning() << QStringLiteral("[BDE] Failed to open Baytevora Store");
             return false;
         }
+    } else if (name == QStringLiteral("Package Manager") && m_packageManagerApplication) {
+        windowId = m_packageManagerApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Package Manager");
+            return false;
+        }
+    } else if (name == QStringLiteral("Browser") && m_browserApplication) {
+        windowId = m_browserApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Browser");
+            return false;
+        }
+    } else if (name == QStringLiteral("Notes") && m_notesApplication) {
+        windowId = m_notesApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Notes");
+            return false;
+        }
+    } else if (name == QStringLiteral("Image Viewer") && m_imageViewerApplication) {
+        windowId = m_imageViewerApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Image Viewer");
+            return false;
+        }
+    } else if (name == QStringLiteral("Calculator") && m_calculatorApplication) {
+        windowId = m_calculatorApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Calculator");
+            return false;
+        }
+    } else if (name == QStringLiteral("Baytevora PDF Studio") && m_pdfStudioApplication) {
+        windowId = m_pdfStudioApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Baytevora PDF Studio");
+            return false;
+        }
+    } else if (name == QStringLiteral("Archive Manager") && m_archiveApplication) {
+        windowId = m_archiveApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Archive Manager");
+            return false;
+        }
+    } else if (name == QStringLiteral("Media Player") && m_mediaPlayerApplication) {
+        windowId = m_mediaPlayerApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Media Player");
+            return false;
+        }
+    } else if (name == QStringLiteral("Text Editor") && m_textEditorApplication) {
+        windowId = m_textEditorApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Text Editor");
+            return false;
+        }
+    } else if (name == QStringLiteral("System Monitor") && m_systemMonitorApplication) {
+        windowId = m_systemMonitorApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open System Monitor");
+            return false;
+        }
+    } else if (name == QStringLiteral("Task Manager") && m_taskManagerApplication) {
+        windowId = m_taskManagerApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Task Manager");
+            return false;
+        }
+    } else if (name == QStringLiteral("Network Manager") && m_networkApplication) {
+        windowId = m_networkApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Network Manager");
+            return false;
+        }
+    } else if (name == QStringLiteral("Storage Manager") && m_storageApplication) {
+        windowId = m_storageApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Storage Manager");
+            return false;
+        }
+    } else if (name == QStringLiteral("Print Manager") && m_printApplication) {
+        windowId = m_printApplication->open();
+        if (windowId < 0) {
+            qWarning() << QStringLiteral("[BDE] Failed to open Print Manager");
+            return false;
+        }
     } else {
         windowId = m_windowManager->createApplicationWindow(info->name());
         if (windowId < 0) {
@@ -191,6 +359,39 @@ bool ApplicationManager::launchApplication(const QString &name)
     return true;
 }
 
+bool ApplicationManager::openFileWithApplication(const QString &name, const QString &filePath)
+{
+    int windowId = -1;
+
+    if (name == QStringLiteral("Notes") && m_notesApplication) {
+        windowId = m_notesApplication->openFile(filePath);
+    } else if (name == QStringLiteral("Image Viewer") && m_imageViewerApplication) {
+        windowId = m_imageViewerApplication->openFile(filePath);
+    } else if (name == QStringLiteral("Baytevora PDF Studio") && m_pdfStudioApplication) {
+        windowId = m_pdfStudioApplication->openFile(filePath);
+    } else if (name == QStringLiteral("Archive Manager") && m_archiveApplication) {
+        windowId = m_archiveApplication->openFile(filePath);
+    }
+
+    if (windowId < 0) {
+        qWarning() << QStringLiteral("[BDE] Failed to open") << name << QStringLiteral("with file") << filePath;
+        return false;
+    }
+
+    m_running.insert(name);
+    m_windowToApp.insert(windowId, name);
+    emit runningApplicationsChanged();
+
+    if (m_notificationManager) {
+        m_notificationManager->createNotification(
+            QStringLiteral("Application Started"),
+            name + QStringLiteral(" opened ") + filePath,
+            name,
+            QStringLiteral("success"));
+    }
+    return true;
+}
+
 void ApplicationManager::registerPlaceholderApplications()
 {
     struct Placeholder {
@@ -207,9 +408,21 @@ void ApplicationManager::registerPlaceholderApplications()
         {QStringLiteral("terminal"), QStringLiteral("Terminal"), QStringLiteral("Command line"), QStringLiteral("Utilities"), QStringLiteral("TR"), false},
         {QStringLiteral("settings"), QStringLiteral("Settings"), QStringLiteral("System settings"), QStringLiteral("System"), QStringLiteral("ST"), false},
         {QStringLiteral("browser"), QStringLiteral("Browser"), QStringLiteral("Web browser"), QStringLiteral("Internet"), QStringLiteral("BR"), false},
-        {QStringLiteral("calculator"), QStringLiteral("Calculator"), QStringLiteral("Basic calculator"), QStringLiteral("Utilities"), QStringLiteral("CA"), true},
-        {QStringLiteral("notes"), QStringLiteral("Notes"), QStringLiteral("Simple notes"), QStringLiteral("Productivity"), QStringLiteral("NO"), false},
-        {QStringLiteral("store"), QStringLiteral("Baytevora Store"), QStringLiteral("Discover and install applications"), QStringLiteral("System"), QStringLiteral("ST"), false}
+        {QStringLiteral("calculator"), QStringLiteral("Calculator"), QStringLiteral("Basic calculator"), QStringLiteral("Utilities"), QStringLiteral("CA"), false},
+        {QStringLiteral("notes"), QStringLiteral("Notes"), QStringLiteral("Take and manage notes"), QStringLiteral("Productivity"), QStringLiteral("NO"), false},
+        {QStringLiteral("image-viewer"), QStringLiteral("Image Viewer"), QStringLiteral("View images"), QStringLiteral("Media"), QStringLiteral("IV"), false},
+        {QStringLiteral("pdf-studio"), QStringLiteral("Baytevora PDF Studio"), QStringLiteral("View, annotate, and print PDF documents"), QStringLiteral("Productivity"), QStringLiteral("PS"), false},
+        {QStringLiteral("archive-manager"), QStringLiteral("Archive Manager"), QStringLiteral("Inspect archive files"), QStringLiteral("Utilities"), QStringLiteral("AM"), false},
+        {QStringLiteral("media-player"), QStringLiteral("Media Player"), QStringLiteral("Play media files"), QStringLiteral("Media"), QStringLiteral("MP"), false},
+        {QStringLiteral("text-editor"), QStringLiteral("Text Editor"), QStringLiteral("Edit text files"), QStringLiteral("Productivity"), QStringLiteral("TE"), false},
+        {QStringLiteral("system-monitor"), QStringLiteral("System Monitor"), QStringLiteral("View system metrics"), QStringLiteral("System"), QStringLiteral("SM"), false},
+        {QStringLiteral("task-manager"), QStringLiteral("Task Manager"), QStringLiteral("Manage running tasks"), QStringLiteral("System"), QStringLiteral("TM"), false},
+        {QStringLiteral("network-manager"), QStringLiteral("Network Manager"), QStringLiteral("Manage network connections"), QStringLiteral("System"), QStringLiteral("NM"), false},
+        {QStringLiteral("storage-manager"), QStringLiteral("Storage Manager"), QStringLiteral("View storage devices"), QStringLiteral("System"), QStringLiteral("SM"), false},
+        {QStringLiteral("print-manager"), QStringLiteral("Print Manager"), QStringLiteral("Manage printers and print jobs"), QStringLiteral("System"), QStringLiteral("PM"), false},
+        {QStringLiteral("store"), QStringLiteral("Baytevora Store"), QStringLiteral("Discover and install applications"), QStringLiteral("System"), QStringLiteral("ST"), false},
+        {QStringLiteral("package-manager"), QStringLiteral("Package Manager"), QStringLiteral("Manage packages, repositories, and transactions"), QStringLiteral("System"), QStringLiteral("PM"), false},
+        {QStringLiteral("browser"), QStringLiteral("Browser"), QStringLiteral("Browse the web"), QStringLiteral("System"), QStringLiteral("BR"), false}
     };
 
     for (const auto &placeholder : placeholders) {

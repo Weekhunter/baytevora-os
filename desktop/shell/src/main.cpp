@@ -1,4 +1,6 @@
 #include <QApplication>
+#include <QtWebEngineQuick/qtwebenginequickglobal.h>
+
 #include "bos/Application.h"
 
 /**
@@ -12,6 +14,10 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+
+    // Sprint 27: initialize the Qt WebEngine runtime before any QML engine is
+    // created so the Browser view can load content immediately.
+    QtWebEngineQuick::initialize();
 
     app.setApplicationName(QStringLiteral("BOS Shell"));
     app.setOrganizationName(QStringLiteral("Baytevora Labs"));
