@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 project(BOS_Shell
     VERSION 0.1.0
-    DESCRIPTION "Baytevora OS Desktop Environment Shell - Sprint 26"
+    DESCRIPTION "Baytevora OS Desktop Environment Shell - Sprint D"
     LANGUAGES CXX
 )
 
@@ -11,7 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Find Qt6 components required for this sprint.
-find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Widgets)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick QuickControls2 QuickDialogs2 Widgets WebEngineQuick WebEngineCore Pdf PdfQuick Multimedia Network PrintSupport)
+find_package(ZLIB REQUIRED)
 
 # Standard Qt project setup. This helper enables Qt's recommended CMake
 # defaults and improves IDE compatibility (Qt Creator, CLion, command line).
@@ -35,6 +36,11 @@ set(SOURCES
     src/NotificationManager.cpp
     src/FileSystemModel.cpp
     src/FileManagerApplication.cpp
+    src/FavoriteLocation.cpp
+    src/FileFavoriteManager.cpp
+    src/RecentFile.cpp
+    src/RecentFileManager.cpp
+    src/FileSearchManager.cpp
     src/SettingsManager.cpp
     src/SettingsApplication.cpp
     src/TerminalSession.cpp
@@ -89,13 +95,86 @@ set(SOURCES
     src/PackageInfo.cpp
     src/PackageDatabase.cpp
     src/PackageManager.cpp
+    src/Package.cpp
+    src/PackageDependency.cpp
+    src/PackageRepository.cpp
+    src/PackageTransaction.cpp
+    src/PackageManagerApplication.cpp
     src/PackageModule.cpp
     src/StoreCategory.cpp
+    src/StoreCategoryEnum.cpp
     src/StoreItem.cpp
     src/StoreCatalog.cpp
+    src/InstalledApplication.cpp
+    src/StoreUpdate.cpp
     src/StoreManager.cpp
     src/StoreModule.cpp
     src/StoreApplication.cpp
+    src/BrowserPage.cpp
+    src/BrowserManager.cpp
+    src/BrowserModule.cpp
+    src/BrowserApplication.cpp
+    src/BrowserTab.cpp
+    src/BrowserSession.cpp
+    src/BrowserDownload.cpp
+    src/BrowserDownloadManager.cpp
+    src/BrowserBookmark.cpp
+    src/BrowserBookmarkManager.cpp
+    src/BrowserHistoryEntry.cpp
+    src/BrowserHistoryManager.cpp
+    src/BrowserPermission.cpp
+    src/BrowserPermissionManager.cpp
+    src/BrowserPrivacySettings.cpp
+    src/Note.cpp
+    src/NoteFolder.cpp
+    src/NotesStorageManager.cpp
+    src/NoteSearchManager.cpp
+    src/NotesManager.cpp
+    src/NotesApplication.cpp
+    src/ImageDocument.cpp
+    src/ImageMetadata.cpp
+    src/ImageSlideshowManager.cpp
+    src/ImageViewerManager.cpp
+    src/ImageViewerApplication.cpp
+    src/AdaptiveLayoutManager.cpp
+    src/AccessibilityManager.cpp
+    src/CalculatorEngine.cpp
+    src/CalculatorManager.cpp
+    src/CalculatorApplication.cpp
+    src/PdfEditorTools.cpp
+    src/PdfAnnotation.cpp
+    src/PdfAnnotationManager.cpp
+    src/PdfStudioDocument.cpp
+    src/PdfStudioManager.cpp
+    src/PdfStudioApplication.cpp
+    src/ArchiveEntry.cpp
+    src/ArchiveDocument.cpp
+    src/ArchiveEngine.cpp
+    src/ArchiveManager.cpp
+    src/ArchiveApplication.cpp
+    src/MediaDocument.cpp
+    src/MediaPlayerManager.cpp
+    src/MediaPlayerApplication.cpp
+    src/TextDocument.cpp
+    src/TextEditorManager.cpp
+    src/TextEditorApplication.cpp
+    src/SystemInfo.cpp
+    src/SystemMonitorManager.cpp
+    src/SystemMonitorApplication.cpp
+    src/TaskInfo.cpp
+    src/TaskManager.cpp
+    src/TaskManagerApplication.cpp
+    src/NetworkInterface.cpp
+    src/NetworkManager.cpp
+    src/NetworkApplication.cpp
+    src/StorageDevice.cpp
+    src/StoragePartition.cpp
+    src/StorageManager.cpp
+    src/StorageApplication.cpp
+    src/PrinterInfo.cpp
+    src/PrintJob.cpp
+    src/PrintManager.cpp
+    src/PrintApplication.cpp
 )
 
 set(HEADERS
@@ -118,6 +197,11 @@ set(HEADERS
     include/bos/NotificationModule.h
     include/bos/FileSystemModel.h
     include/bos/FileManagerApplication.h
+    include/bos/FavoriteLocation.h
+    include/bos/FileFavoriteManager.h
+    include/bos/RecentFile.h
+    include/bos/RecentFileManager.h
+    include/bos/FileSearchManager.h
     include/bos/SettingsPage.h
     include/bos/SettingsManager.h
     include/bos/SettingsApplication.h
@@ -173,15 +257,88 @@ set(HEADERS
     include/bos/PackageState.h
     include/bos/PackageType.h
     include/bos/PackageInfo.h
+    include/bos/Package.h
+    include/bos/PackageDependency.h
+    include/bos/PackageRepository.h
+    include/bos/PackageTransaction.h
     include/bos/PackageDatabase.h
     include/bos/PackageManager.h
+    include/bos/PackageManagerApplication.h
     include/bos/PackageModule.h
     include/bos/StoreCategory.h
+    include/bos/StoreCategoryEnum.h
     include/bos/StoreItem.h
     include/bos/StoreCatalog.h
+    include/bos/InstalledApplication.h
+    include/bos/StoreUpdate.h
     include/bos/StoreManager.h
     include/bos/StoreModule.h
     include/bos/StoreApplication.h
+    include/bos/BrowserPage.h
+    include/bos/BrowserManager.h
+    include/bos/BrowserModule.h
+    include/bos/BrowserApplication.h
+    include/bos/BrowserTab.h
+    include/bos/BrowserSession.h
+    include/bos/BrowserDownload.h
+    include/bos/BrowserDownloadManager.h
+    include/bos/BrowserBookmark.h
+    include/bos/BrowserBookmarkManager.h
+    include/bos/BrowserHistoryEntry.h
+    include/bos/BrowserHistoryManager.h
+    include/bos/BrowserPermission.h
+    include/bos/BrowserPermissionManager.h
+    include/bos/BrowserPrivacySettings.h
+    include/bos/Note.h
+    include/bos/NoteFolder.h
+    include/bos/NotesStorageManager.h
+    include/bos/NoteSearchManager.h
+    include/bos/NotesManager.h
+    include/bos/NotesApplication.h
+    include/bos/ImageDocument.h
+    include/bos/ImageMetadata.h
+    include/bos/ImageSlideshowManager.h
+    include/bos/ImageViewerManager.h
+    include/bos/ImageViewerApplication.h
+    include/bos/AdaptiveLayoutManager.h
+    include/bos/AccessibilityManager.h
+    include/bos/CalculatorEngine.h
+    include/bos/CalculatorManager.h
+    include/bos/CalculatorApplication.h
+    include/bos/PdfEditorTools.h
+    include/bos/PdfAnnotation.h
+    include/bos/PdfAnnotationManager.h
+    include/bos/PdfStudioDocument.h
+    include/bos/PdfStudioManager.h
+    include/bos/PdfStudioApplication.h
+    include/bos/ArchiveEntry.h
+    include/bos/ArchiveDocument.h
+    include/bos/ArchiveEngine.h
+    include/bos/ArchiveManager.h
+    include/bos/ArchiveApplication.h
+    include/bos/MediaDocument.h
+    include/bos/MediaPlayerManager.h
+    include/bos/MediaPlayerApplication.h
+    include/bos/TextDocument.h
+    include/bos/TextEditorManager.h
+    include/bos/TextEditorApplication.h
+    include/bos/SystemInfo.h
+    include/bos/SystemMonitorManager.h
+    include/bos/SystemMonitorApplication.h
+    include/bos/TaskInfo.h
+    include/bos/TaskManager.h
+    include/bos/TaskManagerApplication.h
+    include/bos/NetworkInterface.h
+    include/bos/NetworkManager.h
+    include/bos/NetworkApplication.h
+    include/bos/StorageDevice.h
+    include/bos/StoragePartition.h
+    include/bos/StorageManager.h
+    include/bos/StorageApplication.h
+    include/bos/PrinterInfo.h
+    include/bos/PrintJob.h
+    include/bos/PrintManager.h
+    include/bos/PrintApplication.h
 )
 
 qt_add_executable(BOS_Shell
@@ -195,7 +352,17 @@ target_include_directories(BOS_Shell PRIVATE
 
 target_link_libraries(BOS_Shell PRIVATE
     Qt6::Quick
+    Qt6::QuickControls2
+    Qt6::QuickDialogs2
     Qt6::Widgets
+    Qt6::WebEngineQuick
+    Qt6::WebEngineCore
+    Qt6::Pdf
+    Qt6::PdfQuick
+    Qt6::Multimedia
+    Qt6::Network
+    Qt6::PrintSupport
+    ZLIB::ZLIB
 )
 
 # Embed QML files as a QML module. This keeps the QML source tree clean and
@@ -237,8 +404,22 @@ qt_add_qml_module(BOS_Shell
         qml/PackageCard.qml
         qml/PackageList.qml
         qml/PackageStatus.qml
+        qml/PackagesPage.qml
+        qml/PackageManagerWindow.qml
+        qml/PackageToolbar.qml
+        qml/PackageStatusBar.qml
+        qml/RepositoryManager.qml
+        qml/RepositoryDelegate.qml
+        qml/TransactionViewer.qml
+        qml/DependencyViewer.qml
         qml/StoreWindow.qml
         qml/StoreSidebar.qml
+        qml/CategorySidebar.qml
+        qml/StoreToolbar.qml
+        qml/StoreGrid.qml
+        qml/StoreStatusBar.qml
+        qml/InstalledApplicationsPage.qml
+        qml/UpdatesPage.qml
         qml/FeaturedSection.qml
         qml/CategoryList.qml
         qml/SearchBar.qml
@@ -247,6 +428,47 @@ qt_add_qml_module(BOS_Shell
         qml/ApplicationDetails.qml
         qml/InstallButton.qml
         qml/StoreSettingsPage.qml
+        qml/BrowserWindow.qml
+        qml/BrowserToolbar.qml
+        qml/BrowserToolButton.qml
+        qml/AddressBar.qml
+        qml/BrowserView.qml
+        qml/BrowserStatusBar.qml
+        qml/BrowserTabBar.qml
+        qml/BrowserTabButton.qml
+        qml/BrowserDownloadsWindow.qml
+        qml/BrowserDownloadList.qml
+        qml/BrowserDownloadDelegate.qml
+        qml/BrowserBookmarksWindow.qml
+        qml/BrowserBookmarkList.qml
+        qml/BrowserBookmarkDelegate.qml
+        qml/BrowserHistoryWindow.qml
+        qml/BrowserHistoryList.qml
+        qml/BrowserHistoryDelegate.qml
+        qml/BrowserPrivacyWindow.qml
+        qml/BrowserPermissionList.qml
+        qml/BrowserPermissionDelegate.qml
+        qml/BrowserPermissionPrompt.qml
+        qml/BrowserPrivacySettingsPage.qml
+        qml/PrivacyToggle.qml
+        qml/NotesWindow.qml
+        qml/NotesToolbar.qml
+        qml/NotesToolButton.qml
+        qml/NotesSidebar.qml
+        qml/NoteItem.qml
+        qml/NotesEditor.qml
+        qml/NotesStatusBar.qml
+        qml/FolderSidebar.qml
+        qml/NotesSearchBar.qml
+        qml/NoteProperties.qml
+        qml/ImageViewerWindow.qml
+        qml/ImageToolbar.qml
+        qml/ImageToolButton.qml
+        qml/ImageCanvas.qml
+        qml/ImagePlaceholder.qml
+        qml/ImageStatusBar.qml
+        qml/MetadataPanel.qml
+        qml/SlideshowControls.qml
         qml/NotificationCenter.qml
         qml/NotificationPopup.qml
         qml/FileManagerWindow.qml
@@ -257,6 +479,10 @@ qt_add_qml_module(BOS_Shell
         qml/ToolButton.qml
         qml/HeaderLabel.qml
         qml/CellLabel.qml
+        qml/BreadcrumbBar.qml
+        qml/FavoriteSidebar.qml
+        qml/RecentFilesPanel.qml
+        qml/SearchBar.qml
         qml/SettingsWindow.qml
         qml/NavigationSidebar.qml
         qml/SettingsContent.qml
@@ -270,6 +496,84 @@ qt_add_qml_module(BOS_Shell
         qml/DesktopIcons.qml
         qml/DesktopIcon.qml
         qml/DesktopSelection.qml
+        qml/CalculatorWindow.qml
+        qml/CalculatorDisplay.qml
+        qml/CalculatorKeypad.qml
+        qml/CalculatorButton.qml
+        qml/CalculatorStatusBar.qml
+        qml/PdfStudioWindow.qml
+        qml/PdfStudioToolbar.qml
+        qml/PdfPageView.qml
+        qml/PdfSidebar.qml
+        qml/PdfThumbnailItem.qml
+        qml/PdfStudioStatusBar.qml
+        qml/PdfToolButton.qml
+        qml/LabelRow.qml
+        qml/PdfDocumentPanel.qml
+        qml/PdfPropertiesTab.qml
+        qml/PdfMetadataTab.qml
+        qml/PdfBookmarksTab.qml
+        qml/PdfOutlineTab.qml
+        qml/PdfAnnotationListTab.qml
+        qml/PdfAnnotationOverlay.qml
+        qml/ArchiveWindow.qml
+        qml/ArchiveToolbar.qml
+        qml/ArchiveSidebar.qml
+        qml/ArchiveFileList.qml
+        qml/ArchiveEntryDelegate.qml
+        qml/ArchiveStatusBar.qml
+        qml/ArchiveToolButton.qml
+        qml/MediaPlayerWindow.qml
+        qml/MediaToolbar.qml
+        qml/MediaControls.qml
+        qml/MediaCanvas.qml
+        qml/PlaylistSidebar.qml
+        qml/MediaStatusBar.qml
+        qml/MediaToolButton.qml
+        qml/TextEditorWindow.qml
+        qml/TextToolbar.qml
+        qml/TextEditorArea.qml
+        qml/TextStatusBar.qml
+        qml/TextToolButton.qml
+        qml/FindBar.qml
+        qml/SystemMonitorWindow.qml
+        qml/OverviewPage.qml
+        qml/CpuCard.qml
+        qml/MemoryCard.qml
+        qml/DiskCard.qml
+        qml/SystemCard.qml
+        qml/MonitorStatusBar.qml
+        qml/TaskManagerWindow.qml
+        qml/ProcessTable.qml
+        qml/ProcessDelegate.qml
+        qml/ProcessDetails.qml
+        qml/TaskToolbar.qml
+        qml/TaskStatusBar.qml
+        qml/TaskToolButton.qml
+        qml/NetworkManagerWindow.qml
+        qml/NetworkInterfaceList.qml
+        qml/NetworkInterfaceDelegate.qml
+        qml/NetworkDetails.qml
+        qml/NetworkToolbar.qml
+        qml/NetworkStatusBar.qml
+        qml/NetworkToolButton.qml
+        qml/StorageManagerWindow.qml
+        qml/DeviceList.qml
+        qml/DeviceDelegate.qml
+        qml/PartitionTable.qml
+        qml/StorageDetails.qml
+        qml/StorageToolbar.qml
+        qml/StorageStatusBar.qml
+        qml/StorageToolButton.qml
+        qml/PrintManagerWindow.qml
+        qml/PrinterList.qml
+        qml/PrinterDelegate.qml
+        qml/PrintQueue.qml
+        qml/PrintJobDelegate.qml
+        qml/PrinterDetails.qml
+        qml/PrintToolbar.qml
+        qml/PrintStatusBar.qml
+        qml/PrintToolButton.qml
 )
 
 # Copy assets from the source tree into the build directory so the executable
