@@ -1,0 +1,12 @@
+debianVersion: stable
+debianMirror: http://deb.debian.org/debian
+packagesListPath: debian-base/packages.list
+sourcesListPath: debian-base/sources.list
+aptPreferencesPath: debian-base/apt-preferences
+displayManager: sddm
+defaultHostname: baytevora-live
+defaultLocale: en_US.UTF-8
+defaultTimezone: UTC
+liveUser: live
+targetRoot: /workspace/app-cwh12h2q3ri9/baytevora-os-main/foundation/rootfs
+sourceRoot: /workspace/app-cwh12h2q3ri9/baytevora-os-main

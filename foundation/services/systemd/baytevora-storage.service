@@ -1,0 +1,11 @@
+[Unit]
+Description=Baytevora Storage Manager
+After=dbus.service
+
+[Service]
+Type=simple
+ExecStart=/opt/baytevora/services/storage/storage-daemon
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

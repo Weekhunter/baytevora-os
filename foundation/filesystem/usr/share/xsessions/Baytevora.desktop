@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Baytevora
+Comment=Baytevora Desktop Session
+Exec=/usr/bin/baytevora-session
+Type=Application
+DesktopNames=Baytevora

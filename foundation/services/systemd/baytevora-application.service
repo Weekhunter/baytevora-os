@@ -1,0 +1,11 @@
+[Unit]
+Description=Baytevora Application Framework
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/baytevora/services/application/app-framework
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

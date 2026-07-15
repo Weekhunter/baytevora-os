@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Store
+Comment=Browse and install applications
+Exec=baytevora-store %U
+Icon=baytevora-store
+Type=Application
+Terminal=false
+Categories=System;Baytevora;
+MimeType=application/x-baytevora;

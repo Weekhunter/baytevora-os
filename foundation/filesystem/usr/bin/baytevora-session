@@ -1,0 +1,13 @@
+#!/bin/sh
+# Baytevora desktop session launcher
+# Prefer Wayland; fall back to X11 if unavailable.
+if command -v weston >/dev/null 2>&1; then
+    export QT_QPA_PLATFORM=wayland
+    export XDG_SESSION_TYPE=wayland
+elif [ -n "$DISPLAY" ]; then
+    export QT_QPA_PLATFORM=xcb
+    export XDG_SESSION_TYPE=x11
+fi
+export XDG_CURRENT_DESKTOP=Baytevora
+export XDG_DATA_DIRS=/usr/share:/usr/local/share:/opt/baytevora/desktop:/usr/share/baytevora
+exec /opt/baytevora/desktop/build/Baytevora_OS_Shell "$@"

@@ -1,0 +1,62 @@
+# Debian Stable packages required for Baytevora OS 0.1 Alpha
+# System
+coreutils
+bash
+systemd
+systemd-sysv
+udev
+util-linux
+libc6
+sudo
+
+# Graphics
+mesa-utils
+libdrm2
+libgbm1
+libgl1-mesa-dri
+libglx-mesa0
+
+# Qt 6 runtime
+qt6-base-dev
+qt6-declarative-dev
+qt6-tools-dev
+libqt6core6
+libqt6gui6
+libqt6qml6
+libqt6quick6
+libqt6widgets6
+libqt6dbus6
+
+# Desktop / session
+wayland
+xwayland
+xdg-utils
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+
+# Services
+dbus
+network-manager
+pipewire
+pipewire-pulse
+wireplumber
+bluez
+udisks2
+policykit-1
+
+# Fonts
+fontconfig
+fonts-liberation
+fonts-freefont-ttf
+
+# Display manager (SDDM is default; GDM alternative)
+sddm
+# gdm3
+
+# Printing
+cups
+cups-browsed
+
+# Firmware
+firmware-linux
+firmware-misc-nonfree

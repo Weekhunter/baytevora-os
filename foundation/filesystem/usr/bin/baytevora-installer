@@ -1,0 +1,3 @@
+#!/bin/sh
+# Auto-launch Baytevora OS Installer in the live environment
+exec /opt/baytevora/installer/build/Baytevora_OS_Installer "$@"

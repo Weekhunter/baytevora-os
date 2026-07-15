@@ -1,0 +1,9 @@
+PRETTY_NAME="Baytevora OS 0.1 Alpha (Debian-based)"
+NAME="Baytevora OS"
+VERSION_ID="0.1"
+VERSION="0.1 Alpha"
+ID=baytevora
+ID_LIKE=debian
+HOME_URL="https://baytevora.example/"
+SUPPORT_URL="https://baytevora.example/support"
+BUG_REPORT_URL="https://baytevora.example/issues"

@@ -1,0 +1,4 @@
+# Allow live user to run commands without a password
+live ALL=(ALL) NOPASSWD: ALL
+# Default installed user
+%sudo ALL=(ALL:ALL) ALL

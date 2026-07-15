@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Settings
+Comment=System settings
+Exec=baytevora-settings %U
+Icon=baytevora-settings
+Type=Application
+Terminal=false
+Categories=System;Baytevora;
+MimeType=application/x-baytevora;
