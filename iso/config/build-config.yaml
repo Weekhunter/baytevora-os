@@ -1,0 +1,6 @@
+sourceRoot: /workspace/app-cwh12h2q3ri9/baytevora-os-main
+outputDir: /workspace/app-cwh12h2q3ri9/baytevora-os-main/iso
+filesystemType: squashfs
+compressionLevel: 9
+kernelPath:
+initramfsPath:

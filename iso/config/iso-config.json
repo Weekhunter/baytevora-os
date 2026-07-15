@@ -1,0 +1,7 @@
+{
+  "volumeLabel": "Baytevora OS 0.1 Alpha",
+  "publisher": "Baytevora Project",
+  "applicationID": "Baytevora-OS-Installer",
+  "bootMode": "UEFI",
+  "bootTimeout": 5
+}
