@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for NetworkManager
+echo "[BOS PLACEHOLDER] NetworkManager not functional in Alpha sandbox" >&2
+exit 0

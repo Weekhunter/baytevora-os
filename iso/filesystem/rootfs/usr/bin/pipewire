@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for pipewire
+echo "[BOS PLACEHOLDER] pipewire not functional in Alpha sandbox" >&2
+exit 0

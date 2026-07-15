@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Baytevora Installer
+Comment=Install Baytevora OS
+Exec=/usr/bin/baytevora-installer
+Type=Application
+Terminal=false
+X-GNOME-Autostart-enabled=true

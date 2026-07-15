@@ -1,0 +1,15 @@
+BAYTEVORA OS ALPHA LICENSE AGREEMENT
+
+Version 0.1 Alpha
+
+This pre-release software is provided for evaluation and development purposes only.
+By installing Baytevora OS, you agree that:
+
+1. This is an alpha product and may contain defects, incomplete features, or
+   instability.
+2. You will not use Baytevora OS in production environments or for critical data.
+3. Telemetry, online activation, and cloud account integration are not included
+   in this release.
+4. Feedback and contributions are welcome under the project guidelines.
+
+Please accept this agreement to continue installing Baytevora OS.

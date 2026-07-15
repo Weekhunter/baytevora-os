@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for sh
+echo "[BOS PLACEHOLDER] sh not functional in Alpha sandbox" >&2
+exit 0

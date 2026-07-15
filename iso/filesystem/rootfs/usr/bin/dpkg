@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for dpkg
+echo "[BOS PLACEHOLDER] dpkg not functional in Alpha sandbox" >&2
+exit 0

@@ -1,0 +1,215 @@
+Package: coreutils
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: bash
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: systemd
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: systemd-sysv
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: udev
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: util-linux
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libc6
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: sudo
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: mesa-utils
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libdrm2
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libgbm1
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libgl1-mesa-dri
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libglx-mesa0
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: qt6-base-dev
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: qt6-declarative-dev
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: qt6-tools-dev
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libqt6core6
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libqt6gui6
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libqt6qml6
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libqt6quick6
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libqt6widgets6
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: libqt6dbus6
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: wayland
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: xwayland
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: xdg-utils
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: xdg-desktop-portal
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: xdg-desktop-portal-wlr
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: dbus
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: network-manager
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: pipewire
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: pipewire-pulse
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: wireplumber
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: bluez
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: udisks2
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: policykit-1
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: fontconfig
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: fonts-liberation
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: fonts-freefont-ttf
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: sddm
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: cups
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: cups-browsed
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: firmware-linux
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+
+Package: firmware-misc-nonfree
+Status: install ok installed
+Version: 0.1-alpha
+Description: placeholder package entry for Baytevora OS Alpha
+

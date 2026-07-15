@@ -1,0 +1,3 @@
+#!/bin/sh
+# Baytevora Package Manager backend (Alpha read-only hook)
+cat /var/lib/dpkg/status

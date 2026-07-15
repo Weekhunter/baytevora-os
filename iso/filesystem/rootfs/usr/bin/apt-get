@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for apt-get
+echo "[BOS PLACEHOLDER] apt-get not functional in Alpha sandbox" >&2
+exit 0

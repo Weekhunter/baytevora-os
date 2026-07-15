@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for mount
+echo "[BOS PLACEHOLDER] mount not functional in Alpha sandbox" >&2
+exit 0

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder systemd for Baytevora OS Alpha sandbox
+echo "[BOS PLACEHOLDER] systemd not functional in Alpha sandbox" >&2
+exec /bin/sh

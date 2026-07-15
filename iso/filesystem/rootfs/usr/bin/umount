@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for umount
+echo "[BOS PLACEHOLDER] umount not functional in Alpha sandbox" >&2
+exit 0

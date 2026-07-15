@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for gdm3
+echo "[BOS PLACEHOLDER] gdm3 not functional in Alpha sandbox" >&2
+exit 0

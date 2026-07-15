@@ -1,0 +1,30 @@
+{
+  "distribution": "debian",
+  "version": "0.1 Alpha",
+  "components": [
+    {
+      "name": "Desktop Shell",
+      "version": "0.1"
+    },
+    {
+      "name": "Installer",
+      "version": "0.1"
+    },
+    {
+      "name": "Branding",
+      "version": "0.1"
+    },
+    {
+      "name": "StorageManager",
+      "version": "0.1"
+    },
+    {
+      "name": "Printing Framework",
+      "version": "0.1"
+    },
+    {
+      "name": "Application Framework",
+      "version": "0.1"
+    }
+  ]
+}

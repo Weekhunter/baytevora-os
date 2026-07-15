@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for modprobe
+echo "[BOS PLACEHOLDER] modprobe not functional in Alpha sandbox" >&2
+exit 0

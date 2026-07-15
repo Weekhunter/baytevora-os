@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for dbus-daemon
+echo "[BOS PLACEHOLDER] dbus-daemon not functional in Alpha sandbox" >&2
+exit 0

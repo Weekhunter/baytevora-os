@@ -1,0 +1,4 @@
+#!/bin/sh
+# Placeholder for cupsd
+echo "[BOS PLACEHOLDER] cupsd not functional in Alpha sandbox" >&2
+exit 0

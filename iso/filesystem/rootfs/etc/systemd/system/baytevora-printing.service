@@ -1,0 +1,11 @@
+[Unit]
+Description=Baytevora Printing Framework
+After=cups.service
+
+[Service]
+Type=simple
+ExecStart=/opt/baytevora/services/printing/printing-daemon
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
