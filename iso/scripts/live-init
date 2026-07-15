@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# Baytevora OS live environment init script (Milestone H2)
+#
+# Executed by the kernel as PID 1 inside the initramfs. It mounts the ISO,
+# mounts the squashfs root filesystem, sets up the live overlay, and switches
+# to the Debian-based rootfs so systemd can start the Baytevora desktop session.
+
+set -euo pipefail
+
+ISO_MOUNT="/run/iso"
+ROOTFS_SQUASH="${ISO_MOUNT}/filesystem/squashfs/rootfs.squashfs"
+NEWROOT="/run/baytevora-root"
+
+log() { echo "[LIVE] $*"; }
+
+log "Baytevora OS live environment starting..."
+
+# Minimal setup of /proc, /sys, /dev, /run.
+mkdir -p /proc /sys /dev /run
+mount -t proc proc /proc 2>/dev/null || true
+mount -t sysfs sysfs /sys 2>/dev/null || true
+mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
+mount -t tmpfs tmpfs /run 2>/dev/null || true
+
+# Locate and mount the ISO device (this is a simplified placeholder).
+mkdir -p "${ISO_MOUNT}"
+if mount -o ro /dev/sr0 "${ISO_MOUNT}" 2>/dev/null || \
+   mount -o ro /dev/cdrom "${ISO_MOUNT}" 2>/dev/null || \
+   mount -o loop /dev/sda1 "${ISO_MOUNT}" 2>/dev/null; then
+    log "ISO mounted at ${ISO_MOUNT}"
+else
+    log "Could not auto-mount ISO device; continuing in stub mode"
+fi
+
+# Mount the squashfs rootfs if it exists.
+mkdir -p "${NEWROOT}"
+if [[ -f "${ROOTFS_SQUASH}" ]]; then
+    mount -o ro,loop "${ROOTFS_SQUASH}" "${NEWROOT}"
+    log "Rootfs mounted at ${NEWROOT}"
+else
+    # Fallback: use a tmpfs overlay for testing on systems without squashfs.
+    mount -t tmpfs tmpfs "${NEWROOT}"
+    log "Squashfs not found; using tmpfs fallback at ${NEWROOT}"
+fi
+
+# Bind required kernel filesystems into the new root.
+mkdir -p "${NEWROOT}/proc" "${NEWROOT}/sys" "${NEWROOT}/dev" "${NEWROOT}/run"
+mount --bind /proc "${NEWROOT}/proc" 2>/dev/null || true
+mount --bind /sys "${NEWROOT}/sys" 2>/dev/null || true
+mount --bind /dev "${NEWROOT}/dev" 2>/dev/null || true
+mount --bind /run "${NEWROOT}/run" 2>/dev/null || true
+
+# Ensure systemd can be found in the new root.
+if [[ ! -e "${NEWROOT}/sbin/init" && ! -L "${NEWROOT}/sbin/init" ]]; then
+    ln -sf /usr/lib/systemd/systemd "${NEWROOT}/sbin/init" 2>/dev/null || \
+        { echo '#!/bin/sh\nexec /bin/sh' > "${NEWROOT}/sbin/init"; chmod +x "${NEWROOT}/sbin/init"; }
+fi
+
+log "Switching root to Debian-based Baytevora OS..."
+exec switch_root "${NEWROOT}" /sbin/init
+
