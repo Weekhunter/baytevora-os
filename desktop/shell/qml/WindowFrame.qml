@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief A minimal window frame for the BDE Window Manager framework.
@@ -21,6 +22,9 @@ Rectangle {
 
     /** Current window state: "normal", "minimized", "maximized", or "closed". */
     property string state: "normal"
+
+    /** Whether the in-window About dialog is visible. */
+    property bool aboutOpen: false
 
     color: ThemeManager.windowBackground
     border.color: isActive
@@ -54,10 +58,25 @@ Rectangle {
                   ? (ThemeManager.surfaceColor)
                   : (ThemeManager.backgroundColor)
 
-            Text {
+            Image {
+                id: windowIcon
+
                 anchors.verticalCenter: parent.verticalCenter
                 anchors.left: parent.left
-                anchors.leftMargin: SpacingManager.space12
+                anchors.leftMargin: SpacingManager.space8
+                width: 18
+                height: 18
+                source: BrandingManager.applicationSymbolUrl(root.applicationName)
+                fillMode: Image.PreserveAspectFit
+                sourceSize.width: 36
+                sourceSize.height: 36
+                visible: source.toString().length > 0
+            }
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.left: windowIcon.visible ? windowIcon.right : parent.left
+                anchors.leftMargin: windowIcon.visible ? SpacingManager.space8 : SpacingManager.space12
                 anchors.right: buttonRow.left
                 anchors.rightMargin: SpacingManager.space8
                 text: root.title
@@ -73,6 +92,28 @@ Rectangle {
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
                 height: parent.height
+                spacing: 4
+
+                // Milestone E: in-window About button for every application.
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 28
+                    height: 28
+                    radius: DesignTokens.radiusSmall
+                    color: ThemeManager.surfaceSecondaryColor
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "?"
+                        color: ThemeManager.textSecondary
+                        font.pixelSize: 14
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: root.aboutOpen = true
+                    }
+                }
 
                 WindowButton {
                     symbol: "−"
@@ -95,6 +136,11 @@ Rectangle {
                     onClicked: windowManager.closeWindow(modelData.id)
                 }
             }
+        }
+
+        AboutDialog {
+            applicationName: root.applicationName
+            open: root.aboutOpen
         }
 
         // Content area. A Loader selects the application-specific UI based on

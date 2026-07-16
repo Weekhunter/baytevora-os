@@ -29,6 +29,17 @@ Rectangle {
         spacing: SpacingManager.space16
         width: Math.min(parent.width * 0.8, 320)
 
+        // Official Baytevora OS symbol
+        Image {
+            anchors.horizontalCenter: parent.horizontalCenter
+            width: 64
+            height: 77
+            source: BrandingManager.applicationSymbolUrl("Baytevora OS")
+            fillMode: Image.PreserveAspectFit
+            sourceSize.width: 128
+            sourceSize.height: 154
+        }
+
         Clock {
             anchors.horizontalCenter: parent.horizontalCenter
             height: 48

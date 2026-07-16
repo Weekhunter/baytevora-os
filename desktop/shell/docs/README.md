@@ -3466,8 +3466,218 @@ Baytevora OS (BOS) is a security-first, privacy-focused Linux-based operating sy
 - No installer, ISO generation, boot branding, or Welcome Center yet.
 - Some legacy QML components still use fixed layout sizes (width/height defaults) rather than fully tokenized spacing; this is tolerated for the Alpha because it does not affect theme consistency or runtime stability.
 
+**Milestone F — Baytevora Welcome & First Boot Experience (BWF)**
+
+This milestone delivers the complete first-time user experience for Baytevora OS v0.1 Alpha. It reuses the existing Branding Repository and BrandingManager from Milestone E and stores all configuration in a local JSON file.
+
+**First boot lifecycle**
+
+1. `Application::run()` loads `SettingsPersistence` and reads `first-boot.json`.
+2. If `firstBootCompleted` is missing or `false`, the shell loads `FirstBootWizard.qml` instead of the login screen.
+3. `FirstBootManager` drives the wizard pages and validates user input.
+4. After the summary page, `FirstBootManager::startSetup()` executes staged setup (prepare desktop, create user, apply settings, configure system, almost ready).
+5. On the finish page, `FirstBootManager::completeSetup()` saves configuration and emits `setupCompleted`.
+6. `Application` closes the wizard and loads `LoginScreen` so the first login can occur.
+7. After successful login, `WelcomeManager` checks `welcomeCenterHidden`; if `false`, it opens `WelcomeCenterWindow.qml`.
+8. Closing the Welcome Center marks the first login as handled. Checking "Hide on next startup" persists the flag so the center does not appear on future logins.
+
+**Wizard architecture**
+
+- `FirstBootManager` (C++): owns wizard state, exposes page properties, validates each page, executes setup stages, and builds the configuration map.
+- `SettingsPersistence` (C++): loads and saves `~/.config/Baytevora/first-boot.json` using Qt's standard config location.
+- `WelcomeManager` (C++): tracks first-login state and Welcome Center visibility.
+- `UserManager` (extended): new `createUserFromWizard()` method replaces the default user list with the first boot account.
+- `FirstBootWizard.qml`: full-screen container with header, page loader, and adaptive footer.
+- Wizard pages (`WizardWelcomePage.qml` through `WizardFinishPage.qml`): per-page UI using BDL v2 tokens and BrandingManager.
+- Shared wizard primitives: `WizardButton.qml`, `WizardToggle.qml`, `SummaryRow.qml`, `WelcomeCenterTab.qml`.
+
+**Persistence format**
+
+`first-boot.json` stores the following fields:
+
+- `firstBootCompleted` (bool)
+- `region` (string)
+- `language` (string)
+- `keyboardLayout` (string)
+- `timeZone` (string)
+- `autoDateTime` (bool)
+- `use24HourFormat` (bool)
+- `usageAnalytics` (bool)
+- `crashReports` (bool)
+- `personalization` (bool)
+- `locationServices` (bool)
+- `computerName` (string)
+- `firstUserCreated` (bool)
+- `welcomeCenterHidden` (bool)
+
+**Class relationships**
+
+- `Application` creates `SettingsPersistence`, `WelcomeManager`, and `FirstBootManager`.
+- `FirstBootManager` uses `SettingsPersistence` to save and `UserManager` to create the first account.
+- `WelcomeManager` uses `SettingsPersistence` to read/write `welcomeCenterHidden`.
+- `Application` loads `FirstBootWizard.qml` or `LoginScreen.qml` based on `firstBootCompleted`.
+- `Application` loads `WelcomeCenterWindow.qml` after first login when `WelcomeManager::shouldOpenOnLogin()` is true.
+
+**New QML components**
+
+- `FirstBootWizard.qml`, `WizardWelcomePage.qml`, `WizardRegionPage.qml`, `WizardLanguagePage.qml`, `WizardKeyboardPage.qml`, `WizardTimezonePage.qml`, `WizardDateTimePage.qml`, `WizardPrivacyPage.qml`, `WizardUserAccountPage.qml`, `WizardComputerNamePage.qml`, `WizardSummaryPage.qml`, `WizardSetupProgressPage.qml`, `WizardFinishPage.qml`
+- `WelcomeCenterWindow.qml`, `WelcomeCenterTab.qml`
+- `WizardButton.qml`, `WizardToggle.qml`, `SummaryRow.qml`
+
+**Validation notes**
+
+- Region, language, keyboard layout, and time zone must be selected.
+- User account requires a non-empty full name, valid username, and a password of at least 8 characters containing uppercase, lowercase, and a digit.
+- Computer name must be 1-15 characters and contain only letters, numbers, and hyphens.
+- Privacy toggles default to off to honor the local-by-default policy.
+
 **Alpha readiness notes**
 
 - The shell launches, manages windows, routes applications, and integrates the major desktop subsystems without architectural changes.
 - All sprint work is packaged and validated structurally; the codebase is ready for Alpha Preparation Phase entry.
-- The next phase should focus on: installer/ISO, boot branding, real authentication/identity, and the Welcome Center, while keeping the current architecture stable.
+- The next phase should focus on: ISO generation, real authentication/identity, and system settings wiring, while keeping the current architecture stable.
+
+---
+
+## Milestone G: Baytevora OS Installer (BOI)
+
+A standalone installer application now lives in `baytevora-os-main/installer/`.
+It reuses the existing `BrandingManager`, `StorageManager`, and BDL v2 design
+managers from the desktop shell to provide a consistent first-install
+experience.
+
+**Installer flow**
+
+1. Welcome — BOS logo and version.
+2. Language — language selector (English default).
+3. Keyboard — keyboard layout selector (US default).
+4. License Agreement — scrollable license with Accept/Decline.
+5. Installation Type — standard install functional; replace/manual are placeholders.
+6. Disk Selection — detected disks from `StorageManager`.
+7. Partition Summary — target disk and required space review.
+8. Installation Progress — staged progress bar with status and logs.
+9. Installation Complete — Restart Now / Restart Later.
+
+**Core C++ classes**
+
+- `InstallerApplication` — application lifecycle, QML module registration, and service wiring.
+- `InstallerSession` — wizard page state and user selections.
+- `InstallerManager` — disk validation, staged installation engine, progress reporting, logging, and cancellation.
+- `InstallationTarget` — selected disk descriptor.
+- `InstallationSummary` — review-screen data holder.
+
+**UI components**
+
+- `InstallerWindow.qml`, `InstallerToolbar.qml`, `InstallerSidebar.qml`, `InstallerProgress.qml`, `InstallerStatusBar.qml`, `InstallerButton.qml`
+- `WelcomePage.qml`, `LanguagePage.qml`, `KeyboardPage.qml`, `LicensePage.qml`, `InstallationTypePage.qml`
+- `DiskSelectionPage.qml`, `DiskSelector.qml`, `PartitionSummaryPage.qml`, `SummaryPage.qml`
+- `InstallationProgressPage.qml`, `CompletionPage.qml`
+
+**Validation notes**
+
+- Standard installation is the only functional type; advanced partitioning, dual boot, encryption, LVM, Btrfs, network/OEM/enterprise modes are future hooks.
+- Disk validation requires at least 20 GB and warns on removable media.
+- The Alpha engine uses safe placeholder operations; the architecture is ready for a real partitioning/copy engine.
+- See `baytevora-os-main/installer/docs/README.md` for full architecture, lifecycle, and extension points.
+
+---
+
+## Milestone H: Baytevora OS ISO Generation (BIG)
+
+The first bootable Baytevora OS installation image is built from
+`baytevora-os-main/iso/`. The ISO boots directly into the Milestone G
+installer and contains the live root filesystem with the desktop shell,
+installer, branding assets, and required services.
+
+**ISO layout**
+
+- `iso/boot/grub/grub.cfg` — GRUB2 menu entry for the installer.
+- `iso/EFI/BOOT/BOOTX64.EFI` — UEFI bootloader (placeholder for Alpha).
+- `iso/boot/vmlinuz` and `iso/boot/initramfs.img` — kernel and initramfs
+  (placeholders for Alpha; real build supplies binaries via config).
+- `iso/filesystem/squashfs/` — compressed root filesystem.
+- `iso/output/` — `Baytevora-OS-0.1-Alpha.iso`, checksum, build info, and
+  version manifest.
+
+**Build scripts**
+
+- `iso/scripts/build_iso.sh` — main orchestrator.
+- `iso/scripts/clean_iso.sh` — remove build artifacts.
+- `iso/scripts/validate_iso.sh` — verify ISO, checksums, manifests, and rootfs contents.
+- `iso/scripts/prepare_filesystem.sh` — create the rootfs skeleton.
+- `iso/scripts/generate_manifest.sh` — create `version-manifest.json` and `build-info.json`.
+- `iso/scripts/live-init` — live environment init that mounts the rootfs and
+  launches the installer.
+
+**C++ build system**
+
+- `ISOBuilder` — coordinates filesystem preparation, packaging, GRUB config,
+  squashfs/ISO assembly, manifests, and checksums.
+- `ImageManifest` / `BuildConfiguration` / `ISOConfiguration` / `BuildLogger`
+  — configuration, manifests, and logging.
+
+**Boot flow**
+
+```
+UEFI → BOOTX64.EFI → GRUB → vmlinuz → initramfs → live-init →
+squashfs rootfs → Baytevora Installer → reboot → installed BOS →
+First Boot Wizard → Desktop
+```
+
+**Validation notes**
+
+- QEMU is the supported Alpha test target; VirtualBox, VMware, and GNOME
+  Boxes are future hooks.
+- The Alpha ISO is produced with kernel/initramfs/bootloader placeholders
+  unless the build host provides real binaries and `xorriso`/`grub-mkrescue`.
+- Future hooks include Secure Boot, signed images, Legacy BIOS, recovery ISO,
+  OEM/enterprise/minimal/network/offline ISO variants.
+- See `baytevora-os-main/iso/docs/README.md` for the full ISO build
+  documentation.
+
+## Milestone H2: Baytevora Linux Distribution Foundation (BLDF)
+
+Milestone H2 transforms Baytevora OS into a Debian Stable-based Linux distribution. The existing desktop shell, applications, installer, and branding remain unchanged; BLDF provides the Linux foundation underneath them.
+
+### Architecture
+
+```text
+Baytevora Applications
+        ↓
+Baytevora Desktop
+        ↓
+Baytevora Frameworks
+        ↓
+       Qt 6
+        ↓
+Debian User Space
+        ↓
+    systemd
+        ↓
+  Linux Kernel
+        ↓
+    Hardware
+```
+
+### What Changed for the Desktop Shell
+
+- The shell is installed into `/opt/baytevora/desktop` on the Debian rootfs.
+- A system-wide `Baytevora.desktop` session file is registered in `/usr/share/xsessions/`.
+- The `/usr/bin/baytevora-session` launcher selects Wayland when available and falls back to X11.
+- SDDM auto-logs in the live user and starts the Baytevora session.
+- After installation, the display manager launches the shell on user login.
+
+### Boot Flow with BLDF
+
+```text
+UEFI → GRUB → kernel → initramfs → live-init → squashfs rootfs → systemd →
+display manager → Baytevora Desktop → Baytevora Installer → installation →
+reboot → systemd → display manager → first-boot wizard → desktop
+```
+
+### Relevant Files
+
+- `baytevora-os-main/foundation/` — BLDF scripts, C++ classes, configuration, and documentation.
+- `baytevora-os-main/iso/scripts/build_iso.sh` — extended to run the BLDF scripts before ISO assembly.
+- `baytevora-os-main/foundation/docs/README.md` — full BLDF documentation.
+

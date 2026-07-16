@@ -52,6 +52,27 @@ int UserManager::userCount() const
     return m_users.size();
 }
 
+void UserManager::createUserFromWizard(const QString &name,
+                                       const QString &login,
+                                       const QString &password,
+                                       bool administrator,
+                                       const QString &avatar)
+{
+    User user;
+    user.username = login;
+    user.displayName = name.isEmpty() ? login : name;
+    user.password = password;
+    user.avatarPath = avatar;
+    user.administrator = administrator;
+    user.lastLogin = QDateTime::currentDateTimeUtc();
+
+    m_users.clear();
+    m_users.append(user);
+    m_currentUsername = user.username;
+    emit usersChanged();
+    emit currentUserChanged();
+}
+
 void UserManager::createDefaultUser()
 {
     User user;

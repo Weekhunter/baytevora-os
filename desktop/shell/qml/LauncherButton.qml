@@ -11,6 +11,7 @@ Rectangle {
     id: root
 
     property string iconName: ""
+    property url iconSource: ""
     property string appName: ""
 
     signal clicked()
@@ -23,26 +24,36 @@ Rectangle {
         anchors.centerIn: parent
         spacing: SpacingManager.space8
 
-        // Placeholder icon: a small geometric square with the icon text inside.
+        // Official application symbol or fallback initials.
         Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             width: 40
             height: 40
-            color: "ThemeManager.surfaceSecondaryColor"
+            color: root.iconSource.toString().length > 0 ? "transparent" : ThemeManager.surfaceSecondaryColor
             radius: DesignTokens.radiusSmall
+
+            Image {
+                anchors.fill: parent
+                source: root.iconSource
+                fillMode: Image.PreserveAspectFit
+                sourceSize.width: 80
+                sourceSize.height: 80
+                visible: root.iconSource.toString().length > 0
+            }
 
             Text {
                 anchors.centerIn: parent
-                text: root.iconName.length > 0 ? root.iconName : root.appName.substring(0, 2)
-                color: "ThemeManager.textSecondary"
+                text: root.appName.substring(0, 2).toUpperCase()
+                color: ThemeManager.textSecondary
                 font.pixelSize: 16
+                visible: root.iconSource.toString().length === 0
             }
         }
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: root.appName
-            color: "ThemeManager.textSecondary"
+            color: ThemeManager.textSecondary
             font.pixelSize: 12
             elide: Text.ElideRight
         }

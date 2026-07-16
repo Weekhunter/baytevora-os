@@ -11,6 +11,7 @@ Rectangle {
 
     property string itemTitle: ""
     property string itemDescription: ""
+    property url itemIcon: ""
     property bool itemEnabled: true
 
     signal activated()
@@ -20,14 +21,29 @@ Rectangle {
     color: "transparent"
     opacity: itemEnabled ? 1.0 : 0.4
 
-    Text {
+    Row {
         anchors.verticalCenter: parent.verticalCenter
         anchors.left: parent.left
         anchors.leftMargin: 14
-        text: root.itemTitle
-        color: "ThemeManager.textSecondary"
-        font.pixelSize: 14
-        elide: Text.ElideRight
+        spacing: 10
+
+        Image {
+            width: root.itemIcon.toString().length > 0 ? 18 : 0
+            height: 18
+            source: root.itemIcon
+            fillMode: Image.PreserveAspectFit
+            sourceSize.width: 36
+            sourceSize.height: 36
+            visible: root.itemIcon.toString().length > 0
+        }
+
+        Text {
+            text: root.itemTitle
+            color: ThemeManager.textSecondary
+            font.pixelSize: 14
+            elide: Text.ElideRight
+            verticalAlignment: Text.AlignVCenter
+        }
     }
 
     MouseArea {

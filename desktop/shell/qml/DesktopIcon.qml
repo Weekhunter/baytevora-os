@@ -14,6 +14,7 @@ Rectangle {
     property int itemId: 0
     property string displayName: ""
     property string iconName: ""
+    property url iconSource: ""
     property string itemType: ""
     property bool selected: false
 
@@ -34,8 +35,18 @@ Rectangle {
             anchors.horizontalCenter: parent.horizontalCenter
             width: IconManager.large
             height: width
-            color: ThemeManager.surfaceSecondaryColor
+            color: root.iconSource.toString().length > 0 ? "transparent" : ThemeManager.surfaceSecondaryColor
             radius: DesignTokens.radiusSmall
+
+            Image {
+                anchors.fill: parent
+                anchors.margins: 4
+                source: root.iconSource
+                fillMode: Image.PreserveAspectFit
+                sourceSize.width: IconManager.large * 2
+                sourceSize.height: IconManager.large * 2
+                visible: root.iconSource.toString().length > 0
+            }
 
             Text {
                 anchors.centerIn: parent
@@ -46,6 +57,7 @@ Rectangle {
                 font.weight: Font.Bold
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
+                visible: root.iconSource.toString().length === 0
             }
         }
 

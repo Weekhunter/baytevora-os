@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief Renders all desktop icons from the DesktopManager model.
@@ -21,6 +22,7 @@ Item {
             itemId: model.itemId
             displayName: model.name
             iconName: model.icon
+            iconSource: BrandingManager.iconUrl(model.icon)
             itemType: model.type
             selected: model.selected
             visible: model.visible

@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief Grid of registered applications for the launcher.
@@ -18,6 +19,7 @@ Grid {
 
         delegate: LauncherButton {
             iconName: modelData.iconName
+            iconSource: BrandingManager.applicationSymbolUrl(modelData.name)
             appName: modelData.name
             onClicked: {
                 if (applicationManager) {

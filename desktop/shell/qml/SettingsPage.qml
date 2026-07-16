@@ -447,43 +447,51 @@ Rectangle {
         Rectangle {
             width: parent.width
             height: childrenRect.height + 48
-            color: "ThemeManager.surfaceSecondaryColor"
+            color: ThemeManager.surfaceSecondaryColor
             radius: DesignTokens.radiusXLarge
             visible: root.settingsManager && root.settingsManager.currentPage === "about"
 
             Column {
                 anchors.fill: parent
                 anchors.margins: 24
-                spacing: 12
+                spacing: 16
+
+                Image {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: 96
+                    height: 115
+                    source: BrandingManager.applicationSymbolUrl("Baytevora OS")
+                    fillMode: Image.PreserveAspectFit
+                    sourceSize.width: 192
+                    sourceSize.height: 230
+                }
 
                 Text {
-                    text: "Baytevora OS"
-                    color: "ThemeManager.backgroundColor"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: BrandingManager.osName
+                    color: ThemeManager.textPrimary
                     font.pixelSize: 22
                     font.weight: Font.DemiBold
                 }
 
                 Text {
-                    text: "Version 0.13.0"
-                    color: "ThemeManager.textDisabled"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: BrandingManager.osVersion
+                    color: ThemeManager.textSecondary
                     font.pixelSize: 14
                 }
 
                 Text {
-                    text: "Build 2026.07.09.13"
-                    color: "ThemeManager.textDisabled"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: BrandingManager.poweredBy
+                    color: ThemeManager.textDisabled
                     font.pixelSize: 14
                 }
 
                 Text {
-                    text: "Copyright \u00A9 2026 Baytevora Labs"
-                    color: "ThemeManager.textDisabled"
-                    font.pixelSize: 14
-                }
-
-                Text {
-                    text: "Baytevora Labs"
-                    color: "ThemeManager.textDisabled"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "Copyright \u00A9 2026 " + BrandingManager.companyName
+                    color: ThemeManager.textDisabled
                     font.pixelSize: 14
                 }
             }

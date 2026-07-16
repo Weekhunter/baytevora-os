@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief Displays one button per non-closed window managed by WindowManager.
@@ -19,6 +20,7 @@ Row {
 
         delegate: TaskbarButton {
             text: modelData.title
+            iconSource: BrandingManager.applicationSymbolUrl(modelData.applicationName)
             active: modelData.id === windowManager.activeWindowId
             height: root.height
             onClicked: {

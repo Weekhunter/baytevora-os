@@ -19,7 +19,9 @@ int main(int argc, char *argv[])
     // created so the Browser view can load content immediately.
     QtWebEngineQuick::initialize();
 
-    app.setApplicationName(QStringLiteral("BOS Shell"));
+    app.setApplicationName(QStringLiteral("Baytevora OS"));
+    app.setApplicationDisplayName(QStringLiteral("Baytevora OS"));
+    app.setApplicationVersion(QStringLiteral("0.1 Alpha"));
     app.setOrganizationName(QStringLiteral("Baytevora Labs"));
 
     bos::shell::Application shell(app);

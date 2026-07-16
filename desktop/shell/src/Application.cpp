@@ -1,11 +1,17 @@
 #include "bos/Application.h"
 
 #include <QQmlContext>
+#include <QQmlEngine>
 #include <QCoreApplication>
 #include <QUrl>
 #include <QtQml>
 
 #include "bos/ApplicationManager.h"
+#include "bos/BrandingManager.h"
+#include "bos/FirstBootManager.h"
+#include "bos/SettingsPersistence.h"
+#include "bos/WelcomeManager.h"
+#include "bos/UserManager.h"
 #include "bos/BrowserApplication.h"
 #include "bos/BrowserManager.h"
 #include "bos/BrowserDownloadManager.h"
@@ -349,6 +355,22 @@ void Application::registerQmlTypes()
     qmlRegisterUncreatableType<bos::shell::StoreCategoryEnum>(
         "BOS.Shell", 1, 0, "StoreCategory",
         QStringLiteral("StoreCategory is an enum and cannot be instantiated"));
+
+    // Milestone E: register BrandingManager as a QML singleton so all QML
+    // consumers can resolve official logos, symbols, icons, and version strings.
+    qmlRegisterSingletonType<BrandingManager>(
+        "BOS.Shell", 1, 0, "BrandingManager",
+        [](QQmlEngine *, QJSEngine *) -> QObject * {
+            static BrandingManager instance;
+            QQmlEngine::setObjectOwnership(&instance, QQmlEngine::CppOwnership);
+            return &instance;
+        });
+
+    // Milestone F: register FirstBootManager and WelcomeManager as QML types.
+    // Instances are created and owned by Application so they can coordinate with
+    // persistence and user management.
+    qmlRegisterType<FirstBootManager>("BOS.Shell", 1, 0, "FirstBootManager");
+    qmlRegisterType<WelcomeManager>("BOS.Shell", 1, 0, "WelcomeManager");
 }
 
 void Application::exposeDesignManagers()
@@ -426,17 +448,48 @@ void Application::loadLoginInterface()
     }
 }
 
-void Application::loadInterface()
+void Application::loadFirstBootInterface()
 {
-    // Expose the wallpaper source path to QML. The path is resolved relative
-    // to the application executable so that the build directory can contain a
-    // copy of the assets folder (see CMakeLists.txt). If the file is missing,
-    // the Wallpaper component will log a warning and show the fallback color.
-    const QString wallpaperPath = QCoreApplication::applicationDirPath()
-        + QStringLiteral("/assets/wallpapers/default.jpg");
+    // Milestone F: resolve the default wallpaper through BrandingManager so the
+    // first-boot wizard shares the same desktop background.
+    BrandingManager branding;
     m_engine->rootContext()->setContextProperty(
         QStringLiteral("wallpaperSource"),
-        QUrl::fromLocalFile(wallpaperPath));
+        branding.wallpaperUrl(QStringLiteral("default")));
+
+    // Load the first-boot wizard from the embedded BOS.Shell module.
+    m_engine->loadFromModule(QStringLiteral("BOS.Shell"), QStringLiteral("FirstBootWizard"));
+
+    const auto objects = m_engine->rootObjects();
+    if (!objects.isEmpty()) {
+        m_firstBootWindow = objects.last();
+    }
+}
+
+void Application::openWelcomeCenter()
+{
+    if (m_welcomeCenterWindow) {
+        m_welcomeCenterWindow->setProperty("visible", true);
+        return;
+    }
+
+    m_engine->loadFromModule(QStringLiteral("BOS.Shell"), QStringLiteral("WelcomeCenterWindow"));
+
+    const auto objects = m_engine->rootObjects();
+    if (!objects.isEmpty()) {
+        m_welcomeCenterWindow = objects.last();
+    }
+}
+
+void Application::loadInterface()
+{
+    // Milestone E: resolve the default wallpaper through BrandingManager so the
+    // path is not hardcoded. The manager checks BAYTEVORA_BRANDING_DIR and falls
+    // back to the compile-time branding directory when needed.
+    BrandingManager branding;
+    m_engine->rootContext()->setContextProperty(
+        QStringLiteral("wallpaperSource"),
+        branding.wallpaperUrl(QStringLiteral("default")));
 
     // Load the root QML type from the embedded BOS.Shell module.
     m_engine->loadFromModule(QStringLiteral("BOS.Shell"), QStringLiteral("Desktop"));
@@ -456,11 +509,13 @@ int Application::run()
 
     // Sprint 22: expose the LoginManager to the login screen.
     LoginManager *loginManager = nullptr;
+    UserManager *userManager = nullptr;
     if (auto *loginModule = dynamic_cast<LoginModule*>(
             m_sessionManager->moduleManager()->findModule(QStringLiteral("Login")))) {
         loginManager = loginModule->loginManager();
         if (loginManager) {
             m_engine->rootContext()->setContextProperty(QStringLiteral("loginManager"), loginManager);
+            userManager = loginManager->userManager();
         }
     }
 
@@ -475,31 +530,73 @@ int Application::run()
         loginManager->setNotificationManager(notificationManager);
     }
 
-    // Sprint 26.5: establish signal connections before any state transition.
-    // This ensures login success/failure cannot race with the handlers.
-    if (loginManager) {
-        QObject::connect(loginManager, &LoginManager::loggedIn, &m_app, [this, loginManager]() {
-            if (m_loginWindow) {
-                m_loginWindow->setProperty("visible", false);
+    // Milestone F: create shared persistence, welcome, and first-boot managers.
+    m_settingsPersistence = new SettingsPersistence(m_engine.get());
+    m_welcomeManager = new WelcomeManager(m_settingsPersistence, m_engine.get());
+    m_engine->rootContext()->setContextProperty(QStringLiteral("welcomeManager"), m_welcomeManager);
+
+    const QVariantMap settings = m_settingsPersistence->load();
+    const bool firstBootCompleted = settings.value(QStringLiteral("firstBootCompleted")).toBool();
+
+    // Milestone F: first boot drives the setup wizard. After the wizard finishes
+    // the user is taken to the login screen so the Welcome Center can open on
+    // first login.
+    if (!firstBootCompleted) {
+        m_firstBootManager = new FirstBootManager(m_settingsPersistence, userManager, m_engine.get());
+        m_engine->rootContext()->setContextProperty(QStringLiteral("firstBootManager"), m_firstBootManager);
+
+        QObject::connect(m_firstBootManager, &FirstBootManager::setupCompleted,
+                         &m_app, [this, loginManager]() {
+            if (m_firstBootWindow) {
+                m_firstBootWindow->setProperty("visible", false);
             }
-            startDesktopSession();
+            m_welcomeManager->setIsFirstLogin(true);
+            loadLoginInterface();
+            if (loginManager) {
+                loginManager->cancel();
+            }
         }, Qt::QueuedConnection);
 
-        QObject::connect(loginManager, &LoginManager::loggedOut, &m_app, [this]() {
-            if (m_loginWindow) {
-                m_loginWindow->setProperty("visible", true);
+        QObject::connect(m_firstBootManager, &FirstBootManager::setupFailed,
+                         &m_app, [notificationManager](const QString &reason) {
+            if (notificationManager) {
+                notificationManager->createNotification(
+                    QStringLiteral("Setup failed"),
+                    reason,
+                    QStringLiteral("System"),
+                    QStringLiteral("error"));
             }
-            m_sessionManager->stop();
         }, Qt::QueuedConnection);
-    }
 
-    // Transition the login manager from Booting to WaitingForSelection so the
-    // login screen is presented immediately.
-    if (loginManager) {
-        loginManager->cancel();
-    }
+        loadFirstBootInterface();
+    } else {
+        // Sprint 26.5: establish signal connections before any state transition.
+        // This ensures login success/failure cannot race with the handlers.
+        if (loginManager) {
+            QObject::connect(loginManager, &LoginManager::loggedIn, &m_app, [this, loginManager]() {
+                if (m_loginWindow) {
+                    m_loginWindow->setProperty("visible", false);
+                }
+                startDesktopSession();
+                m_welcomeManager->markFirstLoginHandled();
+            }, Qt::QueuedConnection);
 
-    loadLoginInterface();
+            QObject::connect(loginManager, &LoginManager::loggedOut, &m_app, [this]() {
+                if (m_loginWindow) {
+                    m_loginWindow->setProperty("visible", true);
+                }
+                m_sessionManager->stop();
+            }, Qt::QueuedConnection);
+        }
+
+        // Transition the login manager from Booting to WaitingForSelection so the
+        // login screen is presented immediately.
+        if (loginManager) {
+            loginManager->cancel();
+        }
+
+        loadLoginInterface();
+    }
 
     if (m_engine->rootObjects().isEmpty()) {
         return -1;
@@ -1018,6 +1115,12 @@ void Application::startDesktopSession()
     }
 
     loadInterface();
+
+    // Milestone F: show the Welcome Center on the first login unless the user
+    // has chosen to hide it on future startups.
+    if (m_welcomeManager && m_welcomeManager->shouldOpenOnLogin()) {
+        openWelcomeCenter();
+    }
 
     // Sprint 11 startup demonstration: a single information notification once
     // the desktop environment has finished starting.

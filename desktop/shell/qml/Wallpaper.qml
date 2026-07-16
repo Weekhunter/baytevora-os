@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief Reusable wallpaper component.
@@ -15,18 +16,19 @@ Item {
     property url source
 
     /** Background color used when the wallpaper image cannot be loaded. */
-    property color fallbackColor: "ThemeManager.backgroundColor"
+    property color fallbackColor: ThemeManager.backgroundColor
 
     /**
      * The actual image item. fillMode is set to PreserveAspectCrop so the image
      * fills the screen without distortion, cropping edges when the aspect ratio
-     * does not match the screen.
+     * does not match the screen. When no explicit source is provided, the
+     * official Baytevora default wallpaper is resolved through BrandingManager.
      */
     Image {
         id: wallpaperImage
 
         anchors.fill: parent
-        source: root.source
+        source: root.source.toString().length > 0 ? root.source : BrandingManager.wallpaperUrl("default")
         fillMode: Image.PreserveAspectCrop
         smooth: true
         asynchronous: true

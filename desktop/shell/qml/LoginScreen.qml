@@ -26,31 +26,32 @@ Window {
         spacing: SpacingManager.space32
         width: Math.min(parent.width * 0.8, 360)
 
-        // Logo placeholder
-        Rectangle {
+        // Official Baytevora OS symbol
+        Image {
             anchors.horizontalCenter: parent.horizontalCenter
             width: 80
-            height: 80
-            radius: DesignTokens.radiusLarge
-            color: ThemeManager.primaryColor
-
-            Text {
-                anchors.centerIn: parent
-                text: "B"
-                color: ThemeManager.textPrimary
-                font.pixelSize: TypographyManager.displaySize
-                font.family: TypographyManager.fontFamily
-                font.weight: Font.Bold
-            }
+            height: 96
+            source: BrandingManager.applicationSymbolUrl("Baytevora OS")
+            fillMode: Image.PreserveAspectFit
+            sourceSize.width: 160
+            sourceSize.height: 192
         }
 
         Text {
             anchors.horizontalCenter: parent.horizontalCenter
-            text: "Baytevora OS"
+            text: BrandingManager.osName
             color: ThemeManager.textPrimary
             font.pixelSize: TypographyManager.title
             font.family: TypographyManager.fontFamily
             font.weight: Font.DemiBold
+        }
+
+        Text {
+            anchors.horizontalCenter: parent.horizontalCenter
+            text: BrandingManager.osVersion
+            color: ThemeManager.textSecondary
+            font.pixelSize: TypographyManager.body
+            font.family: TypographyManager.fontFamily
         }
 
         Clock {

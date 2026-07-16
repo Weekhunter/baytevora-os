@@ -15,6 +15,7 @@ namespace bos::shell {
 struct User {
     QString username;
     QString displayName;
+    QString password;
     QString avatarPath;
     bool administrator = false;
     QDateTime lastLogin;

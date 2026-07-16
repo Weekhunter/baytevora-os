@@ -8,6 +8,10 @@
 
 namespace bos::shell {
 
+class FirstBootManager;
+class SettingsPersistence;
+class WelcomeManager;
+
 /**
  * @brief The Application class manages the desktop shell lifecycle.
  *
@@ -48,6 +52,16 @@ private:
     void loadLoginInterface();
 
     /**
+     * @brief Milestone F: loads the first-boot setup wizard.
+     */
+    void loadFirstBootInterface();
+
+    /**
+     * @brief Milestone F: opens the Welcome Center window after first login.
+     */
+    void openWelcomeCenter();
+
+    /**
      * @brief Sprint 22: starts the desktop session and loads the desktop UI.
      */
     void startDesktopSession();
@@ -68,6 +82,12 @@ private:
     void connectSignals();
 
     QObject *m_loginWindow = nullptr;
+    QObject *m_firstBootWindow = nullptr;
+    QObject *m_welcomeCenterWindow = nullptr;
+
+    SettingsPersistence *m_settingsPersistence = nullptr;
+    FirstBootManager *m_firstBootManager = nullptr;
+    WelcomeManager *m_welcomeManager = nullptr;
 
     QGuiApplication &m_app;
     std::unique_ptr<QQmlApplicationEngine> m_engine;

@@ -76,7 +76,7 @@ void SettingsManager::setCurrentPage(const QString &pageId)
 
 QString SettingsManager::bosVersion() const
 {
-    return QStringLiteral("0.13.0");
+    return QStringLiteral("0.1 Alpha");
 }
 
 QString SettingsManager::qtVersion() const

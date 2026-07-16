@@ -403,26 +403,28 @@ void ApplicationManager::registerPlaceholderApplications()
         bool singleInstance;
     };
 
+    // Milestone E: iconName now maps to the official product name so the
+    // BrandingManager can resolve the correct symbol or logo.
     const std::vector<Placeholder> placeholders = {
-        {QStringLiteral("file-manager"), QStringLiteral("File Manager"), QStringLiteral("Browse files"), QStringLiteral("Utilities"), QStringLiteral("FM"), false},
-        {QStringLiteral("terminal"), QStringLiteral("Terminal"), QStringLiteral("Command line"), QStringLiteral("Utilities"), QStringLiteral("TR"), false},
-        {QStringLiteral("settings"), QStringLiteral("Settings"), QStringLiteral("System settings"), QStringLiteral("System"), QStringLiteral("ST"), false},
-        {QStringLiteral("browser"), QStringLiteral("Browser"), QStringLiteral("Web browser"), QStringLiteral("Internet"), QStringLiteral("BR"), false},
-        {QStringLiteral("calculator"), QStringLiteral("Calculator"), QStringLiteral("Basic calculator"), QStringLiteral("Utilities"), QStringLiteral("CA"), false},
-        {QStringLiteral("notes"), QStringLiteral("Notes"), QStringLiteral("Take and manage notes"), QStringLiteral("Productivity"), QStringLiteral("NO"), false},
-        {QStringLiteral("image-viewer"), QStringLiteral("Image Viewer"), QStringLiteral("View images"), QStringLiteral("Media"), QStringLiteral("IV"), false},
-        {QStringLiteral("pdf-studio"), QStringLiteral("Baytevora PDF Studio"), QStringLiteral("View, annotate, and print PDF documents"), QStringLiteral("Productivity"), QStringLiteral("PS"), false},
-        {QStringLiteral("archive-manager"), QStringLiteral("Archive Manager"), QStringLiteral("Inspect archive files"), QStringLiteral("Utilities"), QStringLiteral("AM"), false},
-        {QStringLiteral("media-player"), QStringLiteral("Media Player"), QStringLiteral("Play media files"), QStringLiteral("Media"), QStringLiteral("MP"), false},
-        {QStringLiteral("text-editor"), QStringLiteral("Text Editor"), QStringLiteral("Edit text files"), QStringLiteral("Productivity"), QStringLiteral("TE"), false},
-        {QStringLiteral("system-monitor"), QStringLiteral("System Monitor"), QStringLiteral("View system metrics"), QStringLiteral("System"), QStringLiteral("SM"), false},
-        {QStringLiteral("task-manager"), QStringLiteral("Task Manager"), QStringLiteral("Manage running tasks"), QStringLiteral("System"), QStringLiteral("TM"), false},
-        {QStringLiteral("network-manager"), QStringLiteral("Network Manager"), QStringLiteral("Manage network connections"), QStringLiteral("System"), QStringLiteral("NM"), false},
-        {QStringLiteral("storage-manager"), QStringLiteral("Storage Manager"), QStringLiteral("View storage devices"), QStringLiteral("System"), QStringLiteral("SM"), false},
-        {QStringLiteral("print-manager"), QStringLiteral("Print Manager"), QStringLiteral("Manage printers and print jobs"), QStringLiteral("System"), QStringLiteral("PM"), false},
-        {QStringLiteral("store"), QStringLiteral("Baytevora Store"), QStringLiteral("Discover and install applications"), QStringLiteral("System"), QStringLiteral("ST"), false},
-        {QStringLiteral("package-manager"), QStringLiteral("Package Manager"), QStringLiteral("Manage packages, repositories, and transactions"), QStringLiteral("System"), QStringLiteral("PM"), false},
-        {QStringLiteral("browser"), QStringLiteral("Browser"), QStringLiteral("Browse the web"), QStringLiteral("System"), QStringLiteral("BR"), false}
+        {QStringLiteral("file-manager"), QStringLiteral("File Manager"), QStringLiteral("Browse files"), QStringLiteral("Utilities"), QStringLiteral("File Manager"), false},
+        {QStringLiteral("terminal"), QStringLiteral("Terminal"), QStringLiteral("Command line"), QStringLiteral("Utilities"), QStringLiteral("Terminal"), false},
+        {QStringLiteral("settings"), QStringLiteral("Settings"), QStringLiteral("System settings"), QStringLiteral("System"), QStringLiteral("Settings"), false},
+        {QStringLiteral("browser"), QStringLiteral("Browser"), QStringLiteral("Web browser"), QStringLiteral("Internet"), QStringLiteral("Browser"), false},
+        {QStringLiteral("calculator"), QStringLiteral("Calculator"), QStringLiteral("Basic calculator"), QStringLiteral("Utilities"), QStringLiteral("Calculator"), false},
+        {QStringLiteral("notes"), QStringLiteral("Notes"), QStringLiteral("Take and manage notes"), QStringLiteral("Productivity"), QStringLiteral("Notes"), false},
+        {QStringLiteral("image-viewer"), QStringLiteral("Image Viewer"), QStringLiteral("View images"), QStringLiteral("Media"), QStringLiteral("Image Viewer"), false},
+        {QStringLiteral("pdf-studio"), QStringLiteral("Baytevora PDF Studio"), QStringLiteral("View, annotate, and print PDF documents"), QStringLiteral("Productivity"), QStringLiteral("Baytevora PDF Studio"), false},
+        {QStringLiteral("archive-manager"), QStringLiteral("Archive Manager"), QStringLiteral("Inspect archive files"), QStringLiteral("Utilities"), QStringLiteral("Archive Manager"), false},
+        {QStringLiteral("media-player"), QStringLiteral("Media Player"), QStringLiteral("Play media files"), QStringLiteral("Media"), QStringLiteral("Media Player"), false},
+        {QStringLiteral("text-editor"), QStringLiteral("Text Editor"), QStringLiteral("Edit text files"), QStringLiteral("Productivity"), QStringLiteral("Text Editor"), false},
+        {QStringLiteral("system-monitor"), QStringLiteral("System Monitor"), QStringLiteral("View system metrics"), QStringLiteral("System"), QStringLiteral("System Monitor"), false},
+        {QStringLiteral("task-manager"), QStringLiteral("Task Manager"), QStringLiteral("Manage running tasks"), QStringLiteral("System"), QStringLiteral("Task Manager"), false},
+        {QStringLiteral("network-manager"), QStringLiteral("Network Manager"), QStringLiteral("Manage network connections"), QStringLiteral("System"), QStringLiteral("Network Manager"), false},
+        {QStringLiteral("storage-manager"), QStringLiteral("Storage Manager"), QStringLiteral("View storage devices"), QStringLiteral("System"), QStringLiteral("Storage Manager"), false},
+        {QStringLiteral("print-manager"), QStringLiteral("Print Manager"), QStringLiteral("Manage printers and print jobs"), QStringLiteral("System"), QStringLiteral("Print Manager"), false},
+        {QStringLiteral("store"), QStringLiteral("Baytevora Store"), QStringLiteral("Discover and install applications"), QStringLiteral("System"), QStringLiteral("Store"), false},
+        {QStringLiteral("package-manager"), QStringLiteral("Package Manager"), QStringLiteral("Manage packages, repositories, and transactions"), QStringLiteral("System"), QStringLiteral("Store"), false},
+        {QStringLiteral("browser"), QStringLiteral("Browser"), QStringLiteral("Browse the web"), QStringLiteral("System"), QStringLiteral("Browser"), false}
     };
 
     for (const auto &placeholder : placeholders) {

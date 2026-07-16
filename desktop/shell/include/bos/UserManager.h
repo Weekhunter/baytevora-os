@@ -27,6 +27,11 @@ public:
 
     Q_INVOKABLE void selectUser(const QString &username);
     Q_INVOKABLE int userCount() const;
+    Q_INVOKABLE void createUserFromWizard(const QString &name,
+                                          const QString &login,
+                                          const QString &password,
+                                          bool administrator,
+                                          const QString &avatar);
 
 signals:
     void usersChanged();

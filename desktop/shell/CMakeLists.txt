@@ -21,6 +21,10 @@ qt_standard_project_setup()
 set(SOURCES
     src/main.cpp
     src/Application.cpp
+    src/BrandingManager.cpp
+    src/FirstBootManager.cpp
+    src/SettingsPersistence.cpp
+    src/WelcomeManager.cpp
     src/SessionManager.cpp
     src/ModuleManager.cpp
     src/DesktopSurfaceModule.cpp
@@ -179,6 +183,10 @@ set(SOURCES
 
 set(HEADERS
     include/bos/Application.h
+    include/bos/BrandingManager.h
+    include/bos/FirstBootManager.h
+    include/bos/SettingsPersistence.h
+    include/bos/WelcomeManager.h
     include/bos/SessionManager.h
     include/bos/DesktopModule.h
     include/bos/ModuleManager.h
@@ -350,6 +358,12 @@ target_include_directories(BOS_Shell PRIVATE
     include
 )
 
+# Milestone E: absolute default path to the Baytevora Branding Repository so
+# the BrandingManager can resolve assets without hardcoding per-file paths.
+# Override at runtime with the BAYTEVORA_BRANDING_DIR environment variable.
+get_filename_component(BAYTEVORA_BRANDING_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../tasks/Branding" ABSOLUTE)
+target_compile_definitions(BOS_Shell PRIVATE BAYTEVORA_BRANDING_DIR="${BAYTEVORA_BRANDING_DIR}")
+
 target_link_libraries(BOS_Shell PRIVATE
     Qt6::Quick
     Qt6::QuickControls2
@@ -397,6 +411,32 @@ qt_add_qml_module(BOS_Shell
         qml/LoginButton.qml
         qml/LockScreen.qml
         qml/UnlockButton.qml
+        qml/BootScreen.qml
+        qml/SplashScreen.qml
+        qml/ShutdownScreen.qml
+        qml/RestartScreen.qml
+        qml/InstallerScreen.qml
+        qml/AboutBosScreen.qml
+        qml/SystemInformationScreen.qml
+        qml/AboutDialog.qml
+        qml/FirstBootWizard.qml
+        qml/WizardWelcomePage.qml
+        qml/WizardRegionPage.qml
+        qml/WizardLanguagePage.qml
+        qml/WizardKeyboardPage.qml
+        qml/WizardTimezonePage.qml
+        qml/WizardDateTimePage.qml
+        qml/WizardPrivacyPage.qml
+        qml/WizardUserAccountPage.qml
+        qml/WizardComputerNamePage.qml
+        qml/WizardSummaryPage.qml
+        qml/WizardSetupProgressPage.qml
+        qml/WizardFinishPage.qml
+        qml/SummaryRow.qml
+        qml/WizardButton.qml
+        qml/WizardToggle.qml
+        qml/WelcomeCenterWindow.qml
+        qml/WelcomeCenterTab.qml
         qml/UpdatesPage.qml
         qml/UpdateCard.qml
         qml/CheckUpdatesButton.qml
@@ -404,7 +444,6 @@ qt_add_qml_module(BOS_Shell
         qml/PackageCard.qml
         qml/PackageList.qml
         qml/PackageStatus.qml
-        qml/PackagesPage.qml
         qml/PackageManagerWindow.qml
         qml/PackageToolbar.qml
         qml/PackageStatusBar.qml
@@ -418,8 +457,6 @@ qt_add_qml_module(BOS_Shell
         qml/StoreToolbar.qml
         qml/StoreGrid.qml
         qml/StoreStatusBar.qml
-        qml/InstalledApplicationsPage.qml
-        qml/UpdatesPage.qml
         qml/FeaturedSection.qml
         qml/CategoryList.qml
         qml/SearchBar.qml
@@ -480,9 +517,7 @@ qt_add_qml_module(BOS_Shell
         qml/HeaderLabel.qml
         qml/CellLabel.qml
         qml/BreadcrumbBar.qml
-        qml/FavoriteSidebar.qml
         qml/RecentFilesPanel.qml
-        qml/SearchBar.qml
         qml/SettingsWindow.qml
         qml/NavigationSidebar.qml
         qml/SettingsContent.qml

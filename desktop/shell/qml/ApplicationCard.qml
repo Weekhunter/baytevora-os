@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief Card representing a single application in the Baytevora Store.
@@ -26,7 +27,19 @@ Rectangle {
             width: 48
             height: 48
             radius: DesignTokens.radiusSmall
-            color: ThemeManager.accentColor
+            color: ThemeManager.surfaceSecondaryColor
+
+            Image {
+                id: appIcon
+
+                anchors.fill: parent
+                anchors.margins: 4
+                source: root.itemData ? BrandingManager.applicationSymbolUrl(root.itemData.name) : ""
+                fillMode: Image.PreserveAspectFit
+                sourceSize.width: 96
+                sourceSize.height: 96
+                visible: source.toString().length > 0
+            }
 
             Text {
                 anchors.centerIn: parent
@@ -35,6 +48,7 @@ Rectangle {
                 font.pixelSize: TypographyManager.headline
                 font.family: TypographyManager.fontFamily
                 font.weight: Font.Bold
+                visible: !appIcon.visible
             }
         }
 

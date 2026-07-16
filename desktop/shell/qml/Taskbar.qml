@@ -1,4 +1,5 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief The bottom-of-screen taskbar for the BDE Shell.
@@ -47,7 +48,7 @@ Rectangle {
         anchors.leftMargin: SpacingManager.space8
         anchors.verticalCenter: parent.verticalCenter
         width: 48
-        text: "BOS"
+        iconSource: BrandingManager.applicationSymbolUrl("Baytevora OS")
         active: launcher ? launcher.visible : false
         onClicked: {
             if (launcher) {
@@ -81,6 +82,7 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         z: 11
         width: 40
+        iconSource: BrandingManager.iconUrl("power")
         text: "P"
         active: powerMenu ? powerMenu.menuOpen : false
         onClicked: {

@@ -46,6 +46,7 @@ Rectangle {
                 width: column.width
                 itemTitle: modelData.title
                 itemDescription: modelData.description
+                itemIcon: BrandingManager.iconUrl(modelData.iconName)
                 itemEnabled: modelData.enabled
 
                 onActivated: {
@@ -64,6 +65,7 @@ Rectangle {
             width: column.width
             itemTitle: "Lock"
             itemDescription: "Lock this session"
+            itemIcon: BrandingManager.iconUrl("lock")
             itemEnabled: lockManager ? !lockManager.isLocked : false
 
             onActivated: {

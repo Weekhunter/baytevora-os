@@ -1,9 +1,10 @@
 import QtQuick
+import BOS.Shell
 
 /**
  * @brief Static header for the launcher panel.
  *
- * LauncherHeader shows the system name and a short welcome line. It contains
+ * LauncherHeader shows the official system name and version line. It contains
  * no interactive elements or dynamic content.
  */
 Column {
@@ -13,15 +14,15 @@ Column {
     width: parent ? parent.width : 320
 
     Text {
-        text: "Baytevora OS"
-        color: "ThemeManager.textSecondary"
+        text: BrandingManager.osName
+        color: ThemeManager.textSecondary
         font.pixelSize: 18
         font.weight: Font.Bold
     }
 
     Text {
-        text: "Welcome"
-        color: "ThemeManager.textDisabled"
+        text: BrandingManager.osVersion
+        color: ThemeManager.textDisabled
         font.pixelSize: 14
     }
 }

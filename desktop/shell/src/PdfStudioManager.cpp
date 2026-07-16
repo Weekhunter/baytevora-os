@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QFileInfo>
 #include <QPdfDocument>
+#include <QtMath>
 #include <QUrl>
 
 #include "bos/NotificationManager.h"
@@ -117,7 +118,8 @@ void PdfStudioManager::openDocument(const QString &path)
     // Read PDF metadata through QtPdf so the panel can display real values
     // when the document is available.
     QPdfDocument pdf;
-    if (pdf.load(localPath) == QPdfDocument::Success) {
+    pdf.load(localPath);
+    if (pdf.status() == QPdfDocument::Ready) {
         m_document->setTitle(pdf.metaData(QPdfDocument::Title).toString());
         m_document->setAuthor(pdf.metaData(QPdfDocument::Author).toString());
         m_document->setSubject(pdf.metaData(QPdfDocument::Subject).toString());
@@ -126,6 +128,7 @@ void PdfStudioManager::openDocument(const QString &path)
         m_document->setProducer(pdf.metaData(QPdfDocument::Producer).toString());
         m_document->setCreationDate(pdf.metaData(QPdfDocument::CreationDate).toDateTime());
         m_document->setModificationDate(pdf.metaData(QPdfDocument::ModificationDate).toDateTime());
+        m_document->setPageCount(pdf.pageCount());
     }
 
     notifyInfo(QStringLiteral("Document Opened."));

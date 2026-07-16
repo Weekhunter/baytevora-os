@@ -10,26 +10,41 @@ Rectangle {
     id: root
 
     property string text: ""
+    property url iconSource: ""
     property bool active: false
 
     signal clicked()
 
-    color: active ? "ThemeManager.surfaceSecondaryColor" : "transparent"
-    implicitWidth: label.implicitWidth + 24
+    color: active ? ThemeManager.surfaceSecondaryColor : "transparent"
+    implicitWidth: row.implicitWidth + 24
     height: parent ? parent.height : 40
 
-    Text {
-        id: label
+    Row {
+        id: row
 
         anchors.verticalCenter: parent.verticalCenter
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.leftMargin: 12
-        anchors.rightMargin: 12
-        text: root.text
-        color: "ThemeManager.textSecondary"
-        font.pixelSize: 13
-        elide: Text.ElideRight
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 6
+
+        Image {
+            width: root.iconSource.toString().length > 0 ? 18 : 0
+            height: 18
+            source: root.iconSource
+            fillMode: Image.PreserveAspectFit
+            sourceSize.width: 36
+            sourceSize.height: 36
+            visible: root.iconSource.toString().length > 0
+        }
+
+        Text {
+            id: label
+
+            text: root.text
+            color: ThemeManager.textSecondary
+            font.pixelSize: 13
+            elide: Text.ElideRight
+            verticalAlignment: Text.AlignVCenter
+        }
     }
 
     MouseArea {
