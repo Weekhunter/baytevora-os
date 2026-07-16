@@ -162,6 +162,63 @@ cd /workspace/app-cwh12h2q3ri9/baytevora-os-main/iso/scripts
 - `iso/scripts/validate_iso.sh` checks the generated ISO artifacts.
 - In a real environment, the ISO is booted in QEMU/VMware to verify live boot, desktop launch, installer flow, installation, first-boot wizard, and shutdown/restart.
 
+## Milestone I — First Real Bootable ISO
+
+Milestone I replaces every placeholder in the ISO build pipeline with production-ready Linux components:
+
+- **Real Debian rootfs:** `debootstrap` installs a complete Debian Stable base.
+- **Real kernel:** `linux-image-amd64` is installed inside the chroot.
+- **Real initramfs:** generated with `initramfs-tools` plus the `live-boot` package.
+- **Real GRUB images:** `grub-mkstandalone` creates `EFI/BOOT/BOOTX64.EFI`; `grub-mkimage` creates the BIOS core image.
+- **Real SquashFS:** `mksquashfs` compresses the live rootfs into `live/filesystem.squashfs`.
+- **Real ISO:** `xorriso` assembles a hybrid UEFI/BIOS bootable ISO.
+- **Auto-launch desktop:** SDDM auto-logs in the `live` user and starts `Baytevora.desktop`.
+
+### Required build host packages
+
+```bash
+sudo apt-get install -y \
+  xorriso grub-common grub-pc-bin grub-efi-amd64-bin \
+  squashfs-tools debootstrap live-build build-essential \
+  cmake ninja-build qt6-base-dev \
+  linux-image-amd64 initramfs-tools live-boot live-config
+```
+
+### New foundation scripts
+
+- `scripts/install_kernel.sh` — install the Debian kernel, initramfs-tools and live-boot.
+- `scripts/generate_initramfs.sh` — run `update-initramfs` in chroot and copy images to the ISO boot directory.
+- `scripts/configure_grub.sh` — build GRUB EFI and BIOS boot images and write `grub.cfg`.
+- `scripts/generate_squashfs.sh` — create `live/filesystem.squashfs`.
+- `scripts/assemble_iso.sh` — invoke `xorriso` to create the final bootable ISO.
+
+### Boot parameters
+
+The GRUB menu loads the kernel with:
+
+```
+boot=live quiet splash
+```
+
+`live-boot` in the initramfs finds the ISO media, mounts `live/filesystem.squashfs`, sets up a writable overlay, and starts systemd as `/sbin/init`.
+
+### Build commands
+
+```bash
+cd /path/to/baytevora-os-main/iso/scripts
+sudo ./build_iso.sh
+sudo ./validate_iso.sh
+```
+
+Run as `root` because `debootstrap`, `chroot`, and the GRUB/ISO tools require it.
+
+### VirtualBox testing
+
+1. Create a new VM, type **Linux**, version **Debian 64-bit**.
+2. Attach `iso/output/Baytevora-OS-0.1-Alpha.iso` to the optical drive.
+3. Enable **EFI** in System → Motherboard (or leave BIOS for legacy boot).
+4. Start the VM. GRUB → kernel → initramfs → systemd → SDDM → Baytevora desktop.
+
 ## Future Roadmap
 
 - **Secure Boot:** signed shim + GRUB + kernel + modules

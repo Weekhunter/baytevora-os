@@ -1,10 +1,9 @@
-# Baytevora OS fstab
+# Baytevora OS fstab (live environment)
+# The real root filesystem is an overlay mounted by the live initramfs.
 # <file system> <mount point>   <type>  <options>       <dump>  <pass>
 proc            /proc           proc    defaults          0       0
 sysfs           /sys            sysfs   defaults          0       0
 devtmpfs        /dev            devtmpfs rw,nosuid        0       0
 tmpfs           /tmp            tmpfs   defaults,nosuid,nodev 0   0
-tmpfs           /run            tmpfs   defaults,nosuid,nodev 0   0
-LABEL=BAYTEVORA_ROOT /          ext4    errors=remount-ro 0       1
-LABEL=BAYTEVORA_BOOT /boot      ext4    defaults          0       2
-LABEL=BAYTEVORA_SWAP none       swap    sw                0       0
+tmpfs           /run            tmpfs   defaults,nosuid,nodev 0       0
+overlay         /               overlay defaults          0       0

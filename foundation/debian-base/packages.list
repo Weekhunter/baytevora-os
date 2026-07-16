@@ -60,3 +60,15 @@ cups-browsed
 # Firmware
 firmware-linux
 firmware-misc-nonfree
+firmware-linux-free
+
+# Kernel, initramfs and live boot support
+linux-image-amd64
+initramfs-tools
+live-boot
+live-config
+
+# GRUB bootloader (for building boot images inside chroot or on host)
+grub-pc-bin
+grub-efi-amd64-bin
+grub-common

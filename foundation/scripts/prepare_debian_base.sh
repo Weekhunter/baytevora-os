@@ -47,51 +47,69 @@ log_info "Configuring APT sources..."
 cp "${SOURCES_LIST}" "${TARGET_ROOT}/etc/apt/sources.list"
 cp "${APT_PREFERENCES}" "${TARGET_ROOT}/etc/apt/preferences.d/baytevora"
 
+ALLOW_PLACEHOLDER="${BOS_PLACEHOLDER_OK:-0}"
+REAL_BASE=false
+
 if check_tool debootstrap && check_tool chroot; then
     log_info "Attempting real Debian base installation with debootstrap..."
-    if debootstrap stable "${TARGET_ROOT}" http://deb.debian.org/debian 2>/dev/null; then
+    if debootstrap stable "${TARGET_ROOT}" http://deb.debian.org/debian; then
         log_info "Debian base installed successfully."
-        exit 0
+        REAL_BASE=true
     else
-        log_warn "debootstrap failed; falling back to placeholder environment."
+        log_error "debootstrap failed. A real bootable ISO cannot be built."
+        if [[ "${ALLOW_PLACEHOLDER}" != "1" ]]; then
+            exit 1
+        fi
+        log_warn "BOS_PLACEHOLDER_OK is set; creating placeholder Debian base for validation."
     fi
 else
-    log_warn "debootstrap/chroot not available; creating placeholder Debian base."
+    log_warn "debootstrap/chroot not available."
+    if [[ "${ALLOW_PLACEHOLDER}" != "1" ]]; then
+        log_error "Real tooling is missing and placeholder mode is disabled."
+        exit 1
+    fi
+    log_warn "BOS_PLACEHOLDER_OK is set; creating placeholder Debian base for validation."
 fi
 
-log_info "Creating placeholder dpkg status..."
-: > "${TARGET_ROOT}/var/lib/dpkg/status"
-while IFS= read -r pkg || [[ -n "$pkg" ]]; do
-    [[ -z "$pkg" || "$pkg" =~ ^# ]] && continue
-    cat >> "${TARGET_ROOT}/var/lib/dpkg/status" <<EOF
+if [[ "${REAL_BASE}" != "true" ]]; then
+    log_info "Creating placeholder dpkg status..."
+    : > "${TARGET_ROOT}/var/lib/dpkg/status"
+    while IFS= read -r pkg || [[ -n "$pkg" ]]; do
+        [[ -z "$pkg" || "$pkg" =~ ^# ]] && continue
+        cat >> "${TARGET_ROOT}/var/lib/dpkg/status" <<EOF
 Package: ${pkg}
 Status: install ok installed
 Version: 0.1-alpha
 Description: placeholder package entry for Baytevora OS Alpha
 
 EOF
-done < "${PACKAGES_LIST}"
+    done < "${PACKAGES_LIST}"
 
-log_info "Creating placeholder essential tools..."
-for tool in systemctl bash sh mount umount modprobe udevadm dbus-daemon NetworkManager pipewire cupsd sddm gdm3 apt-get dpkg; do
-    cat > "${TARGET_ROOT}/usr/bin/${tool}" <<EOF
+    log_info "Creating placeholder essential tools..."
+    for tool in systemctl bash sh mount umount modprobe udevadm dbus-daemon NetworkManager pipewire cupsd sddm gdm3 apt-get dpkg; do
+        cat > "${TARGET_ROOT}/usr/bin/${tool}" <<EOF
 #!/bin/sh
 # Placeholder for ${tool}
 echo "[BOS PLACEHOLDER] ${tool} not functional in Alpha sandbox" >&2
 exit 0
 EOF
-    chmod +x "${TARGET_ROOT}/usr/bin/${tool}"
-done
+        chmod +x "${TARGET_ROOT}/usr/bin/${tool}"
+    done
 
-# Create a minimal systemd placeholder so live-init can switch_root into systemd.
-mkdir -p "${TARGET_ROOT}/usr/lib/systemd"
-cat > "${TARGET_ROOT}/usr/lib/systemd/systemd" <<'EOF'
+    # Only create a systemd placeholder in sandbox environments where the real
+    # init system is missing. A real Debian base will already provide systemd.
+    if [[ ! -x "${TARGET_ROOT}/usr/lib/systemd/systemd" && ! -x "${TARGET_ROOT}/lib/systemd/systemd" ]]; then
+        log_warn "No real systemd found; creating sandbox placeholder."
+        mkdir -p "${TARGET_ROOT}/usr/lib/systemd"
+        cat > "${TARGET_ROOT}/usr/lib/systemd/systemd" <<'EOF'
 #!/bin/sh
 # Placeholder systemd for Baytevora OS Alpha sandbox
 echo "[BOS PLACEHOLDER] systemd not functional in Alpha sandbox" >&2
 exec /bin/sh
 EOF
-chmod +x "${TARGET_ROOT}/usr/lib/systemd/systemd"
-ln -sf /usr/lib/systemd/systemd "${TARGET_ROOT}/sbin/init"
+        chmod +x "${TARGET_ROOT}/usr/lib/systemd/systemd"
+        ln -sf /usr/lib/systemd/systemd "${TARGET_ROOT}/sbin/init"
+    fi
+fi
 
-log_info "Placeholder Debian base prepared at ${TARGET_ROOT}."
+log_info "Debian base prepared at ${TARGET_ROOT}."
