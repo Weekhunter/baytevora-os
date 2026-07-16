@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Baytevora OS ISO Build Script (Milestone H)
+# Baytevora OS ISO Build Script (Milestone I)
+# Produces a real, bootable UEFI/BIOS hybrid ISO using debootstrap,
+# a real Debian kernel/initramfs, GRUB, SquashFS and xorriso.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ISO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
@@ -14,7 +16,7 @@ BOOT_DIR="${ISO_DIR}/boot"
 EFI_DIR="${ISO_DIR}/EFI/BOOT"
 FS_DIR="${ISO_DIR}/filesystem"
 ROOTFS_DIR="${FS_DIR}/rootfs"
-SQUASHFS_DIR="${FS_DIR}/squashfs"
+LIVE_DIR="${ISO_DIR}/live"
 
 ISO_NAME="Baytevora-OS-0.1-Alpha.iso"
 ISO_PATH="${OUTPUT_DIR}/${ISO_NAME}"
@@ -45,6 +47,21 @@ load_config() {
     fi
 
     log_info "Volume label: ${VOLUME_LABEL}"
+}
+
+check_prerequisites() {
+    local missing=""
+    for tool in debootstrap chroot mksquashfs xorriso grub-mkstandalone; do
+        if ! check_tool "${tool}"; then
+            missing="${missing} ${tool}"
+        fi
+    done
+    if [[ -n "${missing}" ]]; then
+        log_error "This build requires real Linux ISO tooling that is not available in this environment."
+        log_error "Missing tools:${missing}"
+        log_error "Please run this script on a Debian build host with the packages listed in foundation/debian-base/packages.list installed."
+        exit 1
+    fi
 }
 
 prepare_filesystem() {
@@ -86,85 +103,36 @@ EOF
     log_info "  -> Foundation integrated"
 }
 
-generate_grub_config() {
-    log_info "Generating GRUB configuration..."
-    mkdir -p "${BOOT_DIR}/grub"
-    cat > "${BOOT_DIR}/grub/grub.cfg" <<EOF
-set timeout=${BOOT_TIMEOUT}
-set default=0
-set gfxpayload=keep
-
-menuentry "${VOLUME_LABEL}" {
-    linux /boot/vmlinuz quiet splash root=/dev/ram0 init=/opt/baytevora/iso/scripts/live-init
-    initrd /boot/initramfs.img
+install_kernel() {
+    log_info "Installing real Linux kernel and live-boot packages..."
+    export TARGET_ROOT="${ROOTFS_DIR}"
+    bash "${SOURCE_ROOT}/foundation/scripts/install_kernel.sh"
 }
 
-# Future hooks:
-# menuentry "Boot existing OS" { ... }
-# menuentry "Recovery mode" { ... }
-# menuentry "Legacy BIOS" { ... }
-EOF
-    log_info "  -> ${BOOT_DIR}/grub/grub.cfg"
+generate_initramfs() {
+    log_info "Generating initramfs..."
+    export TARGET_ROOT="${ROOTFS_DIR}"
+    export ISO_BOOT_DIR="${BOOT_DIR}"
+    bash "${SOURCE_ROOT}/foundation/scripts/generate_initramfs.sh"
 }
 
-create_boot_images() {
-    log_info "Preparing boot images..."
-    mkdir -p "${BOOT_DIR}"
-    mkdir -p "${EFI_DIR}"
-
-    if check_tool vmlinuz_path; then
-        : # placeholder; real path is set in build-config.yaml
-    fi
-
-    if [[ -f "${ISO_DIR}/../desktop/shell/build/Baytevora_OS_Shell" ]]; then
-        log_info "  -> Using built shell binary as kernel placeholder is not appropriate"
-    fi
-
-    # Placeholder kernel and initramfs.
-    echo "# Placeholder kernel - replace with real vmlinuz" > "${BOOT_DIR}/vmlinuz"
-    echo "# Placeholder initramfs - replace with real initramfs" > "${BOOT_DIR}/initramfs.img"
-
-    # Placeholder UEFI bootloader. Real build uses grub-mkimage or signed shim.
-    echo "# Placeholder UEFI bootloader - replace with BOOTX64.EFI" > "${EFI_DIR}/BOOTX64.EFI"
-
-    log_info "  -> Boot images prepared (placeholders)"
+configure_grub() {
+    log_info "Configuring GRUB EFI/BIOS bootloader..."
+    export ISO_DIR VOLUME_LABEL BOOT_TIMEOUT
+    bash "${SOURCE_ROOT}/foundation/scripts/configure_grub.sh"
 }
 
 create_squashfs() {
-    log_info "Creating compressed root filesystem..."
-    mkdir -p "${SQUASHFS_DIR}"
-    if check_tool mksquashfs; then
-        mksquashfs "${ROOTFS_DIR}" "${SQUASHFS_DIR}/rootfs.squashfs" -noappend -comp xz
-        log_info "  -> Squashfs image created"
-    else
-        tar -czf "${SQUASHFS_DIR}/rootfs.tar.gz" -C "${ROOTFS_DIR}" .
-        log_warn "  -> mksquashfs not found; created ${SQUASHFS_DIR}/rootfs.tar.gz as placeholder"
-    fi
+    log_info "Creating compressed SquashFS root filesystem..."
+    export TARGET_ROOT="${ROOTFS_DIR}"
+    export ISO_DIR
+    bash "${SOURCE_ROOT}/foundation/scripts/generate_squashfs.sh"
 }
 
 assemble_iso() {
-    log_info "Assembling ISO image..."
-    mkdir -p "${OUTPUT_DIR}"
-
-    if check_tool xorriso; then
-        xorriso -as mkisofs \
-            -iso-level 3 \
-            -o "${ISO_PATH}" \
-            -V "${VOLUME_LABEL}" \
-            -J -R \
-            -eltorito-boot boot/grub/grub.img \
-            -no-emul-boot -boot-load-size 4 -boot-info-table \
-            -eltorito-alt-boot -e EFI/BOOT/BOOTX64.EFI \
-            -no-emul-boot -isohybrid-gpt-basdat \
-            "${ISO_DIR}"
-        log_info "  -> Bootable ISO created with xorriso"
-    elif check_tool grub-mkrescue; then
-        grub-mkrescue -o "${ISO_PATH}" "${ISO_DIR}"
-        log_info "  -> Bootable ISO created with grub-mkrescue"
-    else
-        log_warn "  -> No ISO creation tool found (xorriso/grub-mkrescue); packaging staging tree into ${ISO_PATH}"
-        tar -czf "${ISO_PATH}" --exclude='./output' --exclude='./filesystem/rootfs' --exclude='./filesystem/squashfs' -C "${ISO_DIR}" .
-    fi
+    log_info "Assembling bootable ISO image with xorriso..."
+    export ISO_DIR ISO_PATH VOLUME_LABEL
+    bash "${SOURCE_ROOT}/foundation/scripts/assemble_iso.sh"
 }
 
 generate_manifests() {
@@ -183,14 +151,16 @@ generate_checksum() {
 }
 
 main() {
-    log_info "Starting Baytevora OS ISO build"
+    log_info "Starting Baytevora OS ISO build (Milestone I)"
     log_info "ISO directory: ${ISO_DIR}"
 
     load_config
+    check_prerequisites
     prepare_filesystem
     build_foundation
-    generate_grub_config
-    create_boot_images
+    install_kernel
+    generate_initramfs
+    configure_grub
     create_squashfs
     assemble_iso
     generate_manifests

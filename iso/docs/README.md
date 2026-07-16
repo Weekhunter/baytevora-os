@@ -1,7 +1,10 @@
-# Baytevora OS ISO Generation (BIG) — Milestone H
+# Baytevora OS ISO Generation (BIG) — Milestone I
 
 This directory contains the build infrastructure for creating the first
-bootable Baytevora OS installation image (ISO) for Version 0.1 Alpha.
+**real, bootable** Baytevora OS installation image (ISO) for Version 0.1 Alpha.
+Starting with Milestone I the build uses a real Debian rootfs, a real Linux
+kernel, a real initramfs, real GRUB images, a real SquashFS filesystem and
+`xorriso` to produce a hybrid UEFI/BIOS ISO.
 
 ## Directory Layout
 
@@ -69,10 +72,10 @@ First Boot Wizard (Milestone F)
 Desktop session
 ```
 
-For the Alpha release the kernel, initramfs, and UEFI bootloader are
-placeholders. A production build supplies real binaries via
-`config/build-config.yaml` or by installing `xorriso` and `grub-mkrescue` on
-the build host so the scripts can create a true bootable ISO.
+For the Alpha release the kernel, initramfs, and UEFI bootloader are **real**
+Debian binaries generated automatically by the build scripts. No manual
+`build-config.yaml` paths or placeholder files are required on a properly
+configured Debian build host.
 
 ## Build Process
 
@@ -86,16 +89,21 @@ cd baytevora-os-main/iso/scripts
 `build_iso.sh` performs the following steps:
 
 1. Loads `config/iso-config.json` and `config/build-config.yaml`.
-2. Creates the root filesystem skeleton.
-3. Copies the desktop shell, installer, and branding assets into
-   `filesystem/rootfs/opt/baytevora/`.
-4. Generates `boot/grub/grub.cfg`.
-5. Places the kernel, initramfs, and UEFI bootloader files.
-6. Creates a compressed root filesystem (squashfs if available, otherwise tar).
-7. Assembles the ISO image with `xorriso` or `grub-mkrescue`; falls back to a
-   packaged staging archive if neither tool is available.
-8. Generates `version-manifest.json` and `build-info.json`.
-9. Computes the SHA256 checksum.
+2. Verifies that required real-ISO tools are installed (`debootstrap`, `chroot`,
+   `mksquashfs`, `xorriso`, `grub-mkstandalone`).
+3. Creates the root filesystem skeleton.
+4. Runs the BLDF foundation scripts to build the Debian rootfs, configure the
+   filesystem, install Baytevora components, configure the display manager,
+   register applications, and enable services.
+5. Installs the real Linux kernel, `initramfs-tools` and `live-boot` inside the
+   chroot.
+6. Generates the initramfs and copies `vmlinuz` + `initramfs.img` into `iso/boot/`.
+7. Builds the GRUB EFI image (`EFI/BOOT/BOOTX64.EFI`) and the GRUB BIOS core
+   image, and writes `boot/grub/grub.cfg`.
+8. Creates a compressed SquashFS root filesystem at `iso/live/filesystem.squashfs`.
+9. Assembles the hybrid bootable ISO image with `xorriso`.
+10. Generates `version-manifest.json` and `build-info.json`.
+11. Computes the SHA256 checksum.
 
 The output artifacts are written to `iso/output/`.
 
@@ -105,26 +113,25 @@ The output artifacts are written to `iso/output/`.
 /
 ├── boot/
 │   ├── grub/
-│   │   └── grub.cfg
+│   │   ├── grub.cfg
+│   │   └── bios.img
 │   ├── vmlinuz
 │   └── initramfs.img
 ├── EFI/
 │   └── BOOT/
 │       └── BOOTX64.EFI
-├── filesystem/
-│   └── squashfs/
-│       └── rootfs.squashfs (or rootfs.tar.gz placeholder)
-└── (top-level packaging tree when using fallback archive)
+└── live/
+    └── filesystem.squashfs
 ```
 
 The live root filesystem contains:
 
-- `/opt/baytevora/desktop-shell`
-- `/opt/baytevora/installer`
-- `/opt/baytevora/branding`
-- `/opt/baytevora/iso/scripts/live-init`
-- `/opt/baytevora/services` (reserved)
-- `/opt/baytevora/applications` (reserved)
+- `/opt/baytevora/desktop` — Baytevora Desktop Shell
+- `/opt/baytevora/installer` — Baytevora OS Installer (BOI)
+- `/usr/share/baytevora/branding` — Branding assets
+- `/opt/baytevora/iso/scripts/live-init` — Reference live-init script
+- `/opt/baytevora/services` — Storage, printing and application framework services
+- `/usr/share/applications/baytevora-*.desktop` — Registered applications
 
 ## Live Environment
 
@@ -148,11 +155,14 @@ Run `validate_iso.sh` after building:
 
 It checks:
 
-- ISO output file exists.
+- ISO output file exists and is a true ISO 9660 image.
+- ISO size is reasonable for a real bootable image (>100 MB).
 - SHA256 checksum is present and matches.
 - `version-manifest.json` and `build-info.json` exist.
-- `boot/grub/grub.cfg`, `EFI/BOOT/BOOTX64.EFI`, and the compressed filesystem
-  are present in the staging tree or ISO.
+- `boot/grub/grub.cfg`, `boot/vmlinuz`, `boot/initramfs.img`,
+  `EFI/BOOT/BOOTX64.EFI`, and `live/filesystem.squashfs` are present in the ISO.
+- `boot/vmlinuz` and `boot/initramfs.img` are real binary files, not text
+  placeholders.
 - Installer, branding, and desktop shell packages are present in `rootfs`.
 - QEMU availability is reported (manual smoke boot test required when running
   in a sandbox without virtualization tooling).
@@ -184,29 +194,41 @@ The shell scripts are the primary build interface for the Alpha release.
 
 ## Virtual Machine Testing
 
-Verified compatibility is documented for **QEMU**. Example command:
+### VirtualBox
+
+1. Create a new VM: **Linux → Debian (64-bit)**.
+2. Attach `iso/output/Baytevora-OS-0.1-Alpha.iso` to the optical drive.
+3. In **System → Motherboard**, enable **EFI** for UEFI boot, or leave it
+   disabled for legacy BIOS boot.
+4. Start the VM. You should see:
+   - GRUB menu → **Baytevora OS 0.1 Alpha**
+   - Linux kernel boot messages
+   - initramfs mounts `live/filesystem.squashfs`
+   - systemd starts
+   - SDDM auto-logs in the `live` user
+   - Baytevora desktop session starts
+
+### QEMU
 
 ```bash
 qemu-system-x86_64 -cdrom output/Baytevora-OS-0.1-Alpha.iso \
     -boot d -m 4096 -enable-kvm
 ```
 
-Future validation hooks include VirtualBox, VMware, and GNOME Boxes; these
-are not exercised in the Alpha build.
+For UEFI firmware in QEMU, install `ovmf` and add `-bios /usr/share/ovmf/OVMF.fd`.
 
 ## Future Hooks
 
 The architecture is ready for extension, but these features are **not**
-implemented in Milestone H:
+implemented in Milestone I:
 
 - Secure Boot and signed images.
-- Legacy BIOS boot support.
 - Recovery ISO and recovery boot entry.
 - OEM ISO customization.
 - Enterprise deployment ISO.
 - Minimal ISO variant.
 - Network installer / offline installer modes.
-- Additional hypervisor validation (VirtualBox, VMware, GNOME Boxes).
+- Additional hypervisor validation (VMware, GNOME Boxes, Hyper-V).
 
 ## Constraints
 
@@ -214,10 +236,16 @@ implemented in Milestone H:
 - No new applications were added.
 - `BrandingManager` was not modified.
 - The installer UI was not modified.
-- The build system is packaging-only and preserves all prior milestone
-  functionality.
+- Only the ISO build pipeline was changed; all prior milestone functionality is
+  preserved.
 
-## Milestone H2 — BLDF Integration
+## Milestones
 
-Starting with Milestone H2, the ISO build calls the Baytevora Linux Distribution Foundation scripts in `baytevora-os-main/foundation/`. This produces a Debian Stable-based live rootfs, system session, display manager auto-login, application registrations, and system services before ISO assembly. See `baytevora-os-main/foundation/docs/README.md` for full details.
+### Milestone H2 — BLDF Integration
+
+Starting with Milestone H2, the ISO build calls the Baytevora Linux Distribution Foundation scripts in `baytevora-os-main/foundation/`. This produces a Debian Stable-based live rootfs, system session, display manager auto-login, application registrations, and system services before ISO assembly.
+
+### Milestone I — First Real Bootable ISO
+
+Milestone I replaces placeholder kernel, initramfs, GRUB images, SquashFS and ISO assembly with real Debian tooling. The result is a hybrid UEFI/BIOS ISO that boots in VirtualBox, mounts the SquashFS live rootfs, starts systemd, reaches SDDM and launches the Baytevora desktop session.
 

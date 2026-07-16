@@ -8,7 +8,7 @@
 set -euo pipefail
 
 ISO_MOUNT="/run/iso"
-ROOTFS_SQUASH="${ISO_MOUNT}/filesystem/squashfs/rootfs.squashfs"
+ROOTFS_SQUASH="${ISO_MOUNT}/live/filesystem.squashfs"
 NEWROOT="/run/baytevora-root"
 
 log() { echo "[LIVE] $*"; }

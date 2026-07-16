@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# validate_iso.sh — verify that the generated ISO is a real bootable image.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,10 +15,38 @@ log_pass() { echo "[PASS]  $*"; PASS=$((PASS + 1)); }
 log_fail() { echo "[FAIL]  $*" >&2; FAIL=$((FAIL + 1)); }
 log_info() { echo "[INFO]  $*"; }
 
+is_true_iso() {
+    command -v file >/dev/null 2>&1 && file "${ISO_PATH}" | grep -qi "iso 9660"
+}
+
+iso_has() {
+    local path="$1"
+    if command -v isoinfo >/dev/null 2>&1 && is_true_iso; then
+        isoinfo -i "${ISO_PATH}" -x "${path}" >/dev/null 2>&1
+    else
+        return 1
+    fi
+}
+
 if [[ ! -f "${ISO_PATH}" ]]; then
     log_fail "ISO file not found: ${ISO_PATH}"
 else
     log_pass "ISO file exists: ${ISO_PATH}"
+fi
+
+# A real bootable ISO should be ISO 9660 and larger than a placeholder.
+if [[ -f "${ISO_PATH}" ]]; then
+    ISO_SIZE="$(stat -c%s "${ISO_PATH}" 2>/dev/null || echo 0)"
+    if is_true_iso; then
+        log_pass "ISO is a true ISO 9660 image"
+    else
+        log_fail "ISO is not a true ISO 9660 image (got placeholder?)"
+    fi
+    if [[ "${ISO_SIZE}" -gt 104857600 ]]; then
+        log_pass "ISO size looks reasonable (${ISO_SIZE} bytes)"
+    else
+        log_warn "ISO size is only ${ISO_SIZE} bytes; a real image should be >100 MB"
+    fi
 fi
 
 if [[ -f "${ISO_PATH}.sha256" ]]; then
@@ -43,42 +72,48 @@ else
     log_fail "build-info.json missing"
 fi
 
-# Inspect the generated archive/ISO contents.
-if command -v isoinfo >/dev/null 2>&1 && file "${ISO_PATH}" | grep -qi iso; then
-    if isoinfo -i "${ISO_PATH}" -x /BOOT/GRUB/GRUB.CFG >/dev/null 2>&1; then
-        log_pass "ISO contains boot/grub/grub.cfg"
-    else
-        log_fail "ISO missing boot/grub/grub.cfg"
-    fi
-    if isoinfo -i "${ISO_PATH}" -x /EFI/BOOT/BOOTX64.EFI >/dev/null 2>&1; then
-        log_pass "ISO contains EFI/BOOT/BOOTX64.EFI"
-    else
-        log_fail "ISO missing EFI/BOOT/BOOTX64.EFI"
-    fi
-    if isoinfo -i "${ISO_PATH}" -x /FILESYSTEM/SQUASHFS/ROOTFS.SQUASHFS >/dev/null 2>&1 || \
-       isoinfo -i "${ISO_PATH}" -x /FILESYSTEM/SQUASHFS/ROOTFS.TAR.GZ >/dev/null 2>&1; then
-        log_pass "ISO contains compressed filesystem"
-    else
-        log_fail "ISO missing compressed filesystem"
-    fi
+# Real ISO contents.
+if iso_has /BOOT/GRUB/GRUB.CFG; then
+    log_pass "ISO contains boot/grub/grub.cfg"
 else
-    log_info "isoinfo not available or output is not a true ISO; checking staging tree instead"
-    if [[ -f "${ISO_DIR}/boot/grub/grub.cfg" ]]; then
-        log_pass "Staging boot/grub/grub.cfg exists"
-    else
-        log_fail "Staging boot/grub/grub.cfg missing"
-    fi
-    if [[ -f "${ISO_DIR}/EFI/BOOT/BOOTX64.EFI" ]]; then
-        log_pass "Staging EFI/BOOT/BOOTX64.EFI exists"
-    else
-        log_fail "Staging EFI/BOOT/BOOTX64.EFI missing"
-    fi
-    if [[ -f "${ISO_DIR}/filesystem/squashfs/rootfs.squashfs" ]] || \
-       [[ -f "${ISO_DIR}/filesystem/squashfs/rootfs.tar.gz" ]]; then
-        log_pass "Staging compressed filesystem exists"
-    else
-        log_fail "Staging compressed filesystem missing"
-    fi
+    log_fail "ISO missing boot/grub/grub.cfg"
+fi
+
+if iso_has /BOOT/VMLINUZ; then
+    log_pass "ISO contains boot/vmlinuz"
+else
+    log_fail "ISO missing boot/vmlinuz"
+fi
+
+if iso_has /BOOT/INITRAMFS.IMG; then
+    log_pass "ISO contains boot/initramfs.img"
+else
+    log_fail "ISO missing boot/initramfs.img"
+fi
+
+if iso_has /EFI/BOOT/BOOTX64.EFI; then
+    log_pass "ISO contains EFI/BOOT/BOOTX64.EFI"
+else
+    log_fail "ISO missing EFI/BOOT/BOOTX64.EFI"
+fi
+
+if iso_has /LIVE/FILESYSTEM.SQUASHFS; then
+    log_pass "ISO contains live/filesystem.squashfs"
+else
+    log_fail "ISO missing live/filesystem.squashfs"
+fi
+
+# Boot images must not be placeholder text files.
+if [[ -f "${ISO_DIR}/boot/vmlinuz" && ! "$(file -b "${ISO_DIR}/boot/vmlinuz")" =~ ASCII ]]; then
+    log_pass "boot/vmlinuz is a real kernel image"
+elif [[ -f "${ISO_DIR}/boot/vmlinuz" ]]; then
+    log_fail "boot/vmlinuz is still a placeholder"
+fi
+
+if [[ -f "${ISO_DIR}/boot/initramfs.img" && ! "$(file -b "${ISO_DIR}/boot/initramfs.img")" =~ ASCII ]]; then
+    log_pass "boot/initramfs.img is a real initramfs"
+elif [[ -f "${ISO_DIR}/boot/initramfs.img" ]]; then
+    log_fail "boot/initramfs.img is still a placeholder"
 fi
 
 # Check installer and branding inside rootfs.
@@ -137,12 +172,12 @@ else
     log_fail "Live user not configured"
 fi
 
-# QEMU boot check is optional; qemu is not available in every build sandbox.
+# QEMU/VirtualBox smoke test note.
 if command -v qemu-system-x86_64 >/dev/null 2>&1; then
     log_info "qemu-system-x86_64 found; run manual smoke boot test with:"
     log_info "  qemu-system-x86_64 -cdrom ${ISO_PATH} -boot d -m 4096"
 else
-    log_info "qemu-system-x86_64 not available; VM smoke test skipped"
+    log_info "qemu-system-x86_64 not available; VM smoke test must be run manually on a build host"
 fi
 
 echo ""
